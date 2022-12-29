@@ -1,7 +1,7 @@
 # DevOps Experts - Final Project
 • DevOps Experts Course - Final Project.
 
-• The project includes 3 parts.
+• The Project Includes 3 Parts.
 
 • Current status : Only the first part has finished. Part 2, 3 will be attach soon ...
 
