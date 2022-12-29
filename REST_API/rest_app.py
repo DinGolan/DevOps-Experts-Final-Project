@@ -8,10 +8,6 @@ from flask           import Flask, request
 from DB.db_connector import *
 
 
-HOST_REST = "127.0.0.1"
-PORT_REST = 5000
-
-
 # Create Flask Instance #
 app = Flask(__name__)
 
@@ -41,7 +37,7 @@ def rest_api_requests(user_id):
     elif request.method == "PUT":
         request_data  = request.json                                # Getting the JSON data payload from request #
         new_user_name = request_data.get('new_user_name')           # Treating request_data as a dictionary to get a specific value from key #
-        update_result = update_user_in_table(user_id, new_user_name, USERS_TABLE_NAME) and update_user_in_table(user_id, new_user_name, CONFIG_TABLE_NAME)
+        update_result = update_user_in_table(user_id, new_user_name, json_data['db_connector.py']['USERS_TABLE_NAME']) and update_user_in_table(user_id, new_user_name, json_data['db_connector.py']['CONFIG_TABLE_NAME'])
 
         if update_result is False:
             return {"status": "error", "reason": "no such id"}, 500
@@ -58,4 +54,4 @@ def rest_api_requests(user_id):
 
 
 # Run Flask Application #
-app.run(host=HOST_REST, debug=True, port=PORT_REST)
+app.run(host=json_data['rest_api.py']['HOST_REST'], debug=True, port=json_data['rest_api.py']['PORT_REST'])

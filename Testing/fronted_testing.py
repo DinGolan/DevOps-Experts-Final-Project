@@ -10,14 +10,16 @@ from selenium                          import webdriver
 from selenium.webdriver.chrome.service import Service
 
 
-def create_web_driver_session():
+def create_web_driver_session(browser):
     """
     :explanations:
     - Create Web Driver Session.
 
+    :param: browser (str).
+
     :return: web_driver (webdriver).
     """
-    driver_path = "C:\\Users\\ding\\OneDrive - NVIDIA Corporation\\Desktop\\DevOps Engineer - Road Map\\DevOps Experts - Course DevOps\\פרויקט\\חלק - 1\\Driver\\chromedriver.exe"
+    driver_path = f"C:\\Users\\ding\\OneDrive - NVIDIA Corporation\\Desktop\\DevOps Engineer - Road Map\\DevOps Experts - Course DevOps\\פרויקט\\חלק - 1\\Driver\\{browser}driver.exe"
     options     = webdriver.ChromeOptions()
     options.add_argument("--ignore-ssl-errors=yes")
     options.add_argument("--ignore-certificate-errors")
@@ -43,7 +45,7 @@ def check_element_from_web_interface(web_driver):
         raise Exception("\nTest Failed : `user` element not exist in the Web Page ...\n")
 
 
-def open_chrome_web_browser(url):
+def open_chrome_web_browser(url, browser):
     """
     :explanations:
     - open_chrome_web_browser.
@@ -52,10 +54,11 @@ def open_chrome_web_browser(url):
     - Example of URL : "https://{host}:{port}/{users_table_name}/get_user_name/{user_id}"
 
     :param url: (str).
+    :param browser:  (str).
 
     :return: None.
     """
-    web_driver                  = create_web_driver_session()
+    web_driver                  = create_web_driver_session(browser)
     web_interface_url_split     = url.split('/')
     web_interface_url_split[-1] = "get_user_name" + "/" + web_interface_url_split[-1]
     web_interface_url           = "/".join(web_interface_url_split)
@@ -83,7 +86,7 @@ def fronted_testing_function():
     user_id_frontend_test = int(input("\nPlease enter `user id` : "))
 
     sql_query             = f"SELECT url, browser "                      \
-                            f"FROM {SCHEMA_NAME}.{CONFIG_TABLE_NAME} "   \
+                            f"FROM {json_data['db_connector.py']['SCHEMA_NAME']}.{json_data['db_connector.py']['CONFIG_TABLE_NAME']} "   \
                             f"WHERE user_id = '{user_id_frontend_test}';"
     query_result          = run_sql_query(sql_query)
     query_result          = list(itertools.chain(*query_result))
@@ -92,9 +95,10 @@ def fronted_testing_function():
         raise Exception(f"\n[Frontend Test] Test Failed : (`user_id` = {user_id_frontend_test}) not exist in `config` table ...\n")
 
     url, browser          = query_result
+    browser               = browser.lower()
 
     # open Chrome #
-    open_chrome_web_browser(url)
+    open_chrome_web_browser(url, browser)
 
 
 if __name__ == "__main__":

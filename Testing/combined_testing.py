@@ -78,7 +78,7 @@ def combined_testing_function():
     user_name_combined_test = input("\nPlease enter `user name` : ")
 
     sql_query               = f"SELECT url, browser "                         \
-                              f"FROM {SCHEMA_NAME}.{CONFIG_TABLE_NAME} "      \
+                              f"FROM {json_data['db_connector.py']['SCHEMA_NAME']}.{json_data['db_connector.py']['CONFIG_TABLE_NAME']} "      \
                               f"WHERE (user_id = '{user_id_combined_test}') AND (user_name = '{user_name_combined_test}');"
     query_result            = run_sql_query(sql_query)
     query_result            = list(itertools.chain(*query_result))
@@ -87,6 +87,7 @@ def combined_testing_function():
         raise Exception(f"\n[Combined Test] Test Failed : (`user_id` = {user_id_combined_test} , `user_name` = {user_name_combined_test}) not exist in `config` table ...\n")
 
     url, browser            = query_result
+    browser                 = browser.lower()
 
     # Create users table inside MySQL DB #
     create_users_table_result = create_users_table()
@@ -124,12 +125,12 @@ def combined_testing_function():
                 print("\n###############")
                 print("# USERS TABLE #")
                 print("###############\n")
-                print_table(USERS_TABLE_NAME)
+                print_table(json_data['db_connector.py']['USERS_TABLE_NAME'])
 
                 print("\n################")
                 print("# CONFIG TABLE #")
                 print("################\n")
-                print_table(CONFIG_TABLE_NAME)
+                print_table(json_data['db_connector.py']['CONFIG_TABLE_NAME'])
 
             # Exit from `request type` menu #
             else:
@@ -137,7 +138,7 @@ def combined_testing_function():
 
         # Check Web Interface #
         elif test_side == "Frontend":
-            open_chrome_web_browser(url)
+            open_chrome_web_browser(url, browser)
 
         # Exit from `test side` menu #
         else:

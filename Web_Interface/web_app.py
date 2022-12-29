@@ -8,11 +8,6 @@ from flask           import Flask
 from DB.db_connector import *
 
 
-# GLOBAL VARS #
-HOST_WEB = "127.0.0.1"
-PORT_WEB = 5001
-
-
 # Create Flask Instance #
 app = Flask(__name__)
 
@@ -36,4 +31,4 @@ def get_user_name(user_id):
 
 
 # Run Flask Application #
-app.run(host=HOST_WEB, debug=True, port=PORT_WEB)
+app.run(host=json_data['web_app.py']['HOST_WEB'], debug=True, port=json_data['web_app.py']['PORT_WEB'])

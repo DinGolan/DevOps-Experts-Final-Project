@@ -4,7 +4,9 @@
 
 
 # Imports #
+import os
 import sys
+import json
 import pymysql
 import datetime
 import itertools
@@ -14,14 +16,9 @@ import itertools
 from beautifultable import BeautifulTable
 
 
-# GLOBAL VARS #
-HOST              = "sql.freedb.tech"
-PORT              = 3306
-USER              = "freedb_Din_Golan"
-PASSWORD          = "6G24*7bAr5KaU3G"
-SCHEMA_NAME       = "freedb_Din_Golan"
-USERS_TABLE_NAME  = "users"
-CONFIG_TABLE_NAME = "config"
+# JSON #
+json_file = open(os.path.join("..", "Config", "config.json"))
+json_data = json.load(json_file)
 
 
 ##############
@@ -35,7 +32,7 @@ def create_connection_to_db():
     :return: connection: (pymysql), cursor: (pymysql).
     """
     try:
-        connection = pymysql.connect(host=HOST, port=PORT, user=USER, passwd=PASSWORD, db=SCHEMA_NAME)
+        connection = pymysql.connect(host=json_data['db_connector.py']['HOST'], port=json_data['db_connector.py']['PORT'], user=json_data['db_connector.py']['USER'], passwd=json_data['db_connector.py']['PASSWORD'], db=json_data['db_connector.py']['SCHEMA_NAME'])
         connection.autocommit(True)
 
         # Getting a cursor from DB #
@@ -84,7 +81,7 @@ def create_users_table():
 
     try:
         # Create Table #
-        statementToExecute = f"CREATE TABLE IF NOT EXISTS`{SCHEMA_NAME}`.`{USERS_TABLE_NAME}` " + \
+        statementToExecute = f"CREATE TABLE IF NOT EXISTS`{json_data['db_connector.py']['SCHEMA_NAME']}`.`{json_data['db_connector.py']['USERS_TABLE_NAME']}` " + \
                              "(`user_id` INT NOT NULL, `user_name` VARCHAR(50) NOT NULL, `creation_date` DATETIME NOT NULL, PRIMARY KEY (`user_id`));"
         cursor.execute(statementToExecute)
 
@@ -121,7 +118,7 @@ def insert_new_user_to_table(user_id, user_name, creation_date):
 
     try:
         # Inserting data into table #
-        statementToExecute = f"INSERT into {SCHEMA_NAME}.{USERS_TABLE_NAME} " \
+        statementToExecute = f"INSERT into {json_data['db_connector.py']['SCHEMA_NAME']}.{json_data['db_connector.py']['USERS_TABLE_NAME']} " \
                              f"(user_id, user_name, creation_date) "          \
                              f"VALUES ('{user_id}', '{user_name}', '{creation_date}')"
         cursor.execute(statementToExecute)
@@ -153,7 +150,7 @@ def delete_user_from_table(user_id):
 
     try:
         # Delete row from table #
-        statementToExecute = f"DELETE FROM {SCHEMA_NAME}.{USERS_TABLE_NAME} " \
+        statementToExecute = f"DELETE FROM {json_data['db_connector.py']['SCHEMA_NAME']}.{json_data['db_connector.py']['USERS_TABLE_NAME']} " \
                              f"WHERE user_id = '{user_id}'"
         cursor.execute(statementToExecute)
 
@@ -181,7 +178,7 @@ def drop_users_table():
 
     try:
         # Delete table from DB #
-        statementToExecute = f"DROP TABLE {SCHEMA_NAME}.{USERS_TABLE_NAME};"
+        statementToExecute = f"DROP TABLE {json_data['db_connector.py']['SCHEMA_NAME']}.{json_data['db_connector.py']['USERS_TABLE_NAME']};"
         cursor.execute(statementToExecute)
 
     except pymysql.Error as error_exception:
@@ -210,13 +207,13 @@ def get_user_name_from_db(user_id):
 
     try:
         statementToExecute = f"SELECT {column_table} "                 \
-                             f"FROM {SCHEMA_NAME}.{USERS_TABLE_NAME} " \
+                             f"FROM {json_data['db_connector.py']['SCHEMA_NAME']}.{json_data['db_connector.py']['USERS_TABLE_NAME']} " \
                              f"WHERE user_id = '{user_id}';"
         cursor.execute(statementToExecute)
         user_name = cursor.fetchone()[0]
 
     except pymysql.Error as error_exception:
-        print(f"\nError : Can't iterate on the table {USERS_TABLE_NAME} because - {error_exception} ...\n")
+        print(f"\nError : Can't iterate on the table {json_data['db_connector.py']['USERS_TABLE_NAME']} because - {error_exception} ...\n")
         return None
 
     finally:
@@ -244,14 +241,14 @@ def get_user_ids_from_db(user_name):
 
     try:
         statementToExecute = f"SELECT {column_table} "                 \
-                             f"FROM {SCHEMA_NAME}.{USERS_TABLE_NAME} " \
+                             f"FROM {json_data['db_connector.py']['SCHEMA_NAME']}.{json_data['db_connector.py']['USERS_TABLE_NAME']} " \
                              f"WHERE user_name = '{user_name}';"
         cursor.execute(statementToExecute)
         user_ids = cursor.fetchall()
         user_ids = [user_tuple[0] for user_tuple in user_ids]
 
     except pymysql.Error as error_exception:
-        print(f"\nError : Can't iterate on the table {USERS_TABLE_NAME} because - {error_exception} ...\n")
+        print(f"\nError : Can't iterate on the table {json_data['db_connector.py']['USERS_TABLE_NAME']} because - {error_exception} ...\n")
         return None
 
     finally:
@@ -284,7 +281,7 @@ def get_new_user_id(user_id):
     :return: new_user_id (int).
     """
     sql_query    = f"SELECT user_id " \
-                     f"FROM {SCHEMA_NAME}.{USERS_TABLE_NAME};"
+                     f"FROM {json_data['db_connector.py']['SCHEMA_NAME']}.{json_data['db_connector.py']['USERS_TABLE_NAME']};"
     query_result = run_sql_query(sql_query)
     query_result = list(itertools.chain(*query_result))
 
@@ -309,7 +306,7 @@ def create_config_table():
     """
     :explanations:
     - Create another table (in DB) and call it config, the table will contain :
-      * The API gateway URL (e.g: 127.0.0.1:5001/users)
+      * The API gateway URL (e.g: 127.0.0.1:5000/users)
       * The browser to test on (e.g: Chrome).
       * user id.
       * user name to be inserted.
@@ -323,7 +320,7 @@ def create_config_table():
 
     try:
         # Create Table #
-        statementToExecute = f"CREATE TABLE IF NOT EXISTS`{SCHEMA_NAME}`.`{CONFIG_TABLE_NAME}` " \
+        statementToExecute = f"CREATE TABLE IF NOT EXISTS`{json_data['db_connector.py']['SCHEMA_NAME']}`.`{json_data['db_connector.py']['CONFIG_TABLE_NAME']}` " \
                              f"(`url` VARCHAR(50) NOT NULL, `browser` VARCHAR(50) NOT NULL, `user_id` INT NOT NULL, `user_name` VARCHAR(50) NOT NULL, PRIMARY KEY (`user_id`));"
         cursor.execute(statementToExecute)
 
@@ -358,17 +355,17 @@ def insert_rows_to_config_table():
         print()
 
     # Get number of rows from config table #
-    number_of_rows = count_rows_from_table(CONFIG_TABLE_NAME)
+    number_of_rows = count_rows_from_table(json_data['db_connector.py']['CONFIG_TABLE_NAME'])
 
     # Establishing a connection to DB #
     connection, cursor = create_connection_to_db()
 
     user_id = number_of_rows + 1
     while idx < len(user_names):
-        url     = f"http://127.0.0.1:5000/{USERS_TABLE_NAME}/{user_id}"
+        url     = f"http://127.0.0.1:5000/{json_data['db_connector.py']['USERS_TABLE_NAME']}/{user_id}"
         try:
             # Inserting data into table #
-            statementToExecute = f"INSERT into {SCHEMA_NAME}.{CONFIG_TABLE_NAME} " \
+            statementToExecute = f"INSERT into {json_data['db_connector.py']['SCHEMA_NAME']}.{json_data['db_connector.py']['CONFIG_TABLE_NAME']} " \
                                  f"(url, browser, user_id, user_name) "            \
                                  f"VALUES ('{url}', '{browser}', '{user_id}', '{user_names[idx]}')"
             cursor.execute(statementToExecute)
@@ -386,7 +383,7 @@ def insert_rows_to_config_table():
 
     # Extreme Case - If `config` table is empty #
     if number_of_rows == 0:
-        raise Exception(f"\nError : {CONFIG_TABLE_NAME} table can't be empty ...\n")
+        raise Exception(f"\nError : {json_data['db_connector.py']['CONFIG_TABLE_NAME']} table can't be empty ...\n")
 
 
 ############
@@ -410,7 +407,7 @@ def update_user_in_table(user_id, new_user_name, table_name):
 
     try:
         # Update row in the table #
-        statementToExecute = f"UPDATE {SCHEMA_NAME}.{table_name} " \
+        statementToExecute = f"UPDATE {json_data['db_connector.py']['SCHEMA_NAME']}.{table_name} " \
                              f"SET user_name = '{new_user_name}' " \
                              f"WHERE user_id = '{user_id}'"
         cursor.execute(statementToExecute)
@@ -442,11 +439,11 @@ def count_rows_from_table(table_name):
 
     try:
         statementToExecute = f"SELECT {column_table} " \
-                             f"FROM {SCHEMA_NAME}.{table_name};"
+                             f"FROM {json_data['db_connector.py']['SCHEMA_NAME']}.{table_name};"
         cursor.execute(statementToExecute)
 
     except pymysql.Error as error_exception:
-        print(f"\nError : Can't iterate on the table {USERS_TABLE_NAME} because - {error_exception} ...\n")
+        print(f"\nError : Can't iterate on the table {json_data['db_connector.py']['USERS_TABLE_NAME']} because - {error_exception} ...\n")
         return None
 
     finally:
@@ -495,7 +492,7 @@ def print_table(table_name):
     connection, cursor = create_connection_to_db()
 
     sql_query = f"SELECT * " \
-                f"FROM {SCHEMA_NAME}.{table_name};"
+                f"FROM {json_data['db_connector.py']['SCHEMA_NAME']}.{table_name};"
     cursor.execute(sql_query)
 
     beautiful_table = BeautifulTable()
