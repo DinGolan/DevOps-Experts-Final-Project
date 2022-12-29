@@ -85,7 +85,7 @@ def create_users_table():
     try:
         # Create Table #
         statementToExecute = f"CREATE TABLE IF NOT EXISTS`{SCHEMA_NAME}`.`{USERS_TABLE_NAME}` " + \
-                             "(`user_id` INT NOT NULL, `user_name` VARCHAR(50) NOT NULL, `creation_date` VARCHAR(50) NOT NULL, PRIMARY KEY (`user_id`));"
+                             "(`user_id` INT NOT NULL, `user_name` VARCHAR(50) NOT NULL, `creation_date` DATETIME NOT NULL, PRIMARY KEY (`user_id`));"
         cursor.execute(statementToExecute)
 
     except pymysql.err.ProgrammingError as programming_exception:
@@ -264,13 +264,14 @@ def get_user_ids_from_db(user_name):
 def get_user_creation_date():
     """
     :explanations:
-    - Create Date and return it.
+    - Create date and return it.
 
-    :return: creation_date_string (str).
+    :return: creation_date (datetime.datetime).
     """
-    date_format = "%Y-%m-%d %H:%M:%S"
+    date_format          = "%Y-%m-%d %H:%M:%S"
     creation_date_string = datetime.datetime.now().strftime(date_format)
-    return creation_date_string
+    creation_date        = datetime.datetime.strptime(creation_date_string, date_format)
+    return creation_date
 
 
 def get_new_user_id(user_id):
@@ -501,7 +502,10 @@ def print_table(table_name):
     beautiful_table.columns.header = ["user id", "user name", "creation date"] if table_name == "users" else ["url", "browser", "user id", "user name"]
 
     for row in cursor.fetchall():
-        beautiful_table.append_row(row)
+        if type(row[2]) == datetime.datetime:
+            beautiful_table.append_row((row[0], row[1], str(row[2])))
+        else:
+            beautiful_table.append_row(row)
 
     print(beautiful_table)
 
