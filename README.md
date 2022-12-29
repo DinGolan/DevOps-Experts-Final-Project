@@ -1,4 +1,4 @@
-# DevOps-Experts-Project
+# DevOps Experts - Final Project
 • DevOps Experts Course - Final Project.
 
 • The project includes 3 parts.
