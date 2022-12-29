@@ -4,9 +4,9 @@
 • The project includes 3 parts.
 
 • Topics :
-- Python
-- Selenium
-- REST API
-- MySQL
-- Web Interface
-- Flask
+* Python
+* Selenium
+* REST API
+* MySQL
+* Web Interface
+* Flask
