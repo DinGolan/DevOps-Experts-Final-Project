@@ -9,7 +9,7 @@ import json
 
 
 # JSON #
-json_file = open(os.path.join("config.json"))
+json_file = open(os.path.join("..", "Config", "config.json"))
 json_data = json.load(json_file)
 json_file.close()
 
