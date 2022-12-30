@@ -37,7 +37,7 @@ def rest_api_requests(user_id):
     elif request.method == "PUT":
         request_data  = request.json                                # Getting the JSON data payload from request #
         new_user_name = request_data.get('new_user_name')           # Treating request_data as a dictionary to get a specific value from key #
-        update_result = update_user_in_table(user_id, new_user_name, json_data['db_connector.py']['USERS_TABLE_NAME']) and update_user_in_table(user_id, new_user_name, json_data['db_connector.py']['CONFIG_TABLE_NAME'])
+        update_result = update_user_in_table(user_id, new_user_name, get_db_users_table_name()) and update_user_in_table(user_id, new_user_name, get_db_config_table_name())
 
         if update_result is False:
             return {"status": "error", "reason": "no such id"}, 500
@@ -54,4 +54,4 @@ def rest_api_requests(user_id):
 
 
 # Run Flask Application #
-app.run(host=json_data['rest_api.py']['HOST_REST'], debug=True, port=json_data['rest_api.py']['PORT_REST'])
+app.run(host=get_rest_host(), debug=True, port=get_rest_port())

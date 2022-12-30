@@ -198,7 +198,7 @@ def backend_testing_function():
     user_id_backend_test    = int(input("\nPlease enter `user id` : "))
 
     sql_query               = f"SELECT url, browser, user_name "           \
-                              f"FROM {json_data['db_connector.py']['SCHEMA_NAME']}.{json_data['db_connector.py']['CONFIG_TABLE_NAME']} "   \
+                              f"FROM {get_db_schema_name()}.{get_db_config_table_name()} "   \
                               f"WHERE user_id = '{user_id_backend_test}';"
     query_result            = run_sql_query(sql_query)
     query_result            = list(itertools.chain(*query_result))
@@ -239,12 +239,12 @@ def backend_testing_function():
             print("\n###############")
             print("# USERS TABLE #")
             print("###############\n")
-            print_table(json_data['db_connector.py']['USERS_TABLE_NAME'])
+            print_table(get_db_users_table_name())
 
             print("\n################")
             print("# CONFIG TABLE #")
             print("################\n")
-            print_table(json_data['db_connector.py']['CONFIG_TABLE_NAME'])
+            print_table(get_db_config_table_name())
 
         # Exit from `request type` menu #
         else:

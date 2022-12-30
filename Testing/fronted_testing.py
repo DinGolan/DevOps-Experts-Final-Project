@@ -40,7 +40,7 @@ def check_element_from_web_interface(web_driver):
     user_element = web_driver.find_element(By.ID, value="user")
     if user_element.is_displayed():
         user_details_from_web_page = user_element.text
-        print(f"\nTest Succeed : {user_details_from_web_page} ...\n")
+        print(f"\nTest Succeed : `{user_details_from_web_page}` ...\n")
     else:
         raise Exception("\nTest Failed : `user` element not exist in the Web Page ...\n")
 
@@ -86,7 +86,7 @@ def fronted_testing_function():
     user_id_frontend_test = int(input("\nPlease enter `user id` : "))
 
     sql_query             = f"SELECT url, browser "                      \
-                            f"FROM {json_data['db_connector.py']['SCHEMA_NAME']}.{json_data['db_connector.py']['CONFIG_TABLE_NAME']} "   \
+                            f"FROM {get_db_schema_name()}.{get_db_config_table_name()} "   \
                             f"WHERE user_id = '{user_id_frontend_test}';"
     query_result          = run_sql_query(sql_query)
     query_result          = list(itertools.chain(*query_result))

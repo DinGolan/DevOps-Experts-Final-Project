@@ -31,4 +31,4 @@ def get_user_name(user_id):
 
 
 # Run Flask Application #
-app.run(host=json_data['web_app.py']['HOST_WEB'], debug=True, port=json_data['web_app.py']['PORT_WEB'])
+app.run(host=get_web_host(), debug=True, port=get_web_port())
