@@ -22,7 +22,7 @@ def get_user_name(user_id):
 
     :return: HTML Format.
     """
-    user_name = get_user_name_from_db(user_id)
+    user_name = get_user_name_of_specific_user_id_from_users_table(user_id)
 
     if user_name is not None:
         return "<h1 id='user'>" + "`user name` is : " + user_name + "</h1>", 200

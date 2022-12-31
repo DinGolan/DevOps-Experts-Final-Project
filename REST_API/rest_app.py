@@ -17,9 +17,8 @@ def rest_api_requests(user_id):
     if request.method == "POST":
         request_data  = request.json                        # Getting the JSON data payload from request #
         user_name     = request_data.get('user_name')       # Treating request_data as a dictionary to get a specific value from key #
-        new_user_id   = get_new_user_id(user_id)
         creation_date = get_user_creation_date()
-        insert_result = insert_new_user_to_table(new_user_id, user_name, creation_date)
+        insert_result = insert_new_user_to_users_table(user_id, user_name, creation_date) and insert_new_user_to_config_table(user_id, user_name)
 
         if insert_result is False:
             return {"status": "error", "reason": "ID Already Exists"}, 500
@@ -27,7 +26,7 @@ def rest_api_requests(user_id):
         return {"status": "OK", "user_added": user_name}, 200
 
     elif request.method == "GET":
-        user_name = get_user_name_from_db(user_id)
+        user_name = get_user_name_of_specific_user_id_from_users_table(user_id)
 
         if user_name is None:
             return {"status": "error", "reason": "no such ID"}, 500
@@ -45,7 +44,7 @@ def rest_api_requests(user_id):
         return {"status": "OK", "user_updated": new_user_name}, 200
 
     elif request.method == "DELETE":
-        delete_result = delete_user_from_table(user_id)
+        delete_result = delete_user_from_table(user_id, get_db_users_table_name()) and delete_user_from_table(user_id, get_db_config_table_name())
 
         if delete_result is False:
             return {"status": "error", "reason": "no such id"}, 500

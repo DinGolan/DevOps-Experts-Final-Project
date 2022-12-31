@@ -75,7 +75,7 @@ def check_requests_result(request_title, user_id, requests_result, json_result, 
             message = f"We get status code different then 200 , status_code = {status_code} ..."
             raise Exception(f"\n[{request_title}] Test Failed : " + str(generate_response_dict(requests_result, json_result, json_key, message)) + "\n")
 
-        db_user_ids = get_user_ids_from_db(jason_user_name)
+        db_user_ids = get_user_ids_of_specific_user_name_from_users_table(jason_user_name)
 
         if request_title in ["POST", "GET", "PUT"]:
             if user_id not in db_user_ids:
@@ -98,13 +98,11 @@ def check_requests_result(request_title, user_id, requests_result, json_result, 
         raise Exception(f"\n[{request_title}] Test Failed : " + str(generate_response_dict(requests_result, json_result, json_key, message)) + "\n")
 
 
-def send_post_request(url, user_id, user_name):
+def send_post_request(user_name):
     """
     :explanations:
     - Send POST request.
 
-    :param: url: (str).
-    :param: user_id (str).
     :param: user_name: (str).
 
     :return: None
@@ -112,9 +110,11 @@ def send_post_request(url, user_id, user_name):
     print("\n##########")
     print("#  POST  #")
     print("##########\n")
+    new_user_id     = get_new_user_id_from_users_table()
+    url             = f"http://{get_rest_host()}:{get_rest_port()}/{get_db_users_table_name()}/{new_user_id}"
     requests_result = requests.post(url=url, json={"user_name": user_name})
     json_result     = requests_result.json()
-    check_requests_result("POST", user_id, requests_result, json_result, "user_added")
+    check_requests_result("POST", new_user_id, requests_result, json_result, "user_added")
 
 
 def send_get_request(url, user_id):
@@ -192,27 +192,16 @@ def backend_testing_function():
     # Insert rows to config table inside MySQL DB #
     insert_rows_to_config_table()
 
-    print("\n################")
-    print("# User Details #")
-    print("################")
-    user_id_backend_test    = int(input("\nPlease enter `user id` : "))
-
-    sql_query               = f"SELECT url, browser, user_name "           \
-                              f"FROM {get_db_schema_name()}.{get_db_config_table_name()} "   \
-                              f"WHERE user_id = '{user_id_backend_test}';"
-    query_result            = run_sql_query(sql_query)
-    query_result            = list(itertools.chain(*query_result))
-
-    if len(query_result) == 0:
-        raise Exception(f"\n[Backend Test] Test Failed : (`user_id` = {user_id_backend_test}) not exist in `config` table ...\n")
-
-    url, browser, user_name_backend_test = query_result
-
+    ################
+    # User Details #
+    ################
     # Create users table inside MySQL DB #
-    create_users_table_result = create_users_table()
-    if create_users_table_result is False:
-        raise Exception("\nTest Failed : Table `users` didn't generated in MySQL DB ...\n")
+    create_users_table()
 
+    # Insert rows to users table inside MySQL DB #
+    insert_rows_to_users_table()
+
+    # For Request Details #
     while True:
 
         # Get `request_type` from user #
@@ -220,18 +209,22 @@ def backend_testing_function():
 
         # Send POST Request #
         if request_type == "POST":
-            send_post_request(url, user_id_backend_test, user_name_backend_test)
+            user_name_backend_test = get_details_from_external_user_for_backend("POST", "Backend")
+            send_post_request(user_name_backend_test)
 
         # Send GET Request #
         elif request_type == "GET":
+            url, user_id_backend_test = get_details_from_external_user_for_backend("GET", "Backend")
             send_get_request(url, user_id_backend_test)
 
         # Send PUT Request #
         elif request_type == "PUT":
+            url, user_id_backend_test = get_details_from_external_user_for_backend("PUT", "Backend")
             send_put_request(url, user_id_backend_test)
 
         # Send DELETE Request #
         elif request_type == "DELETE":
+            url, user_id_backend_test = get_details_from_external_user_for_backend("DELETE", "Backend")
             send_delete_request(url, user_id_backend_test)
 
         # Print Tables #

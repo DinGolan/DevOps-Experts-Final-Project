@@ -3,32 +3,9 @@
 ############################
 
 
-# Imports #
-import requests
-
-
 # From #
-from backend_testing import requests_menu, check_requests_result, send_get_request, send_put_request, send_delete_request
-from fronted_testing import *
-
-
-def send_post_request(url, user_id, user_name):
-    """
-    :explanations:
-    - Send POST request.
-
-    :param: url: (str).
-    :param: user_id (str).
-    :param: user_name: (str).
-
-    :return: None
-    """
-    print("\n##########")
-    print("#  POST  #")
-    print("##########\n")
-    requests_result = requests.post(url=url, json={"user_id": user_id, "user_name": user_name})
-    json_result     = requests_result.json()
-    check_requests_result("POST", user_id, requests_result, json_result, "user_added")
+from backend_testing  import *
+from frontend_testing import *
 
 
 def test_side_menu():
@@ -71,29 +48,16 @@ def combined_testing_function():
     # Insert rows to config table inside MySQL DB #
     insert_rows_to_config_table()
 
-    print("\n################")
-    print("# User Details #")
-    print("################")
-    user_id_combined_test   = int(input("\nPlease enter `user id` : "))
-    user_name_combined_test = input("\nPlease enter `user name` : ")
-
-    sql_query               = f"SELECT url, browser "                         \
-                              f"FROM {get_db_schema_name()}.{get_db_config_table_name()} "      \
-                              f"WHERE (user_id = '{user_id_combined_test}') AND (user_name = '{user_name_combined_test}');"
-    query_result            = run_sql_query(sql_query)
-    query_result            = list(itertools.chain(*query_result))
-
-    if len(query_result) == 0:
-        raise Exception(f"\n[Combined Test] Test Failed : (`user_id` = {user_id_combined_test} , `user_name` = {user_name_combined_test}) not exist in `config` table ...\n")
-
-    url, browser            = query_result
-    browser                 = browser.lower()
-
+    ################
+    # User Details #
+    ################
     # Create users table inside MySQL DB #
-    create_users_table_result = create_users_table()
-    if create_users_table_result is False:
-        raise Exception("\nTest Failed : Table `users` didn't generated in MySQL DB ...\n")
+    create_users_table()
 
+    # Insert rows to users table inside MySQL DB #
+    insert_rows_to_users_table()
+
+    # For Request Details #
     while True:
 
         # Get `test_side` from user #
@@ -106,18 +70,22 @@ def combined_testing_function():
 
             # Send POST Request #
             if request_type == "POST":
-                send_post_request(url, user_id_combined_test, user_name_combined_test)
+                user_name_combined_test = get_details_from_external_user_for_backend("POST", "Combined")
+                send_post_request(user_name_combined_test)
 
             # Send GET Request #
             elif request_type == "GET":
+                url, user_id_combined_test = get_details_from_external_user_for_backend("GET", "Combined")
                 send_get_request(url, user_id_combined_test)
 
             # Send PUT Request #
             elif request_type == "PUT":
+                url, user_id_combined_test = get_details_from_external_user_for_backend("PUT", "Combined")
                 send_put_request(url, user_id_combined_test)
 
             # Send DELETE Request #
             elif request_type == "DELETE":
+                url, user_id_combined_test = get_details_from_external_user_for_backend("DELETE", "Combined")
                 send_delete_request(url, user_id_combined_test)
 
             # Print Tables #
@@ -138,6 +106,7 @@ def combined_testing_function():
 
         # Check Web Interface #
         elif test_side == "Frontend":
+            url, browser = get_details_from_external_user_for_frontend("Frontend")
             open_chrome_web_browser(url, browser)
 
         # Exit from `test side` menu #
