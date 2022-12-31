@@ -20,10 +20,10 @@ def test_side_menu():
     print("# Test MENU #")
     print("#############\n")
     while True:
-        test_side = input("Please select the test you want [Backend, Fronted, Exit] : ")
+        test_side = input("Please select the test you want [Backend, Frontend, Exit] : ")
         test_side = test_side.title()
         if test_side in ["Backend", "Frontend", "Exit"]: break
-        else: print("\nError : Please enter input from one of the following - [Backend, Frontend] ...\n")
+        else: print("\nError : Please enter input from one of the following - [Backend, Frontend, Exit] ...\n")
 
     return test_side
 

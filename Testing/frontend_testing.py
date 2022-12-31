@@ -69,7 +69,7 @@ def open_chrome_web_browser(url, browser):
     web_driver.quit()
 
 
-def fronted_testing_function():
+def frontend_testing_function():
     """
     :explanations:
     - Check with Selenium the Web page components.
@@ -106,11 +106,23 @@ def fronted_testing_function():
         open_chrome_web_browser(url, browser)
 
         # Check if the `User` want to exit from program #
-        is_exit = input("\nDo you want to exit ?\n* For Yes, type `exit`\n* For No, type `continue`\n* Your Choice : ")
-        is_exit = is_exit.lower()
-        if is_exit == "exit":
+        while True:
+            is_exit = input("\nDo you want to exit ?       \n" + "\n"
+                            "* Press `1` For `exit` ...    \n"
+                            "* Press `2` to `continue` ... \n" + "\n"
+                            "* Your Choice : ")
+
+            if is_exit == "1" or is_exit == "2":
+                break
+            else:
+                print("\nYou pressed on wrong input number, please try again ...\n")
+
+        if   is_exit == "1":
             break
+
+        elif is_exit == "2":
+            continue
 
 
 if __name__ == "__main__":
-    fronted_testing_function()
+    frontend_testing_function()

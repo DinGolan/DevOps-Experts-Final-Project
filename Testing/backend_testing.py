@@ -28,7 +28,7 @@ def requests_menu():
         request_type = input("Please select the request type you want [POST, GET, PUT, DELETE, PRINT_TABLE, EXIT] : ")
         request_type = request_type.upper()
         if request_type in ["POST", "GET", "PUT", "DELETE", "PRINT_TABLE", "EXIT"]: break
-        else: print("\nError : Please enter input from one of the following - [POST, GET, PUT, DELETE] ...\n")
+        else: print("\nError : Please enter input from one of the following - [POST, GET, PUT, DELETE, PRINT_TABLE, EXIT] ...\n")
 
     return request_type
 
