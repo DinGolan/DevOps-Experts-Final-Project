@@ -111,9 +111,9 @@ GET `/users/${user_id}`
 ```bash
 GET `/users/get_all_users`
 ```
-| Parameter | Type  |
-|:----------|:------|
-|     -     |   -   |
+| Parameter | Type |
+|:----------|:-----|
+|   None    | None |
 
 #### Request Body (Json) ####
 ```json  
