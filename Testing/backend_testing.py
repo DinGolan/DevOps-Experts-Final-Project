@@ -118,7 +118,9 @@ def check_requests_result_for_get_all(request_title, requests_result, json_resul
             message = f"We get status code different then 200 , status_code = {status_code} ..."
             raise Exception(f"\n[{request_title}] Test Failed : " + str(generate_response_dict(requests_result, json_result, json_key, message)) + "\n")
 
-        print(f"\n[{request_title}] Test Succeed : `{json_key}` --->")
+        print(f"\n[{request_title}] Test Succeed : ", end="")
+        pprint.pprint({'status': json_result.get("status"), 'status_code': status_code})
+        print(f"\n`{json_key}` --->")
         for user_dict in all_users_json: pprint.pprint(user_dict)
         print("\n")
 
