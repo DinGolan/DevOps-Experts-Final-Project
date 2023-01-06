@@ -14,6 +14,14 @@ app = Flask(__name__)
 
 @app.route("/users/<user_id>", methods=['GET', 'POST', 'PUT', 'DELETE'])
 def rest_api_requests(user_id):
+    """
+    :explanations:
+    - Some types of requests - [GET, POST, PUT, DELETE].
+
+    :param user_id: (str).
+
+    :return: Json format.
+    """
     if request.method == "POST":
         request_data  = request.json                        # Getting the JSON data payload from request #
         user_name     = request_data.get('user_name')       # Treating request_data as a dictionary to get a specific value from key #
@@ -50,6 +58,23 @@ def rest_api_requests(user_id):
             return {"status": "error", "reason": "no such id"}, 500
 
         return {"status": "OK", "user_deleted": user_id}, 200
+
+
+@app.route("/users/get_all_users", methods=['GET'])
+def get_all_users_request():
+    """
+    :explanations:
+    - Return json format of all users from `users` table.
+
+    :return: Json format.
+    """
+    if request.method == "GET":
+        all_users_as_json = get_all_users_as_json()
+
+        if all_users_as_json is None:
+            return {"status": "error", "reason": "no such Table"}, 500
+
+        return {"status": "OK", "users_table": all_users_as_json}, 200
 
 
 # Run Flask Application #

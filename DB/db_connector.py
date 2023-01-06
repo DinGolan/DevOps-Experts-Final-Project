@@ -11,8 +11,9 @@ import itertools
 
 
 # From #
-from Config.config          import *
-from beautifultable         import BeautifulTable
+from Config.config  import *
+from beautifultable import BeautifulTable
+from pypika         import Schema, Query
 
 
 ###########################
@@ -68,14 +69,14 @@ def get_details_from_external_user_for_backend(request_type, test_name):
 
     :return: [POST] user_name_backend_test (str).
              [GET, PUT, DELETE] url (str), user_id_backend_test (str).
+             [GET_ALL] url (str).
     """
     while True:
-        if request_type == "POST":
+        if   request_type == "POST":
             user_name_backend_test = input("\nPlease enter `user name` : ")
             return user_name_backend_test
 
-        # [GET, PUT, DELETE] #
-        else:
+        elif request_type in ["GET", "PUT", "DELETE"]:
             user_id_backend_test = int(input("\nPlease enter `user id` : "))
             sql_query               = f"SELECT url "                                                   \
                                       f"FROM `{get_db_schema_name()}`.`{get_db_config_table_name()}` " \
@@ -90,6 +91,12 @@ def get_details_from_external_user_for_backend(request_type, test_name):
 
             url = "".join(query_result)
             return url, user_id_backend_test
+
+        # GET_ALL #
+        else:
+            url = f"http://{get_rest_host()}:{get_rest_port()}/{get_db_users_table_name()}/get_all_users"
+            return url
+
 
 
 def get_details_from_external_user_for_frontend(test_name):
@@ -498,6 +505,49 @@ def get_new_user_id_from_users_table():
             new_user_id = max(query_result) + 1
 
     return new_user_id
+
+
+def get_all_users_as_json():
+    """
+    :explanations:
+    - Get all users from `users` table, and return them in Json format.
+
+    :return: users_as_json : (Json).
+             None          : If we can't iterate over the table.
+    """
+    # Vars #
+    all_users_as_json = []
+
+    # Establishing a connection to DB #
+    connection, cursor = create_connection_to_db()
+
+    # PyPika SELECT #
+    pypika_query = Query.from_(Schema(get_db_schema_name()).users).select('*')
+    pypika_query = pypika_query.get_sql()
+    pypika_query = pypika_query.replace('"', '')
+
+    try:
+        cursor.execute(pypika_query)
+
+        if cursor.rowcount >= 1:
+            query_result = cursor.fetchall()
+
+            for row in query_result:
+                all_users_as_json.append({"user_id": row[0], "user_name": row[1], "creation_date": str(row[2])})
+
+            # Convert List to Json #
+            return json.dumps(all_users_as_json)
+
+        else:
+            return None
+
+    except pymysql.err.IntegrityError as integrity_exception:
+        print(f"\nError : We can't iterate over `{get_db_users_table_name()}` table, because - {integrity_exception} ...\n")
+        return None
+
+    finally:
+        # Close connection #
+        close_connection_of_db(connection, cursor)
 
 
 #######################

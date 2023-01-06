@@ -78,6 +78,10 @@ def combined_testing_function():
                 url, user_id_combined_test = get_details_from_external_user_for_backend("GET", "Combined")
                 send_get_request(url, user_id_combined_test)
 
+            elif request_type == "GET_ALL":
+                url = get_details_from_external_user_for_backend("GET_ALL", "Combined")
+                send_get_all_request(url)
+
             # Send PUT Request #
             elif request_type == "PUT":
                 url, user_id_combined_test = get_details_from_external_user_for_backend("PUT", "Combined")

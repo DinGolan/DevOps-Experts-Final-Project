@@ -4,6 +4,7 @@
 
 
 # Imports #
+import pprint
 import requests
 import warnings
 warnings.filterwarnings('ignore')
@@ -17,7 +18,7 @@ def requests_menu():
     """
     :explanations:
     - Get request type from user.
-    - The options are - [POST, GET, PUT, DELETE].
+    - The options are - [POST, GET, GET_ALL, PUT, DELETE].
 
     :return: request_type (str).
     """
@@ -25,10 +26,10 @@ def requests_menu():
     print("# Request MENU #")
     print("################\n")
     while True:
-        request_type = input("Please select the request type you want [POST, GET, PUT, DELETE, PRINT_TABLE, EXIT] : ")
+        request_type = input("Please select the request type you want [POST, GET, GET_ALL, PUT, DELETE, PRINT_TABLE, EXIT] : ")
         request_type = request_type.upper()
-        if request_type in ["POST", "GET", "PUT", "DELETE", "PRINT_TABLE", "EXIT"]: break
-        else: print("\nError : Please enter input from one of the following - [POST, GET, PUT, DELETE, PRINT_TABLE, EXIT] ...\n")
+        if request_type in ["POST", "GET", "GET_ALL", "PUT", "DELETE", "PRINT_TABLE", "EXIT"]: break
+        else: print("\nError : Please enter input from one of the following - [POST, GET, GET_ALL, PUT, DELETE, PRINT_TABLE, EXIT] ...\n")
 
     return request_type
 
@@ -56,7 +57,7 @@ def generate_response_dict(requests_result, json_result, json_key, message):
 def check_requests_result(request_title, user_id, requests_result, json_result, json_key):
     """
     :explanations:
-    - Check the results after POST request.
+    - Check the result after request.
 
     :param request_title: (str)
     :param user_id: (str).
@@ -66,7 +67,6 @@ def check_requests_result(request_title, user_id, requests_result, json_result, 
 
     :return: None.
     """
-
     if requests_result.ok:
         status_code     = requests_result.status_code
         jason_user_name = json_result.get(json_key)
@@ -92,6 +92,35 @@ def check_requests_result(request_title, user_id, requests_result, json_result, 
 
             message = "`user_id` in Test not exists in DB, It means that DELETE operation works as expected ..."
             print(f"\n[{request_title}] Test Succeed : " + str(generate_response_dict(requests_result, json_result, json_key, message)) + "\n")
+
+    else:
+        message = "`requests_result.ok` is not `OK` ..."
+        raise Exception(f"\n[{request_title}] Test Failed : " + str(generate_response_dict(requests_result, json_result, json_key, message)) + "\n")
+
+
+def check_requests_result_for_get_all(request_title, requests_result, json_result, json_key):
+    """
+    :explanations:
+    - Check the result after `GET_ALL` request.
+
+    :param request_title: (str)
+    :param requests_result: (requests).
+    :param json_result: (JSON).
+    :param json_key: (str).
+
+    :return: None.
+    """
+    if requests_result.ok:
+        status_code     = requests_result.status_code
+        all_users_json  = json.loads(json_result.get(json_key))
+
+        if status_code != 200:
+            message = f"We get status code different then 200 , status_code = {status_code} ..."
+            raise Exception(f"\n[{request_title}] Test Failed : " + str(generate_response_dict(requests_result, json_result, json_key, message)) + "\n")
+
+        print(f"\n[{request_title}] Test Succeed : `{json_key}` --->")
+        for user_dict in all_users_json: pprint.pprint(user_dict)
+        print("\n")
 
     else:
         message = "`requests_result.ok` is not `OK` ..."
@@ -133,6 +162,23 @@ def send_get_request(url, user_id):
     requests_result = requests.get(url=url, json={"user_id": user_id})
     json_result     = requests_result.json()
     check_requests_result("GET", user_id, requests_result, json_result, "user_name")
+
+
+def send_get_all_request(url):
+    """
+    :explanations:
+    - Send GET_ALL request.
+
+    :param: url: (str).
+
+    :return: None
+    """
+    print("\n#############")
+    print("#  GET ALL  #")
+    print("#############\n")
+    requests_result = requests.get(url=url)
+    json_result     = requests_result.json()
+    check_requests_result_for_get_all("GET_ALL", requests_result, json_result, "users_table")
 
 
 def send_put_request(url, user_id):
@@ -216,6 +262,11 @@ def backend_testing_function():
         elif request_type == "GET":
             url, user_id_backend_test = get_details_from_external_user_for_backend("GET", "Backend")
             send_get_request(url, user_id_backend_test)
+
+        # Send GET_ALL Request #
+        elif request_type == "GET_ALL":
+            url = get_details_from_external_user_for_backend("GET_ALL", "Backend")
+            send_get_all_request(url)
 
         # Send PUT Request #
         elif request_type == "PUT":

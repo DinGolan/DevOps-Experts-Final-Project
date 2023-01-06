@@ -27,7 +27,7 @@ def get_user_name(user_id):
     if user_name is not None:
         return "<h1 id='user'>" + "`user name` is : " + user_name + "</h1>", 200
     else:
-        return "<h1 id='error'>" + "No such `user id` : " + str(user_id) + "</h1>", 200
+        return "<h1 id='error'>" + "No such `user id` : " + str(user_id) + "</h1>", 500
 
 
 # Run Flask Application #
