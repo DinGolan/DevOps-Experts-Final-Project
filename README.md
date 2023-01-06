@@ -107,6 +107,22 @@ GET `/users/${user_id}`
   } 
 ```
 
+### Get All Users ###
+```bash
+GET `/users/get_all_users`
+```
+| Parameter | Type  |
+|:----------|:------|
+|     -     |   -   |
+
+#### Request Body (Json) ####
+```json  
+  {
+    "status"     : "OK",
+    "users_table": "${users_table}"
+  } 
+```
+
 ### Delete User ###
 ```bash
 DELETE `/users/${user_id}`
