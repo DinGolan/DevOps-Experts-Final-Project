@@ -69,10 +69,10 @@ POST `/users/${user_id}`
 
 #### Request Body (Json) ####
 ```json  
-  {
-      "status"    : "OK",
-      "user_added": "${user_name}"
-  }
+{
+    "status"    : "OK",
+    "user_added": "${user_name}"
+}
 ```
 
 ### Update User Name ###
@@ -85,10 +85,10 @@ PUT `/users/${user_id}`
 
 #### Request Body (Json) ####
 ```json  
-  {
-      "status"      : "OK",
-      "user_updated": "${user_name}"
-  }
+{
+    "status"      : "OK",
+    "user_updated": "${user_name}"
+}
 ```
 
 ### Get User ###
@@ -101,10 +101,10 @@ GET `/users/${user_id}`
 
 #### Request Body (Json) ####
 ```json  
-  {
-    "status"   : "OK",
-    "user_name": "${user_name}"
-  } 
+{
+  "status"   : "OK",
+  "user_name": "${user_name}"
+} 
 ```
 
 ### Get All Users ###
@@ -117,10 +117,18 @@ GET `/users/get_all_users`
 
 #### Request Body (Json) ####
 ```json  
-  {
-    "status"     : "OK",
-    "users_table": "${users_table}"
-  } 
+[
+    {
+        "creation_date": "${creation_date}",
+        "user_id"      : "${user_id}",
+        "user_name"    : "${user_name}"
+    },
+    {
+        "creation_date": "${creation_date}",
+        "user_id"      : "${user_id}",
+        "user_name"    : "${user_name}"
+    }
+] 
 ```
 
 ### Delete User ###
@@ -133,10 +141,10 @@ DELETE `/users/${user_id}`
 
 #### Request Body (Json) ####
 ```json  
-  {
-    "status"      : "OK",
-    "user_deleted": "${user_id}"
-  } 
+{
+  "status"      : "OK",
+  "user_deleted": "${user_id}"
+} 
 ```
 
 ---
