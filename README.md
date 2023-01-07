@@ -102,8 +102,8 @@ GET `/users/${user_id}`
 #### Request Body (Json) ####
 ```json  
 {
-  "status"   : "OK",
-  "user_name": "${user_name}"
+    "status"   : "OK",
+    "user_name": "${user_name}"
 } 
 ```
 
@@ -142,8 +142,8 @@ DELETE `/users/${user_id}`
 #### Request Body (Json) ####
 ```json  
 {
-  "status"      : "OK",
-  "user_deleted": "${user_id}"
+    "status"      : "OK",
+    "user_deleted": "${user_id}"
 } 
 ```
 
