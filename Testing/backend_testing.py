@@ -4,7 +4,6 @@
 
 
 # Imports #
-import pprint
 import requests
 import warnings
 warnings.filterwarnings('ignore')
@@ -112,21 +111,21 @@ def check_requests_result_for_get_all(request_title, requests_result, json_resul
     """
     if requests_result.ok:
         status_code     = requests_result.status_code
-        all_users_json  = json.loads(json_result.get(json_key))
+        all_users_json  = json.dumps(json_result, indent=4)
 
         if status_code != 200:
             message = f"We get status code different then 200 , status_code = {status_code} ..."
-            raise Exception(f"\n[{request_title}] Test Failed : " + str(generate_response_dict(requests_result, json_result, json_key, message)) + "\n")
+            raise Exception(f"\n[{request_title}] Test Failed : {message}" + "\n")
 
         print(f"\n[{request_title}] Test Succeed : ", end="")
-        pprint.pprint({'status': json_result.get("status"), 'status_code': status_code})
+        print({'status_code': status_code})
         print(f"\n`{json_key}` --->")
-        for user_dict in all_users_json: pprint.pprint(user_dict)
-        print("\n")
+        print(all_users_json)
+        print()
 
     else:
         message = "`requests_result.ok` is not `OK` ..."
-        raise Exception(f"\n[{request_title}] Test Failed : " + str(generate_response_dict(requests_result, json_result, json_key, message)) + "\n")
+        raise Exception(f"\n[{request_title}] Test Failed : {message}" + "\n")
 
 
 def send_post_request(user_name):

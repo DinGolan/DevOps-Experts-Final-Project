@@ -4,7 +4,7 @@
 
 
 # From #
-from flask           import Flask, request
+from flask           import Flask, make_response, request
 from DB.db_connector import *
 
 
@@ -71,10 +71,14 @@ def get_all_users_request():
     if request.method == "GET":
         all_users_as_json = get_all_users_as_json()
 
-        if all_users_as_json is None:
-            return {"status": "error", "reason": "no such Table"}, 500
+        if all_users_as_json is not None:
+            all_users_as_json = json.loads(all_users_as_json)
+            response          = make_response(all_users_as_json)
+        else:
+            response = make_response({"status": "error", "reason": "no such Table or users don't exits in DB"})
 
-        return {"status": "OK", "users_table": all_users_as_json}, 200
+        response.headers['Content-Type'] = 'application/json'
+        return (response, 200) if all_users_as_json is not None else (response, 500)
 
 
 # Run Flask Application #
