@@ -3,6 +3,13 @@
 ####################
 
 
+# Imports #
+import os
+import sys
+package_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(package_path)
+
+
 # From #
 from flask           import Flask, make_response, request
 from DB.db_connector import *

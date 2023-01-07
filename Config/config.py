@@ -5,11 +5,17 @@
 
 # Imports #
 import os
+import sys
 import json
 
 
+# Sys Path #
+package_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(package_path)
+
+
 # JSON #
-json_file = open(os.path.join("..", "Config", "config.json"))
+json_file = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json"))
 json_data = json.load(json_file)
 json_file.close()
 

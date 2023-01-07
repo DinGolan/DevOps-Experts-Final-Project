@@ -3,6 +3,13 @@
 ############################
 
 
+# Imports #
+import os
+import sys
+package_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(package_path)
+
+
 # From #
 from DB.db_connector                   import *
 from selenium.webdriver.common.by      import By

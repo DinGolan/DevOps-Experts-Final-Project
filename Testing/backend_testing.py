@@ -4,9 +4,16 @@
 
 
 # Imports #
+import os
+import sys
 import requests
 import warnings
 warnings.filterwarnings('ignore')
+
+
+# Sys Path #
+package_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(package_path)
 
 
 # From #
