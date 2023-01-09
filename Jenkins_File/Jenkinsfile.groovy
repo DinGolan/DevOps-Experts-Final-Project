@@ -4,7 +4,10 @@ pipeline {
         // Step 1 - Clone Git From GitHub //
         stage("Clone Git") {
             steps {
-                // TODO - git "https://github.com/DinGolan/DevOps-Experts-Final-Project.git"
+                script {
+                    properties([pipelineTriggers([pollSCM('H/30 * * * *')])])
+                }
+                git "https://github.com/DinGolan/DevOps-Experts-Final-Project.git"
             }
         }
 
