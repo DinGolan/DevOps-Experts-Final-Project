@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     parameters {
-        choice(name: 'User_Choice', choices: ['1', '2', '3'], description: "The ${User} need to choose a number : \n" + "1 - In case the int value is 1 – only frontend_testing.py will run.\n 2 - In case the int value is 2 – only backend_testing.py will run.\n 3 - In case the int value is 3 – only combined_testing.py will run.\n")
+        choice(name: 'User_Choice', choices: ['1', '2', '3'], description: "The `User` need to choose a number : \n1 - In case the int value is 1 – only frontend_testing.py will run.\n 2 - In case the int value is 2 – only backend_testing.py will run.\n 3 - In case the int value is 3 – only combined_testing.py will run.\n")
     }
     stages {
         // Step 1 - Clone Git From GitHub //
