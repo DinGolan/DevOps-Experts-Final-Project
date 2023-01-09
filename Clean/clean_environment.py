@@ -42,7 +42,7 @@ def servers_menu():
     return server_type
 
 
-def clean_rest_app_environment():
+def clean_rest_api_environment():
     """
     :explanations:
     - Clean REST API environment.
@@ -59,13 +59,13 @@ def clean_rest_app_environment():
             message = "REST API server stopped successfully ..."
             print(f"\n[Clear Environment] : {message}\n")
         else:
-            raise ConnectionError(f"\nServer returned status code : {requests_result.status_code}")
+            raise ConnectionError(f"Server returned status code : {requests_result.status_code}")
 
     except (ConnectionError, TimeoutError) as exception_error:
-        print(f"\n [Clear Environment] : REST API server didn't stopped. Exception is - {exception_error}")
+        print(f"\n[Clear Environment] : REST API server didn't stopped. Exception is - {exception_error}\n")
 
     except Exception as exception_error:
-        print(f"\n [Clear Environment] : REST API server didn't stopped. Exception is - {exception_error}")
+        print(f"\n[Clear Environment] : REST API server didn't stopped. Exception is - {exception_error}\n")
 
 
 def clean_web_app_environment():
@@ -100,7 +100,7 @@ def main():
     print("--------------------------\n")
     server_type = servers_menu()
 
-    if   server_type == "REST_API": clean_rest_app_environment()
+    if   server_type == "REST_API": clean_rest_api_environment()
     elif server_type == "WEB_APP" : clean_web_app_environment()
 
 
