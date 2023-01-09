@@ -1,0 +1,108 @@
+#############################
+# Clean Environment Section #
+#############################
+
+
+# Imports #
+import os
+import sys
+import requests
+
+
+# Sys Path #
+package_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(package_path)
+
+
+# From #
+from Config.config import *
+
+
+# Global Vars #
+STOP_SERVER = "stop_server"
+
+
+def servers_menu():
+    """
+    :explanations:
+    - Get server type from user.
+    - The options are - [REST_API, WEB_APP].
+
+    :return: server_type (str).
+    """
+    print("\n################")
+    print("# Servers MENU #")
+    print("################\n")
+    while True:
+        server_type = input("Please select the server type you want [REST_API, WEB_APP] : ")
+        server_type = server_type.upper()
+        if server_type in ["REST_API", "WEB_APP"]: break
+        else: print("\nError : Please enter input from one of the following - [REST_API, WEB_APP] ...\n")
+
+    return server_type
+
+
+def clean_rest_app_environment():
+    """
+    :explanations:
+    - Clean REST API environment.
+
+    :return: None
+    """
+    url = f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}"
+
+    try:
+        requests_result = requests.get(url)
+        json_result     = requests_result.json()
+
+        if requests_result.status_code == 200 and json_result.get("status") == "Server Stopped":
+            message = "REST API server stopped successfully ..."
+            print(f"\n[Clear Environment] : {message}\n")
+        else:
+            raise ConnectionError(f"\nServer returned status code : {requests_result.status_code}")
+
+    except (ConnectionError, TimeoutError) as exception_error:
+        print(f"\n [Clear Environment] : REST API server didn't stopped. Exception is - {exception_error}")
+
+    except Exception as exception_error:
+        print(f"\n [Clear Environment] : REST API server didn't stopped. Exception is - {exception_error}")
+
+
+def clean_web_app_environment():
+    """
+    :explanations:
+    - Clean WEB APP environment.
+
+    :return: None
+    """
+    url = f"http://{get_web_host()}:{get_web_port()}/{STOP_SERVER}"
+
+    try:
+        requests_result = requests.get(url)
+        json_result     = requests_result.json()
+
+        if requests_result.status_code == 200 and json_result.get("status") == "Server Stopped":
+            message = "WEB APP server stopped successfully ..."
+            print(f"\n[Clear Environment] : {message}\n")
+        else:
+            raise ConnectionError(f"\nServer returned status code : {requests_result.status_code}")
+
+    except (ConnectionError, TimeoutError) as exception_error:
+        print(f"\n [Clear Environment] : WEB APP server didn't stopped. Exception is - {exception_error}")
+
+    except Exception as exception_error:
+        print(f"\n [Clear Environment] : WEB APP server didn't stopped. Exception is - {exception_error}")
+
+
+def main():
+    print("\n--------------------------")
+    print("| Clean Environment Test |")
+    print("--------------------------\n")
+    server_type = servers_menu()
+
+    if   server_type == "REST_API": clean_rest_app_environment()
+    elif server_type == "WEB_APP" : clean_web_app_environment()
+
+
+if __name__ == "__main__":
+    main()

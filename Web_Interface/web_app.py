@@ -6,12 +6,13 @@
 # Imports #
 import os
 import sys
+import signal
 package_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(package_path)
 
 
 # From #
-from flask           import Flask
+from flask           import Flask, make_response
 from DB.db_connector import *
 
 
@@ -35,6 +36,19 @@ def get_user_name(user_id):
         return "<h1 id='user'>" + "`user name` is : " + user_name + "</h1>", 200
     else:
         return "<h1 id='error'>" + "No such `user id` : " + str(user_id) + "</h1>", 500
+
+
+@app.route('/stop_server')
+def stop_server():
+    """
+    :explanations:
+    - Stop running of WEB APP server.
+
+    :return: response (Json), 200 (Status code)
+    """
+    os.kill(os.getpid(), signal.CTRL_C_EVENT)
+    response = json.dumps({"status": "Server Stopped"})
+    return response, 200
 
 
 # Run Flask Application #

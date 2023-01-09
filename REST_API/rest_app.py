@@ -6,6 +6,7 @@
 # Imports #
 import os
 import sys
+import signal
 package_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(package_path)
 
@@ -86,6 +87,19 @@ def get_all_users_request():
 
         response.headers['Content-Type'] = 'application/json'
         return (response, 200) if all_users_as_json is not None else (response, 500)
+
+
+@app.route('/stop_server')
+def stop_server():
+    """
+    :explanations:
+    - Stop running of REST API server.
+
+    :return: response (Json), 200 (Status code)
+    """
+    os.kill(os.getpid(), signal.CTRL_C_EVENT)
+    response = json.dumps({"status": "Server Stopped"})
+    return response, 200
 
 
 # Run Flask Application #
