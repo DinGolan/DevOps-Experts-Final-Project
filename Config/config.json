@@ -1,3 +1,4 @@
+
 {
   "web_app.py": {
     "HOST_WEB": "127.0.0.1",
@@ -13,5 +14,19 @@
     "SCHEMA_NAME"      : "freedb_Din_Golan",
     "USERS_TABLE_NAME" : "users",
     "CONFIG_TABLE_NAME": "config"
+  },
+  "backend_testing.py": {
+    "USER_NAME_BACKEND_TEST"    : "Din Golan",
+    "USER_ID_BACKEND_TEST"      : 1,
+    "NEW_USER_NAME_BACKEND_TEST": "Mor Sela"
+  },
+  "frontend_testing.py": {
+    "USER_ID_FRONTEND_TEST": 3
+  },
+  "combined_testing.py": {
+    "USER_NAME_COMBINED_BACKEND_TEST"    : "Luca Doncic",
+    "USER_ID_COMBINED_BACKEND_TEST"      : 5,
+    "NEW_USER_NAME_COMBINED_BACKEND_TEST": "Lebron James",
+    "USER_ID_COMBINED_FRONTEND_TEST"     : 7
   }
 }

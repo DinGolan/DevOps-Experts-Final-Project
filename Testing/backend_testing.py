@@ -189,20 +189,31 @@ def send_get_all_request(url):
     check_requests_result_for_get_all("GET_ALL", requests_result, json_result, "users_table")
 
 
-def send_put_request(url, user_id):
+def send_put_request(is_job_run, url, user_id, test_name):
     """
     :explanations:
     - Send PUT request.
 
+    :param: is_job_run (Boolean).
     :param: url: (str).
     :param: user_id: (str).
+    :param: test_name: (str).
 
     :return: None
     """
     print("\n#########")
     print("#  PUT  #")
     print("#########\n")
-    new_user_name   = input("Please type new user name : ")
+
+    # Vars #
+    new_user_name = None
+
+    if is_job_run:
+        if   test_name == "Backend" : new_user_name = get_new_user_name_backend_test()
+        elif test_name == "Combined": new_user_name = get_new_user_name_combined_backend_test()
+    else:
+        new_user_name = input("Please type new user name : ")
+
     requests_result = requests.put(url=url, json={"user_id": user_id, "new_user_name": new_user_name})
     json_result     = requests_result.json()
     check_requests_result("PUT", user_id, requests_result, json_result, "user_updated")
@@ -237,14 +248,19 @@ def backend_testing_function():
     print("| Backend Test |")
     print("----------------\n")
 
-    print("##################")
-    print("# Config Details #")
-    print("##################\n")
+    ###########
+    # Jenkins #
+    ###########
+    is_job_run = get_from_jenkins_is_job_run()
+
+    ##################
+    # Config Details #
+    ##################
     # Create config table inside MySQL DB #
     create_config_table()
 
     # Insert rows to config table inside MySQL DB #
-    insert_rows_to_config_table()
+    insert_rows_to_config_table(is_job_run, "Backend")
 
     ################
     # User Details #
@@ -255,52 +271,73 @@ def backend_testing_function():
     # Insert rows to users table inside MySQL DB #
     insert_rows_to_users_table()
 
-    # For Request Details #
-    while True:
 
-        # Get `request_type` from user #
-        request_type = requests_menu()
+    if is_job_run:
 
-        # Send POST Request #
-        if request_type == "POST":
-            user_name_backend_test = get_details_from_external_user_for_backend("POST", "Backend")
-            send_post_request(user_name_backend_test)
+        # Get `request_type` from Jenkins #
+        request_type = get_from_jenkins_request_type()
 
-        # Send GET Request #
-        elif request_type == "GET":
-            url, user_id_backend_test = get_details_from_external_user_for_backend("GET", "Backend")
-            send_get_request(url, user_id_backend_test)
+        # Parameters For Backend Testing #
+        user_name_backend_test = get_user_name_backend_test()
+        user_id_backend_test   = get_user_id_backend_test()
+        url                    = f"http://{get_rest_host()}:{get_rest_port()}/{get_db_users_table_name()}/{user_id_backend_test}"
 
-        # Send GET_ALL Request #
-        elif request_type == "GET_ALL":
-            url = get_details_from_external_user_for_backend("GET_ALL", "Backend")
-            send_get_all_request(url)
-
-        # Send PUT Request #
-        elif request_type == "PUT":
-            url, user_id_backend_test = get_details_from_external_user_for_backend("PUT", "Backend")
-            send_put_request(url, user_id_backend_test)
-
-        # Send DELETE Request #
-        elif request_type == "DELETE":
-            url, user_id_backend_test = get_details_from_external_user_for_backend("DELETE", "Backend")
-            send_delete_request(url, user_id_backend_test)
-
-        # Print Tables #
+        if   request_type == "POST"       : send_post_request(user_name_backend_test)
+        elif request_type == "GET"        : send_get_request(url, user_id_backend_test)
+        elif request_type == "GET_ALL"    : send_get_all_request(url)
+        elif request_type == "PUT"        : send_put_request(is_job_run, url, user_id_backend_test, "Backend")
+        elif request_type == "DELETE"     : send_delete_request(url, user_id_backend_test)
         elif request_type == "PRINT_TABLE":
-            print("\n###############")
-            print("# USERS TABLE #")
-            print("###############\n")
             print_table(get_db_users_table_name())
-
-            print("\n################")
-            print("# CONFIG TABLE #")
-            print("################\n")
             print_table(get_db_config_table_name())
 
-        # Exit from `request type` menu #
-        else:
-            break
+    else:
+
+        while True:
+
+            # Get `request_type` from user #
+            request_type = requests_menu()
+
+            # Send POST Request #
+            if request_type == "POST":
+                user_name_backend_test = get_details_from_external_user_for_backend("POST", "Backend")
+                send_post_request(user_name_backend_test)
+
+            # Send GET Request #
+            elif request_type == "GET":
+                url, user_id_backend_test = get_details_from_external_user_for_backend("GET", "Backend")
+                send_get_request(url, user_id_backend_test)
+
+            # Send GET_ALL Request #
+            elif request_type == "GET_ALL":
+                url = get_details_from_external_user_for_backend("GET_ALL", "Backend")
+                send_get_all_request(url)
+
+            # Send PUT Request #
+            elif request_type == "PUT":
+                url, user_id_backend_test = get_details_from_external_user_for_backend("PUT", "Backend")
+                send_put_request(is_job_run, url, user_id_backend_test, "Backend")
+
+            # Send DELETE Request #
+            elif request_type == "DELETE":
+                url, user_id_backend_test = get_details_from_external_user_for_backend("DELETE", "Backend")
+                send_delete_request(url, user_id_backend_test)
+
+            # Print Tables #
+            elif request_type == "PRINT_TABLE":
+                print("\n###############")
+                print("# USERS TABLE #")
+                print("###############\n")
+                print_table(get_db_users_table_name())
+
+                print("\n################")
+                print("# CONFIG TABLE #")
+                print("################\n")
+                print_table(get_db_config_table_name())
+
+            # Exit from `request type` menu #
+            else:
+                break
 
 
 if __name__ == "__main__":

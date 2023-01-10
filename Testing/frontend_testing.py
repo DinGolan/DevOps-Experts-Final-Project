@@ -87,14 +87,19 @@ def frontend_testing_function():
     print("| Frontend Test |")
     print("-----------------\n")
 
-    print("##################")
-    print("# Config Details #")
-    print("##################\n")
+    ###########
+    # Jenkins #
+    ###########
+    is_job_run = get_from_jenkins_is_job_run()
+
+    ##################
+    # Config Details #
+    ##################
     # Create config table inside MySQL DB #
     create_config_table()
 
     # Insert rows to config table inside MySQL DB #
-    insert_rows_to_config_table()
+    insert_rows_to_config_table(is_job_run, "Frontend")
 
     ################
     # User Details #
@@ -106,29 +111,33 @@ def frontend_testing_function():
     insert_rows_to_users_table()
 
     # For User Details #
-    while True:
-        url, browser = get_details_from_external_user_for_frontend("Frontend")
-
-        # open Chrome #
+    if is_job_run:
+        url, browser = get_details_from_external_user_for_frontend("Frontend", user_id_frontend_test=get_user_id_frontend_test())
         open_chrome_web_browser(url, browser)
 
-        # Check if the `User` want to exit from program #
+    else:
+
         while True:
-            is_exit = input("\nDo you want to exit ?       \n" + "\n"
-                            "* Press `1` For `exit` ...    \n"
-                            "* Press `2` to `continue` ... \n" + "\n"
-                            "* Your Choice : ")
+            url, browser = get_details_from_external_user_for_frontend("Frontend")
+            open_chrome_web_browser(url, browser)
 
-            if is_exit == "1" or is_exit == "2":
+            # Check if the `User` want to exit from program #
+            while True:
+                is_exit = input("\nDo you want to exit ?       \n" + "\n"
+                                "* Press `1` For `exit` ...    \n"
+                                "* Press `2` to `continue` ... \n" + "\n"
+                                "* Your Choice : ")
+
+                if is_exit == "1" or is_exit == "2":
+                    break
+                else:
+                    print("\nYou pressed on wrong input number, please try again ...\n")
+
+            if   is_exit == "1":
                 break
-            else:
-                print("\nYou pressed on wrong input number, please try again ...\n")
 
-        if   is_exit == "1":
-            break
-
-        elif is_exit == "2":
-            continue
+            elif is_exit == "2":
+                continue
 
 
 if __name__ == "__main__":

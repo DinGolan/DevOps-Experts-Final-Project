@@ -104,18 +104,20 @@ def get_details_from_external_user_for_backend(request_type, test_name):
             return url
 
 
-
-def get_details_from_external_user_for_frontend(test_name):
+def get_details_from_external_user_for_frontend(test_name, user_id_frontend_test = None):
     """
     :explanations:
     - Get from external user some details.
 
     :param: test_name (str).
+    :param: user_id_frontend_test (str).
 
     :return: url (str), browser(str).
     """
     while True:
-        user_id_frontend_test = int(input("\nPlease enter `user id` : "))
+
+        if user_id_frontend_test is None:
+            user_id_frontend_test = int(input("\nPlease enter `user id` : "))
 
         sql_query               = f"SELECT url, browser "                                          \
                                   f"FROM `{get_db_schema_name()}`.`{get_db_config_table_name()}` " \
@@ -284,6 +286,31 @@ def delete_user_from_table(user_id, table_name):
 
     # Delete - Succeed #
     return True
+
+
+def drop_table(table_name):
+    """
+    :explanations:
+    - Drop table from MySQL DB.
+
+    :param table_name: (str).
+
+    :return: None.
+    """
+    # Establishing a connection to DB #
+    connection, cursor = create_connection_to_db()
+
+    try:
+        sql_query = f"DROP TABLE `{get_db_schema_name()}`.`{table_name}`;"
+        cursor.execute(sql_query)
+
+    except  pymysql.Error as error_exception:
+        print(f"\nError : You can't drop `{get_db_config_table_name()}` table because - {error_exception} ...\n")
+        sys.exit(1)
+
+    finally:
+        # Close connection #
+        close_connection_of_db(connection, cursor)
 
 
 ######################
@@ -548,7 +575,7 @@ def get_all_users_as_json():
             return None
 
     except pymysql.err.IntegrityError as integrity_exception:
-        print(f"\nError : We can't iterate over `{get_db_users_table_name()}` table, because - {integrity_exception} ...\n")
+        print(f"\nError : You can't iterate over `{get_db_users_table_name()}` table, because - {integrity_exception} ...\n")
         return None
 
     finally:
@@ -594,10 +621,13 @@ def create_config_table():
         close_connection_of_db(connection, cursor)
 
 
-def insert_rows_to_config_table():
+def insert_rows_to_config_table(is_job_run, test_name):
     """
     :explanations:
     - Insert new rows to config table.
+
+    :param: is_job_run: (Boolean).
+    :param: test_name: (str).
 
     :return: None.
     """
@@ -607,11 +637,17 @@ def insert_rows_to_config_table():
     browser    = "Chrome"
 
     # Get Names of Users #
-    while True:
-        user_name = input("Please enter `user name` to `config` table. To stop enter details please enter `-1` : ")
-        if user_name == "-1": break
-        user_names.append(user_name)
-        print()
+    if is_job_run:
+        if   test_name == "Backend" : user_names = get_users_names_in_static_way()[:10]
+        elif test_name == "Frontend": user_names = get_users_names_in_static_way()[10:20]
+        elif test_name == "Combined": user_names = get_users_names_in_static_way()[20:40]
+
+    else:
+        while True:
+            user_name = input("Please enter `user name` to `config` table. To stop enter details please enter `-1` : ")
+            if user_name == "-1": break
+            user_names.append(user_name)
+            print()
 
     # Get number of rows from config table #
     number_of_rows = count_rows_from_table(get_db_config_table_name())

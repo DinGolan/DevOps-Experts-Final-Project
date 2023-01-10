@@ -83,13 +83,17 @@ def clean_web_app_environment():
 
     try:
         requests_result = requests.get(url)
-        json_result     = requests_result.json()
 
-        if requests_result.status_code == 200 and json_result.get("status") == "Server Stopped":
-            message = "WEB APP server stopped successfully ..."
-            print(f"\n[Clear Environment] : {message}\n")
+        if requests_result.ok:
+            json_result = requests_result.json()
+
+            if json_result.get("status") == "Server Stopped":
+                message = "WEB APP server stopped successfully ..."
+                print(f"\n[Clear Environment] : {message}\n")
+            else:
+                raise ConnectionError(f"Server returned status : {json_result.get('status')}")
         else:
-            raise ConnectionError(f"\nServer returned status code : {requests_result.status_code}")
+            raise ConnectionError(f"Server returned status code : {requests_result.status_code}")
 
     except (ConnectionError, TimeoutError) as exception_error:
         print(f"\n [Clear Environment] : WEB APP server didn't stopped. Exception is - {exception_error}")
@@ -102,10 +106,20 @@ def main():
     print("\n--------------------------")
     print("| Clean Environment Test |")
     print("--------------------------\n")
-    server_type = servers_menu()
 
-    if   server_type == "REST_API": clean_rest_api_environment()
-    elif server_type == "WEB_APP" : clean_web_app_environment()
+    ###########
+    # Jenkins #
+    ###########
+    is_job_run = get_from_jenkins_is_job_run()
+
+    if is_job_run:
+        clean_rest_api_environment()
+        clean_web_app_environment()
+
+    else:
+        server_type = servers_menu()
+        if   server_type == "REST_API": clean_rest_api_environment()
+        elif server_type == "WEB_APP" : clean_web_app_environment()
 
 
 if __name__ == "__main__":
