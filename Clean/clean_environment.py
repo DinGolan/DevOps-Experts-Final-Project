@@ -49,15 +49,19 @@ def clean_rest_api_environment():
 
     :return: None
     """
-    url = f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}" + "_error"
+    url = f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}"
 
     try:
         requests_result = requests.get(url)
-        json_result     = requests_result.json()
 
-        if requests_result.status_code == 200 and json_result.get("status") == "Server Stopped":
-            message = "REST API server stopped successfully ..."
-            print(f"\n[Clear Environment] : {message}\n")
+        if requests_result.ok:
+            json_result = requests_result.json()
+
+            if json_result.get("status") == "Server Stopped":
+                message = "REST API server stopped successfully ..."
+                print(f"\n[Clear Environment] : {message}\n")
+            else:
+                raise ConnectionError(f"Server returned status : {json_result.get('status')}")
         else:
             raise ConnectionError(f"Server returned status code : {requests_result.status_code}")
 

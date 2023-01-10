@@ -16,7 +16,7 @@ sys.path.append(package_path)
 
 
 # From #
-from flask           import Flask, make_response, request, render_template
+from flask           import Flask, make_response, request, send_file
 from DB.db_connector import *
 
 
@@ -139,7 +139,7 @@ def page_not_found(exception):
     :return: error_result (Json).
     """
     print(f"\n[Page Not Found] : {exception}")
-    return render_template(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "HTML_Files", "error_handler_404.html")), 404
+    return send_file(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "HTML_Files", "error_handler_404.html")), 404
 
 
 # Run Flask Application #
