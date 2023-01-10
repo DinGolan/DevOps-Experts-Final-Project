@@ -49,7 +49,7 @@ def clean_rest_api_environment():
 
     :return: None
     """
-    url = f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}"
+    url = f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}" + "_error"
 
     try:
         requests_result = requests.get(url)

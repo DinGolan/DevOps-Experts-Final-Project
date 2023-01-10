@@ -16,15 +16,15 @@ sys.path.append(package_path)
 
 
 # From #
-from flask             import Flask, request
+from flask             import Flask, request, render_template
 from DB.db_connector   import *
 
 
 # Create Flask Instance #
-app = Flask(__name__)
+web_app = Flask(__name__)
 
 
-@app.route("/users/get_user_name/<user_id>")
+@web_app.route("/users/get_user_name/<user_id>")
 def get_user_name(user_id):
     """
     :explanations:
@@ -62,7 +62,7 @@ def kill_process():
         return False
 
 
-@app.route('/stop_server', methods=['GET'])
+@web_app.route('/stop_server', methods=['GET'])
 def stop_web_app_server():
     """
     :explanations:
@@ -76,5 +76,20 @@ def stop_web_app_server():
         return response, status_code
 
 
+@web_app.errorhandler(404)
+def page_not_found(exception):
+    """
+    :explanations:
+    - Send error when endpoint is invalid.
+    - The `error handler` is 404.
+
+    :param exception: (str).
+
+    :return: error_result (Json).
+    """
+    print(f"\n[Page Not Found] : {exception}")
+    return render_template('404.html'), 404
+
+
 # Run Flask Application #
-app.run(host=get_web_host(), debug=True, port=get_web_port())
+web_app.run(host=get_web_host(), debug=True, port=get_web_port())

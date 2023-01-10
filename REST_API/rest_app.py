@@ -16,15 +16,15 @@ sys.path.append(package_path)
 
 
 # From #
-from flask           import Flask, make_response, request
+from flask           import Flask, make_response, request, render_template
 from DB.db_connector import *
 
 
 # Create Flask Instance #
-app = Flask(__name__)
+rest_app = Flask(__name__, template_folder=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "HTML_Files"))
 
 
-@app.route("/users/<user_id>", methods=['GET', 'POST', 'PUT', 'DELETE'])
+@rest_app.route("/users/<user_id>", methods=['GET', 'POST', 'PUT', 'DELETE'])
 def rest_api_requests(user_id):
     """
     :explanations:
@@ -72,7 +72,7 @@ def rest_api_requests(user_id):
         return {"status": "OK", "user_deleted": user_id}, 200
 
 
-@app.route("/users/get_all_users", methods=['GET'])
+@rest_app.route("/users/get_all_users", methods=['GET'])
 def get_all_users_request():
     """
     :explanations:
@@ -113,7 +113,7 @@ def kill_process():
         return False
 
 
-@app.route('/stop_server', methods=['GET'])
+@rest_app.route('/stop_server', methods=['GET'])
 def stop_rest_api_server():
     """
     :explanations:
@@ -127,5 +127,20 @@ def stop_rest_api_server():
         return response, status_code
 
 
+@rest_app.errorhandler(404)
+def page_not_found(exception):
+    """
+    :explanations:
+    - Send error when endpoint (Web Page) is invalid.
+    - The `error handler` is 404.
+
+    :param exception: (str).
+
+    :return: error_result (Json).
+    """
+    print(f"\n[Page Not Found] : {exception}")
+    return render_template(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "HTML_Files", "error_handler_404.html")), 404
+
+
 # Run Flask Application #
-app.run(host=get_rest_host(), debug=True, port=get_rest_port())
+rest_app.run(host=get_rest_host(), debug=True, port=get_rest_port())
