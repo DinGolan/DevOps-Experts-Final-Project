@@ -1,21 +1,26 @@
 pipeline {
     agent any
 
-    parameters {
-        choice(name: 'User_Choice', choices: ['1', '2', '3'], description: "The `User` need to choose a number : \n1 - In case the int value is 1 – only frontend_testing.py will run.\n 2 - In case the int value is 2 – only backend_testing.py will run.\n 3 - In case the int value is 3 – only combined_testing.py will run.\n")
-    }
     stages {
         // Step 1 - Run REST API //
         stage("Run `rest_app.py` (Backend)") {
             steps {
-                bat 'start /min python rest_app.py'
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                        bat 'start /min python rest_app.py -u ${DB_USER_NAME} -p ${DB_PASSWORD}'
+                    }
+                }
             }
         }
 
         // Step 2 - Run WEB APP  //
         stage("Run `web_app.py` (Frontend)") {
             steps {
-                bat 'start /min python web_app.py'
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                        bat 'start /min python web_app.py -u ${DB_USER_NAME} -p ${DB_PASSWORD}'
+                    }
+                }
             }
         }
 
@@ -23,15 +28,19 @@ pipeline {
         stage("Testing") {
             steps {
                 script {
-                    if (User_Choice == '1') {
-                        bat 'echo Run `backend_testing.py` (Testing)'
-                        bat 'python backend_testing.py'
-                    } else if (User_Choice == '2') {
-                        bat 'echo Run `frontend_testing.py` (Testing)'
-                        bat 'python frontend_testing.py'
-                    } else if (User_Choice == '3') {
-                        bat 'echo Run `combined_testing.py` (Testing)'
-                        bat 'python combined_testing.py'
+                    withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                        if ($ { User_Choice } == '1') {
+                            bat 'echo Run `backend_testing.py` (Testing)'
+                            bat 'python backend_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD}'
+                        } else if ($ { User_Choice } == '2') {
+                            bat 'echo Run `frontend_testing.py` (Testing)'
+                            bat 'python frontend_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD}'
+                        } else if ($ { User_Choice } == '3') {
+                            bat 'echo Run `combined_testing.py` (Testing)'
+                            bat 'python combined_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD}'
+                        } else {
+                            bat 'echo \'User_Choice\' should be between - [1, 2, 3]'
+                        }
                     }
                 }
             }
