@@ -29,17 +29,17 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                        if ($ { User_Choice } == '1') {
+                        if ($ {User_Choice} == '1') {
                             bat 'echo Run `backend_testing.py` (Testing)'
-                            bat 'python backend_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD}'
-                        } else if ($ { User_Choice } == '2') {
+                            bat 'python backend_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}'
+                        } else if ($ {User_Choice} == '2') {
                             bat 'echo Run `frontend_testing.py` (Testing)'
-                            bat 'python frontend_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD}'
-                        } else if ($ { User_Choice } == '3') {
+                            bat 'python frontend_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN}'
+                        } else if ($ {User_Choice} == '3') {
                             bat 'echo Run `combined_testing.py` (Testing)'
-                            bat 'python combined_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD}'
+                            bat 'python combined_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE} -t ${TEST_SIDE}'
                         } else {
-                            bat 'echo \'User_Choice\' should be between - [1, 2, 3]'
+                            bat 'echo \'User_Choice\' must to be between - [1, 2, 3]'
                         }
                     }
                 }
@@ -49,7 +49,7 @@ pipeline {
         // Step 4 - Run Clean Environment //
         stage("Run `clean_environment.py` (Clean)") {
             steps {
-                bat 'python clean_environment.py'
+                bat 'python clean_environment.py -i ${IS_JOB_RUN}'
             }
         }
     }

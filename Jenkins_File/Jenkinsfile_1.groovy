@@ -35,7 +35,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                        bat 'python backend_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD}'
+                        bat 'python backend_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}'
                     }
                 }
             }
@@ -46,7 +46,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                        bat 'python frontend_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD}'
+                        bat 'python frontend_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN}'
                     }
                 }
             }
@@ -57,7 +57,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                        bat 'python combined_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD}'
+                        bat 'python combined_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE} -t ${TEST_SIDE}'
                     }
                 }
             }
@@ -66,7 +66,7 @@ pipeline {
         // Step 7 - Run Clean Environment //
         stage("Run `clean_environment.py` (Clean)") {
             steps {
-                bat 'python clean_environment.py'
+                bat 'python clean_environment.py -i ${IS_JOB_RUN}'
             }
         }
     }
