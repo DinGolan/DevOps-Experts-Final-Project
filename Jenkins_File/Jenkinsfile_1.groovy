@@ -13,7 +13,7 @@ pipeline {
             steps {
                 script {
                     def installed_packages = bat(script: 'pip freeze', returnStdout: true).trim().readLines().join(" ")
-                    echo "${installed_packages}"
+                    echo "installed_packages :\n${installed_packages}"
 
                     if (installed_packages.contains('PyMySQL')) {
                         echo 'pymysql - Already Exist ...'
@@ -65,7 +65,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                        bat 'start /min python REST_API\\rest_app.py -u ${DB_USER_NAME} -p ${DB_PASSWORD}'
+                        bat 'start /min python REST_API\\rest_app.py -u %DB_USER_NAME% -p %DB_PASSWORD%'
                     }
                 }
             }
@@ -76,7 +76,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                        bat 'start /min python Web_Interface\\web_app.py -u ${DB_USER_NAME} -p ${DB_PASSWORD}'
+                        bat 'start /min python Web_Interface\\web_app.py -u %DB_USER_NAME% -p %DB_PASSWORD%'
                     }
                 }
             }
@@ -88,7 +88,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                        bat 'python Testing\\backend_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}'
+                        bat 'python Testing\\backend_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%'
                     }
                 }
             }
@@ -99,7 +99,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                        bat 'python Testing\\frontend_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN}'
+                        bat 'python Testing\\frontend_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN%'
                     }
                 }
             }
@@ -110,7 +110,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                        bat 'python Testing\\combined_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE} -t ${TEST_SIDE}'
+                        bat 'python Testing\\combined_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE% -t %TEST_SIDE%'
                     }
                 }
             }
@@ -120,11 +120,7 @@ pipeline {
         // Step 8 - Run Clean Environment //
         stage("Run `clean_environment.py` (Clean)") {
             steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                        bat 'python Clean\\clean_environment.py -i %IS_JOB_RUN%'
-                    }
-                }
+                bat 'python Clean\\clean_environment.py -i %IS_JOB_RUN%'
             }
         }
     }

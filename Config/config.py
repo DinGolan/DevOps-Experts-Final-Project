@@ -112,7 +112,7 @@ def get_from_jenkins_user_argument():
     """
     # Argument Parser #
     parser = argparse.ArgumentParser(description='Get `user_name` argument from Jenkins ...')
-    parser.add_argument('-u', '--user_name', metavar='', required=True, help="User name for connecting to DB ...")
+    parser.add_argument('-u', '--user_name', required=True, metavar='', help="User name for connecting to DB ...")
     jenkins_arguments = parser.parse_args()
     return jenkins_arguments.user_name
 
@@ -126,7 +126,7 @@ def get_from_jenkins_password_argument():
     """
     # Argument Parser #
     parser = argparse.ArgumentParser(description='Get `password` argument from Jenkins ...')
-    parser.add_argument('-p', '--password', metavar='', required=True, help="Password for connecting to DB ...")
+    parser.add_argument('-p', '--password', required=True, metavar='', help="Password for connecting to DB ...")
     jenkins_arguments = parser.parse_args()
     return jenkins_arguments.password
 
@@ -139,7 +139,7 @@ def get_from_jenkins_is_job_run():
     :return: jenkins_arguments.is_job_run (str).
     """
     parser = argparse.ArgumentParser(description='Get `is_job_run` argument from Jenkins ...')
-    parser.add_argument('-i', '--is_job_run', required=False, help="Flag that tells me if Jenkins job is running or not ...")
+    parser.add_argument('-i', '--is_job_run', required=False, choices=["True", "False"], help="Flag that tells me if Jenkins job is running or not ...")
     jenkins_arguments = parser.parse_args()
     return jenkins_arguments.is_job_run
 
