@@ -112,9 +112,12 @@ def main():
     # Jenkins #
     ###########
     is_job_run = get_from_jenkins_is_job_run()
-    is_job_run = True if is_job_run == "True" else False
+    print(f"1 - is_job_run ===> {is_job_run}")
+    print(f"Type is : {type(is_job_run)}")
 
-    print(f"is_job_run ===> {is_job_run}")
+    is_job_run = True if is_job_run == 'True' else False
+
+    print(f"2 - is_job_run ===> {is_job_run}")
 
 
     # if is_job_run:
