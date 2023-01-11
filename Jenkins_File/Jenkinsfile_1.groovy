@@ -12,7 +12,9 @@ pipeline {
         stage("Run `pip install`") {
             steps {
                 script {
-                    set /p installed_packages=<(bat 'pip freeze')
+                    bat 'pip freeze'
+                    def installed_packages = bat(script: 'pip freeze', returnStdout: true).trim().readLines()
+                    echo "${installed_packages}"
 
                     if (!installed_packages.contains('pymysql')) {
                         bat 'pip install pymysql'
