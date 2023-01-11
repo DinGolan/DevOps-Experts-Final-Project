@@ -6,6 +6,7 @@
 # Imports #
 import os
 import sys
+import time
 import signal
 import psutil
 
@@ -71,6 +72,10 @@ def stop_web_app_server():
     :return: response (Json), status_code (str)
     """
     if request.method == "GET":
+
+        # Going to Sleep for 5 Seconds #
+        time.sleep(5)
+
         is_process_killed     = kill_process()
         response, status_code = (json.dumps({"status": "Server Stopped"}), 200) if is_process_killed is True else (json.dumps({"status": "Server Not Stopped"}), 500)
         return response, status_code
