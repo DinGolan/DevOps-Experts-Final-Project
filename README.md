@@ -204,7 +204,7 @@ Chrome Web Driver supporting Chrome Version 108.0.5359.125 (Official Build) (64-
 9 - Clear DB Credentials.
 ```
 
---
+---
 
 ## Authors ##
 [@Din-Golan](https://www.github.com/DinGolan)
