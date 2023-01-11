@@ -12,7 +12,36 @@ pipeline {
         stage("Run `pip install`") {
             steps {
                 script {
-                    bat 'pip install --ignore-installed pymysql requests selenium flask prettytable pypika psutil'
+                    bat 'pip freeze'
+                    def installed_packages = bat(returnStdout: true, script: 'pip freeze').trim().split()
+
+                    if (!(installed_packages.contains('pymysql'))) {
+                        bat 'pip install --ignore-installed pymysql'
+                    }
+
+                    if (!(installed_packages.contains('requests'))) {
+                        bat 'pip install --ignore-installed requests'
+                    }
+
+                    if (!(installed_packages.contains('selenium'))) {
+                        bat 'pip install --ignore-installed selenium'
+                    }
+
+                    if (!(installed_packages.contains('flask'))) {
+                        bat 'pip install --ignore-installed flask'
+                    }
+
+                    if (!(installed_packages.contains('prettytable'))) {
+                        bat 'pip install --ignore-installed prettytable'
+                    }
+
+                    if (!(installed_packages.contains('pypika'))) {
+                        bat 'pip install --ignore-installed pypika'
+                    }
+
+                    if (!(installed_packages.contains('psutil'))) {
+                        bat 'pip install --ignore-installed psutil'
+                    }
                 }
             }
         }
