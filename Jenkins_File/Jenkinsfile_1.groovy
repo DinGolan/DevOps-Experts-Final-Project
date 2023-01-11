@@ -8,7 +8,6 @@ pipeline {
             }
         }
 
-        /*
         // Step 2 - Install Pip Packages //
         stage("Run `pip install`") {
             steps {
@@ -18,6 +17,7 @@ pipeline {
             }
         }
 
+        /*
         // Step 3 - Run REST API //
         stage("Run `rest_app.py` (Backend)") {
             steps {
