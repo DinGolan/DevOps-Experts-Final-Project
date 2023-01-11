@@ -16,32 +16,51 @@ pipeline {
                     def installed_packages = bat(script: 'pip freeze', returnStdout: true).trim().readLines()
                     echo "${installed_packages}"
 
-                    if (!installed_packages.contains('pymysql')) {
+                    if (!installed_packages.contains('PyMySQL')) {
                         bat 'pip install pymysql'
+                    } else {
+                        echo 'pymysql - Enter to \'else\' ...'
                     }
+
 
                     if (!installed_packages.contains('requests')) {
                         bat 'pip install requests'
+                    } else {
+                        echo 'requests - Enter to \'else\' ...'
                     }
+
 
                     if (!installed_packages.contains('selenium')) {
                         bat 'pip install selenium'
+                    } else {
+                        echo 'selenium - Enter to \'else\' ...'
                     }
 
-                    if (!installed_packages.contains('flask')) {
+
+                    if (!installed_packages.contains('Flask')) {
                         bat 'pip install flask'
+                    } else {
+                        echo 'flask - Enter to \'else\' ...'
                     }
+
 
                     if (!installed_packages.contains('prettytable')) {
                         bat 'pip install prettytable'
+                    } else {
+                        echo 'prettytable - Enter to \'else\' ...'
                     }
 
-                    if (!installed_packages.contains('pypika')) {
+
+                    if (!installed_packages.contains('PyPika')) {
                         bat 'pip install pypika'
+                    } else {
+                        echo 'pypika - Enter to \'else\' ...'
                     }
 
                     if (!installed_packages.contains('psutil')) {
                         bat 'pip install psutil'
+                    } else {
+                        echo 'psutil - Enter to \'else\' ...'
                     }
                 }
             }
