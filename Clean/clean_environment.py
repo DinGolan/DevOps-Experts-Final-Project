@@ -53,7 +53,8 @@ def clean_rest_api_environment():
     url = f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}"
 
     try:
-        requests_result = requests.get(url)
+        proxies         = {"http": f"http://{get_rest_host()}:{get_rest_host()}/{STOP_SERVER}", "https": f"http://{get_rest_host()}:{get_rest_host()}/{STOP_SERVER}"}
+        requests_result = requests.get(url, proxies=proxies)
 
         if requests_result.ok:
             json_result = requests_result.json()
@@ -83,7 +84,8 @@ def clean_web_app_environment():
     url = f"http://{get_web_host()}:{get_web_port()}/{STOP_SERVER}"
 
     try:
-        requests_result = requests.get(url)
+        proxies         = {"http": f"http://{get_web_host()}:{get_web_port()}/{STOP_SERVER}", "https": f"http://{get_web_host()}:{get_web_port()}/{STOP_SERVER}"}
+        requests_result = requests.get(url, proxies=proxies)
 
         if requests_result.ok:
             json_result = requests_result.json()
@@ -97,10 +99,10 @@ def clean_web_app_environment():
             raise ConnectionError(f"Server returned status code : {requests_result.status_code}")
 
     except (ConnectionError, TimeoutError) as exception_error:
-        print(f"\n [Clear Environment] : WEB APP server didn't stopped. Exception is - {exception_error}")
+        print(f"\n[Clear Environment] : WEB APP server didn't stopped. Exception is - {exception_error}")
 
     except Exception as exception_error:
-        print(f"\n [Clear Environment] : WEB APP server didn't stopped. Exception is - {exception_error}")
+        print(f"\n[Clear Environment] : WEB APP server didn't stopped. Exception is - {exception_error}")
 
 
 def main():
@@ -125,6 +127,7 @@ def main():
     # Drop Tables #
     drop_table(get_db_config_table_name())
     drop_table(get_db_users_table_name())
+
 
 if __name__ == "__main__":
     main()
