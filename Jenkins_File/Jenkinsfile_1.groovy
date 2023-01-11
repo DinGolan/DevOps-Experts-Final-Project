@@ -12,55 +12,49 @@ pipeline {
         stage("Run `pip install`") {
             steps {
                 script {
-                    bat 'pip freeze'
-                    def installed_packages = bat(script: 'pip freeze', returnStdout: true).trim().readLines()
+                    def installed_packages = bat(script: 'pip freeze', returnStdout: true).trim().readLines().join(" ")
                     echo "${installed_packages}"
 
-                    if (!installed_packages.contains('PyMySQL')) {
+                    if (installed_packages.contains('PyMySQL')) {
+                        echo 'pymysql - Already Exist ...'
+                    } else {
                         bat 'pip install pymysql'
-                    } else {
-                        echo 'pymysql - Enter to \'else\' ...'
                     }
 
-
-                    if (!installed_packages.contains('requests')) {
+                    if (installed_packages.contains('requests')) {
+                        echo 'requests - Already Exist ...'
+                    } else {
                         bat 'pip install requests'
-                    } else {
-                        echo 'requests - Enter to \'else\' ...'
                     }
 
-
-                    if (!installed_packages.contains('selenium')) {
+                    if (installed_packages.contains('selenium')) {
+                        echo 'selenium - Already Exist ...'
+                    } else {
                         bat 'pip install selenium'
-                    } else {
-                        echo 'selenium - Enter to \'else\' ...'
                     }
 
-
-                    if (!installed_packages.contains('Flask')) {
+                    if (installed_packages.contains('Flask')) {
+                        echo 'flask - Already Exist ...'
+                    } else {
                         bat 'pip install flask'
-                    } else {
-                        echo 'flask - Enter to \'else\' ...'
                     }
 
-
-                    if (!installed_packages.contains('prettytable')) {
+                    if (installed_packages.contains('prettytable')) {
+                        echo 'prettytable - Already Exist ...'
+                    } else {
                         bat 'pip install prettytable'
-                    } else {
-                        echo 'prettytable - Enter to \'else\' ...'
                     }
 
-
-                    if (!installed_packages.contains('PyPika')) {
+                    if (installed_packages.contains('PyPika')) {
+                        echo 'pypika - Already Exist ...'
+                    } else {
                         bat 'pip install pypika'
-                    } else {
-                        echo 'pypika - Enter to \'else\' ...'
                     }
 
-                    if (!installed_packages.contains('psutil')) {
-                        bat 'pip install psutil'
+                    if (installed_packages.contains('psutil')) {
+                        echo 'psutil - Already Exist ...'
                     } else {
-                        echo 'psutil - Enter to \'else\' ...'
+                        bat 'pip install psutil'
                     }
                 }
             }
