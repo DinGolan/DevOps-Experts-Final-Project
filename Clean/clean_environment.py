@@ -114,18 +114,21 @@ def main():
     is_job_run = get_from_jenkins_is_job_run()
     is_job_run = True if is_job_run == "True" else False
 
-    if is_job_run:
-        clean_rest_api_environment()
-        clean_web_app_environment()
+    print(f"is_job_run ===> {is_job_run}")
 
-    else:
-        server_type = servers_menu()
-        if   server_type == "REST_API": clean_rest_api_environment()
-        elif server_type == "WEB_APP" : clean_web_app_environment()
 
-    # Drop Tables #
-    drop_table(get_db_config_table_name())
-    drop_table(get_db_users_table_name())
+    # if is_job_run:
+    #     clean_rest_api_environment()
+    #     clean_web_app_environment()
+    #
+    # else:
+    #     server_type = servers_menu()
+    #     if   server_type == "REST_API": clean_rest_api_environment()
+    #     elif server_type == "WEB_APP" : clean_web_app_environment()
+    #
+    # # Drop Tables #
+    # drop_table(get_db_config_table_name())
+    # drop_table(get_db_users_table_name())
 
 if __name__ == "__main__":
     main()
