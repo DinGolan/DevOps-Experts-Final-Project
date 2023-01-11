@@ -53,7 +53,7 @@ def clean_rest_api_environment():
     url = f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}"
 
     try:
-        proxies         = {"http": f"http://{get_rest_host()}:{get_rest_host()}/{STOP_SERVER}", "https": f"http://{get_rest_host()}:{get_rest_host()}/{STOP_SERVER}"}
+        proxies         = {"http": f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}", "https": f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}"}
         requests_result = requests.get(url, proxies=proxies)
 
         if requests_result.ok:
