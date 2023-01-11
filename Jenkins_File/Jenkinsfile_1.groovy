@@ -122,7 +122,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                        bat 'python Clean\\clean_environment.py --is_job_run'
+                        bat 'python Clean\\clean_environment.py -i ${IS_JOB_RUN}'
                     }
                 }
             }

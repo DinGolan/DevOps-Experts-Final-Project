@@ -112,6 +112,7 @@ def main():
     # Jenkins #
     ###########
     is_job_run = get_from_jenkins_is_job_run()
+    is_job_run = True if is_job_run == "True" else False
 
     if is_job_run:
         clean_rest_api_environment()
