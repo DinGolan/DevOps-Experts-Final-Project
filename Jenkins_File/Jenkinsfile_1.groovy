@@ -14,7 +14,7 @@ pipeline {
                 script {
                     bat 'pip freeze'
                     def installed_packages = bat(returnStdout: true, script: 'pip freeze').trim().split()
-                    echo "%installed_packages%"
+                    bat 'echo ${installed_packages}'
 
                     if (!installed_packages.contains('pymysql')) {
                         bat 'pip install pymysql'
