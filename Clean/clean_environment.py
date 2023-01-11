@@ -15,8 +15,7 @@ sys.path.append(package_path)
 
 
 # From #
-from Config.config   import *
-from DB.db_connector import drop_table
+from DB.db_connector import *
 
 
 # Global Vars #
