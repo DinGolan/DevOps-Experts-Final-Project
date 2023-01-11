@@ -120,7 +120,7 @@ pipeline {
         // Step 8 - Run Clean Environment //
         stage("Run `clean_environment.py` (Clean)") {
             steps {
-                bat 'python Clean\\clean_environment.py -i ${IS_JOB_RUN}'
+                bat 'python Clean\\clean_environment.py -i'
             }
         }
     }
