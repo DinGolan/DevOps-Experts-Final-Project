@@ -90,7 +90,7 @@ def frontend_testing_function():
     ###########
     # Jenkins #
     ###########
-    is_job_run = get_from_jenkins_is_job_run()
+    is_job_run = get_from_jenkins_arguments().is_job_run
 
     ##################
     # Config Details #

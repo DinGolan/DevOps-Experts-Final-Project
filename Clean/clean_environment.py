@@ -15,7 +15,8 @@ sys.path.append(package_path)
 
 
 # From #
-from DB.db_connector import *
+from Config.config   import *
+from DB.db_connector import drop_table
 
 
 # Global Vars #
@@ -110,7 +111,7 @@ def main():
     ###########
     # Jenkins #
     ###########
-    is_job_run = get_from_jenkins_is_job_run()
+    is_job_run = get_from_jenkins_arguments().is_job_run
 
     if is_job_run:
         clean_rest_api_environment()

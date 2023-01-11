@@ -251,7 +251,7 @@ def backend_testing_function():
     ###########
     # Jenkins #
     ###########
-    is_job_run = get_from_jenkins_is_job_run()
+    is_job_run = get_from_jenkins_arguments().is_job_run
 
     ##################
     # Config Details #
@@ -275,7 +275,7 @@ def backend_testing_function():
     if is_job_run:
 
         # Get `request_type` from Jenkins #
-        request_type = get_from_jenkins_request_type()
+        request_type = get_from_jenkins_arguments().request_type
 
         # Parameters For Backend Testing #
         user_name_backend_test = get_user_name_backend_test()

@@ -42,7 +42,7 @@ def combined_testing_function():
     ###########
     # Jenkins #
     ###########
-    is_job_run = get_from_jenkins_is_job_run()
+    is_job_run = get_from_jenkins_arguments().is_job_run
 
     ##################
     # Config Details #
@@ -65,12 +65,12 @@ def combined_testing_function():
     if is_job_run:
 
         # Get `test_side` from Jenkins #
-        test_side    = get_from_jenkins_test_side()
+        test_side    = get_from_jenkins_arguments().test_side
 
         if test_side == "Backend":
 
             # Get `request_type` from Jenkins #
-            request_type = get_from_jenkins_request_type()
+            request_type = get_from_jenkins_arguments().request_type
 
             # Parameters For Combined Testing #
             user_name_combined_test = get_user_name_combined_backend_test()
