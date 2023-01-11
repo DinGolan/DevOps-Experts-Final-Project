@@ -14,32 +14,33 @@ pipeline {
                 script {
                     bat 'pip freeze'
                     def installed_packages = bat(returnStdout: true, script: 'pip freeze').trim().split()
+                    bat 'echo %installed_packages%'
 
-                    if (!(installed_packages.contains('pymysql'))) {
+                    if (!installed_packages.contains('pymysql')) {
                         bat 'pip install pymysql'
                     }
 
-                    if (!(installed_packages.contains('requests'))) {
+                    if (!installed_packages.contains('requests')) {
                         bat 'pip install requests'
                     }
 
-                    if (!(installed_packages.contains('selenium'))) {
+                    if (!installed_packages.contains('selenium')) {
                         bat 'pip install selenium'
                     }
 
-                    if (!(installed_packages.contains('flask'))) {
+                    if (!installed_packages.contains('flask')) {
                         bat 'pip install flask'
                     }
 
-                    if (!(installed_packages.contains('prettytable'))) {
+                    if (!installed_packages.contains('prettytable')) {
                         bat 'pip install prettytable'
                     }
 
-                    if (!(installed_packages.contains('pypika'))) {
+                    if (!installed_packages.contains('pypika')) {
                         bat 'pip install pypika'
                     }
 
-                    if (!(installed_packages.contains('psutil'))) {
+                    if (!installed_packages.contains('psutil')) {
                         bat 'pip install psutil'
                     }
                 }
