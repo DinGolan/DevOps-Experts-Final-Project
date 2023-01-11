@@ -4,10 +4,11 @@ pipeline {
         // Step 1 - Clone Git From GitHub //
         stage("Clone Git") {
             steps {
-                git  credentialsId: "github_credentials", url: "https://github.com/DinGolan/DevOps-Experts-Final-Project.git"
+                git  branch: 'main', credentialsId: 'github_credentials', url: 'https://github.com/DinGolan/DevOps-Experts-Final-Project.git'
             }
         }
 
+        /*
         // Step 2 - Install Pip Packages //
         stage("Run `pip install`") {
             steps {
@@ -78,5 +79,6 @@ pipeline {
                 bat 'python Clean\\clean_environment.py -i ${IS_JOB_RUN}'
             }
         }
+        */
     }
 }
