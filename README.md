@@ -194,14 +194,13 @@ Chrome Web Driver supporting Chrome Version 108.0.5359.125 (Official Build) (64-
 ## Jenkins - Algorithm ##
 ```bash
 1 - Clone GIT Repository.
-2 - Update DB Credentials.
-3 - Create DB Tables.
-4 - Create Users.
-5 - Start Flask Servers (REST API, WEB APP).
-6 - Run Tests (Backebd, Frontend, Combined).
-7 - Stop Flask Servers (REST API, WEB APP).
-8 - DROP DB Tables.
-9 - Clear DB Credentials.
+2 - Install Packages.
+3 - Start Flask Server (REST API).
+4 - Start Flask Server (WEB APP).
+5 - Run Test (Backebd).
+6 - Run Test (Frontend).
+7 - Run Test (Combined).
+8 - Stop Flask Servers (REST API, WEB APP) + Drop DB Tables.
 ```
 
 ---
