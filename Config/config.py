@@ -139,7 +139,7 @@ def get_from_jenkins_is_job_run():
     :return: jenkins_arguments.is_job_run (str).
     """
     parser = argparse.ArgumentParser(description='Get `is_job_run` argument from Jenkins ...')
-    parser.add_argument('-i', '--is_job_run', required=False, choices=["True", "False"], help="Flag that tells me if Jenkins job is running or not ...")
+    parser.add_argument('-i', '--is_job_run', required=False, help="Flag that tells me if Jenkins job is running or not ...")
     jenkins_arguments = parser.parse_args()
     return jenkins_arguments.is_job_run
 

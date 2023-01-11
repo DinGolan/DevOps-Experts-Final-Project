@@ -1,12 +1,5 @@
 pipeline {
     agent any
-    parameters {
-        choice(
-                name: 'IS_JOB_RUN',
-                choices: ["True", "False"],
-                description: 'Flag that tells me if Jenkins job is running or not.'
-        )
-    }
     stages {
         // Step 1 - Clone Git From GitHub //
         stage("Clone Git") {
