@@ -4,7 +4,7 @@ pipeline {
         // Step 1 - Clone Git From GitHub //
         stage("Clone Git") {
             steps {
-                git  branch: 'main', credentialsId: 'github_credentials', url: 'https://github.com/DinGolan/DevOps-Experts-Final-Project.git'
+                git  credentialsId: 'github_credentials', url: 'https://github.com/DinGolan/DevOps-Experts-Final-Project.git', branch: 'main'
             }
         }
 
@@ -60,7 +60,6 @@ pipeline {
             }
         }
 
-        /*
         // Step 3 - Run REST API //
         stage("Run `rest_app.py` (Backend)") {
             steps {
@@ -83,6 +82,7 @@ pipeline {
             }
         }
 
+        /*
         // Step 5 - Run Backend Test //
         stage("Run `backend_testing.py` (Testing)") {
             steps {
@@ -115,6 +115,7 @@ pipeline {
                 }
             }
         }
+        */
 
         // Step 8 - Run Clean Environment //
         stage("Run `clean_environment.py` (Clean)") {
@@ -122,6 +123,5 @@ pipeline {
                 bat 'python Clean\\clean_environment.py -i ${IS_JOB_RUN}'
             }
         }
-        */
     }
 }

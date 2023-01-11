@@ -301,7 +301,7 @@ def drop_table(table_name):
     connection, cursor = create_connection_to_db()
 
     try:
-        sql_query = f"DROP TABLE `{get_db_schema_name()}`.`{table_name}`;"
+        sql_query = f"DROP TABLE IF EXISTS `{get_db_schema_name()}`.`{table_name}`;"
         cursor.execute(sql_query)
 
     except  pymysql.Error as error_exception:
