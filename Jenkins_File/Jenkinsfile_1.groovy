@@ -120,7 +120,11 @@ pipeline {
         // Step 8 - Run Clean Environment //
         stage("Run `clean_environment.py` (Clean)") {
             steps {
-                bat 'python Clean\\clean_environment.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} --is_job_run'
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                        bat 'python Clean\\clean_environment.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} --is_job_run'
+                    }
+                }
             }
         }
     }
