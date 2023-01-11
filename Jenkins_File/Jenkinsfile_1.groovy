@@ -120,7 +120,7 @@ pipeline {
         // Step 8 - Run Clean Environment //
         stage("Run `clean_environment.py` (Clean)") {
             steps {
-                bat 'python Clean\\clean_environment.py -i'
+                bat 'python Clean\\clean_environment.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} --is_job_run'
             }
         }
     }
