@@ -88,7 +88,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                        def user_choice = bat(script: 'echo %User_Choice%', returnStdout: true).trim().readLines()
+                        def user_choice = bat(script: 'echo %User_Choice%', returnStdout: true).trim()
                         echo "user_choice : ${user_choice}"
 
                         if (user_choice == '1') {
