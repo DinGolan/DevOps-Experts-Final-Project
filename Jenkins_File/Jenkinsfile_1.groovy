@@ -93,7 +93,6 @@ pipeline {
             }
         }
 
-        /*
         // Step 6 - Run Frontend Test //
         stage("Run `frontend_testing.py` (Testing)") {
             steps {
@@ -115,7 +114,6 @@ pipeline {
                 }
             }
         }
-        */
 
         // Step 8 - Run Clean Environment //
         stage("Run `clean_environment.py` (Clean)") {
