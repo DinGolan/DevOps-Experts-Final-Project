@@ -5,7 +5,7 @@
   },
   "rest_app.py": {
     "HOST_REST": "0.0.0.0",
-    "PORT_REST": 5000
+    "PORT_REST": 50005
   },
   "db_connector.py": {
     "HOST"             : "sql.freedb.tech",
