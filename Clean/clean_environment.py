@@ -50,7 +50,6 @@ def clean_rest_api_environment():
     :return: None
     """
     url             = f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}"
-    requests_result = None
 
     try:
         proxies         = {"http": f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}", "https": f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}"}
@@ -73,8 +72,9 @@ def clean_rest_api_environment():
 
     except (Exception, ConnectionError, TimeoutError) as exception_error:
         if "ConnectionResetError" in str(exception_error):
-            message = "REST API server stopped successfully ..."
-            print("\n[Clear Environment] : " + str({'message': message, 'url': url, 'status code': requests_result.status_code}) + "\n")
+            message     = "REST API server stopped successfully ..."
+            status_code = 200
+            print("\n[Clear Environment] : " + str({'message': message, 'url': url, 'status code': status_code}) + "\n")
         else:
             print(f"\n[Clear Environment] : REST API server didn't stopped. Exception is - {exception_error}\n")
 
@@ -87,7 +87,6 @@ def clean_web_app_environment():
     :return: None
     """
     url             = f"http://{get_web_host()}:{get_web_port()}/{STOP_SERVER}"
-    requests_result = None
 
     try:
         proxies         = {"http": f"http://{get_web_host()}:{get_web_port()}/{STOP_SERVER}", "https": f"http://{get_web_host()}:{get_web_port()}/{STOP_SERVER}"}
@@ -110,8 +109,9 @@ def clean_web_app_environment():
 
     except (Exception, ConnectionError, TimeoutError) as exception_error:
         if "ConnectionResetError" in str(exception_error):
-            message = "REST API server stopped successfully ..."
-            print("\n[Clear Environment] : " + str({'message': message, 'url': url, 'status code': requests_result.status_code}) + "\n")
+            message     = "REST API server stopped successfully ..."
+            status_code = 200
+            print("\n[Clear Environment] : " + str({'message': message, 'url': url, 'status code': status_code}) + "\n")
         else:
             print(f"\n[Clear Environment] : WEB APP server didn't stopped. Exception is - {exception_error}")
 
