@@ -81,9 +81,9 @@ def combined_testing_function():
             # Parameters For Combined Testing #
             user_name_combined_test = get_user_name_combined_backend_test()
             user_id_combined_test   = get_user_id_combined_backend_test()
-            url                     = f"http://{get_rest_host()}:{get_rest_port()}/{get_db_users_table_name()}/{user_name_combined_test}"
+            url                     = f"http://{get_rest_host()}:{get_rest_port()}/{get_db_users_table_name()}/{user_id_combined_test}"
 
-            if request_type == "POST"     : send_post_request(user_name_combined_test)
+            if   request_type == "POST"   : send_post_request(user_name_combined_test)
             elif request_type == "GET"    : send_get_request(url, user_id_combined_test)
             elif request_type == "GET_ALL": send_get_all_request(url)
             elif request_type == "PUT"    : send_put_request(is_job_run, url, user_id_combined_test, "Combined")
