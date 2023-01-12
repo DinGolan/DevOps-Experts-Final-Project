@@ -16,7 +16,6 @@ sys.path.append(package_path)
 
 # From #
 from Config.config   import *
-from DB.db_connector import drop_table
 
 
 # Global Vars #
@@ -123,10 +122,6 @@ def main():
         server_type = servers_menu()
         if   server_type == "REST_API": clean_rest_api_environment()
         elif server_type == "WEB_APP" : clean_web_app_environment()
-
-    # Drop Tables #
-    drop_table(get_db_config_table_name())
-    drop_table(get_db_users_table_name())
 
 
 if __name__ == "__main__":

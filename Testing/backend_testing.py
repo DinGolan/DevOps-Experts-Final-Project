@@ -248,6 +248,12 @@ def backend_testing_function():
     print("| Backend Test |")
     print("----------------\n")
 
+    ###########################
+    # Drop Tables (If Exists) #
+    ###########################
+    drop_table(get_db_config_table_name())
+    drop_table(get_db_users_table_name())
+
     ###########
     # Jenkins #
     ###########
