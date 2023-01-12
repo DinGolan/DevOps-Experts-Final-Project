@@ -88,7 +88,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                        def user_choice= '%User_Choice%'
+                        def user_choice=${User_Choice}
                         echo "user_choice : ${user_choice}"
 
                         if (user_choice == "1") {
