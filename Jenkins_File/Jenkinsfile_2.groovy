@@ -13,7 +13,7 @@ pipeline {
         stage("Run `pip install`") {
             steps {
                 script {
-                    def installed_packages = bat(script: 'pip freeze', returnStdout: true).trim().readLines().join(" ")
+                    def installed_packages = bat(script: 'pip freeze', returnStdout: true).trim().readLines().drop(1).join(" ")
                     echo "installed_packages :\n${installed_packages}"
 
                     if (installed_packages.contains('PyMySQL')) {
@@ -88,7 +88,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                        def user_choice='${User_Choice}'
+                        def user_choice = bat(script: 'echo %User_Choice%', returnStdout: true).trim().readLines().drop(1).join("")
                         echo "user_choice : ${user_choice}"
 
                         if (user_choice == "1") {

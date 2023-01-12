@@ -15,7 +15,7 @@ pipeline {
         stage("Run `pip install`") {
             steps {
                 script {
-                    def installed_packages = bat(script: 'pip freeze', returnStdout: true).trim().readLines().join(" ")
+                    def installed_packages = bat(script: 'pip freeze', returnStdout: true).trim().readLines().drop(1).join(" ")
                     echo "installed_packages :\n${installed_packages}"
 
                     if (installed_packages.contains('PyMySQL')) {
