@@ -14,7 +14,7 @@ pipeline {
             steps {
                 script {
                     def installed_packages = bat(script: 'pip freeze', returnStdout: true).trim().readLines().drop(1).join(" ")
-                    echo "installed_packages :\n${installed_packages}"
+                    echo "`installed_packages` :\n${installed_packages}"
 
                     if (installed_packages.contains('PyMySQL')) {
                         echo 'pymysql - Already Exist ...'
@@ -91,7 +91,7 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
                         def user_choice = bat(script: 'echo %User_Choice%', returnStdout: true).trim().readLines().drop(1).join("")
-                        echo "user_choice : ${user_choice}"
+                        echo "`user_choice` : ${user_choice}"
 
                         if (user_choice == "1") {
                             bat 'echo Run `frontend_testing.py` (Testing)'
@@ -107,7 +107,7 @@ pipeline {
                             bat 'echo Run `combined_testing.py` (Testing)'
 
                             def test_side = bat(script: 'echo %TEST_SIDE%', returnStdout: true).trim().readLines().drop(1).join("")
-                            echo "test_side : ${test_side}"
+                            echo "`test_side` : ${test_side}"
 
                             if (test_side == "Backend") {
                                 bat 'start /min python REST_API\\rest_app.py -u %DB_USER_NAME% -p %DB_PASSWORD%'
@@ -117,7 +117,7 @@ pipeline {
                             bat 'python Testing\\combined_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE% -t %TEST_SIDE%'
 
                         } else {
-                            bat 'echo \'User_Choice\' must to be between - [1, 2, 3] ...'
+                            bat 'echo `User_Choice` must to be between - [1, 2, 3] ...'
                         }
                     }
                 }

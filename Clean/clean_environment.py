@@ -6,7 +6,6 @@
 # Imports #
 import os
 import sys
-import time
 import requests
 
 
@@ -50,38 +49,34 @@ def clean_rest_api_environment():
 
     :return: None
     """
-    url = f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}"
+    url             = f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}"
+    requests_result = None
 
-    while True:
-        try:
-            proxies         = {"http": f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}", "https": f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}"}
-            headers         = {
-                                'user-agent'     : "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.5359.125 Mobile Safari/537.36",
-                                'Connection'     : "keep-alive",
-                                'accept'         : "application/json",
-                                'Accept-Encoding': "*",
-                                'method'         : "GET"
-                            }
-            requests_result = requests.get(url, headers=headers, proxies=proxies)
+    try:
+        proxies         = {"http": f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}", "https": f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}"}
+        headers         = {
+                            'user-agent'     : "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.5359.125 Mobile Safari/537.36",
+                            'Connection'     : "keep-alive",
+                            'accept'         : "application/json",
+                            'Accept-Encoding': "*",
+                            'method'         : "GET"
+                        }
+        requests_result = requests.get(url, headers=headers, proxies=proxies)
 
-            if requests_result.ok:
-                json_result = requests_result.json()
-                message     = "REST API server stopped successfully ..." if json_result.get("status") == "Server Stopped" else "REST API server didn't stopped ..."
-            else:
-                message     = "REST API server didn't stopped ..."
+        if requests_result.ok:
+            json_result = requests_result.json()
+            message     = "REST API server stopped successfully ..." if json_result.get("status") == "Server Stopped" else "REST API server didn't stopped ..."
+        else:
+            message     = "REST API server didn't stopped ..."
 
+        print("\n[Clear Environment] : " + str({'message': message, 'url': url, 'status code': requests_result.status_code}) + "\n")
+
+    except (Exception, ConnectionError, TimeoutError) as exception_error:
+        if isinstance(exception_error, ConnectionError):
+            message = "REST API server stopped successfully ..."
             print("\n[Clear Environment] : " + str({'message': message, 'url': url, 'status code': requests_result.status_code}) + "\n")
-
-            break
-
-        except (ConnectionError, TimeoutError) as exception_error:
+        else:
             print(f"\n[Clear Environment] : REST API server didn't stopped. Exception is - {exception_error}\n")
-
-        except Exception as exception_error:
-            print(f"\n[Clear Environment] : REST API server didn't stopped. Exception is - {exception_error}\n")
-
-        # Going to Sleep for 1 Second #
-        time.sleep(1)
 
 
 def clean_web_app_environment():
@@ -91,38 +86,34 @@ def clean_web_app_environment():
 
     :return: None
     """
-    url = f"http://{get_web_host()}:{get_web_port()}/{STOP_SERVER}"
+    url             = f"http://{get_web_host()}:{get_web_port()}/{STOP_SERVER}"
+    requests_result = None
 
-    while True:
-        try:
-            proxies         = {"http": f"http://{get_web_host()}:{get_web_port()}/{STOP_SERVER}", "https": f"http://{get_web_host()}:{get_web_port()}/{STOP_SERVER}"}
-            headers         = {
-                                'user-agent'     : "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.5359.125 Mobile Safari/537.36",
-                                'Connection'     : "keep-alive",
-                                'accept'         : "application/json",
-                                'Accept-Encoding': "*",
-                                'method'         : "GET"
-                            }
-            requests_result = requests.get(url, headers=headers, proxies=proxies)
+    try:
+        proxies         = {"http": f"http://{get_web_host()}:{get_web_port()}/{STOP_SERVER}", "https": f"http://{get_web_host()}:{get_web_port()}/{STOP_SERVER}"}
+        headers         = {
+                            'user-agent'     : "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.5359.125 Mobile Safari/537.36",
+                            'Connection'     : "keep-alive",
+                            'accept'         : "application/json",
+                            'Accept-Encoding': "*",
+                            'method'         : "GET"
+                        }
+        requests_result = requests.get(url, headers=headers, proxies=proxies)
 
-            if requests_result.ok:
-                json_result = requests_result.json()
-                message     = "WEB APP server stopped successfully ..." if json_result.get("status") == "Server Stopped" else "WEB APP server didn't stopped ..."
-            else:
-                message     = "WEB APP server didn't stopped ..."
+        if requests_result.ok:
+            json_result = requests_result.json()
+            message     = "WEB APP server stopped successfully ..." if json_result.get("status") == "Server Stopped" else "WEB APP server didn't stopped ..."
+        else:
+            message     = "WEB APP server didn't stopped ..."
 
+        print("\n[Clear Environment] : " + str({'message': message, 'url': url, 'status code': requests_result.status_code}) + "\n")
+
+    except (Exception, ConnectionError, TimeoutError) as exception_error:
+        if isinstance(exception_error, ConnectionError):
+            message = "REST API server stopped successfully ..."
             print("\n[Clear Environment] : " + str({'message': message, 'url': url, 'status code': requests_result.status_code}) + "\n")
-
-            break
-
-        except (ConnectionError, TimeoutError) as exception_error:
+        else:
             print(f"\n[Clear Environment] : WEB APP server didn't stopped. Exception is - {exception_error}")
-
-        except Exception as exception_error:
-            print(f"\n[Clear Environment] : WEB APP server didn't stopped. Exception is - {exception_error}")
-
-        # Going to Sleep for 1 Second #
-        time.sleep(1)
 
 
 def main():
