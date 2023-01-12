@@ -148,4 +148,4 @@ def page_not_found(exception):
 
 
 # Run Flask Application #
-rest_app.run(host=get_rest_host(), debug=True, port=get_rest_port())
+rest_app.run(host=get_rest_bind(), debug=True, port=get_rest_port())
