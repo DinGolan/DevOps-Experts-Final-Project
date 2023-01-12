@@ -92,11 +92,11 @@ pipeline {
                         echo "user_choice : ${user_choice}"
 
                         if (user_choice == "1") {
-                            bat 'echo Run `backend_testing.py` (Testing)'
-                            bat 'python Testing\\backend_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%'
-                        } else if (user_choice == "2") {
                             bat 'echo Run `frontend_testing.py` (Testing)'
                             bat 'python Testing\\frontend_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN%'
+                        } else if (user_choice == "2") {
+                            bat 'echo Run `backend_testing.py` (Testing)'
+                            bat 'python Testing\\backend_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%'
                         } else if (user_choice == "3") {
                             bat 'echo Run `combined_testing.py` (Testing)'
                             bat 'python Testing\\combined_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE% -t %TEST_SIDE%'
