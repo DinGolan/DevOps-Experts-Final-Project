@@ -1,4 +1,3 @@
-
 {
   "web_app.py": {
     "HOST_WEB": "127.0.0.1",
@@ -12,7 +11,7 @@
     "HOST"             : "sql.freedb.tech",
     "PORT"             : 3306,
     "USER_NAME"        : "freedb_Din_Golan",
-    "PASSWORD"         : "6G24*7bAr5KaU3G" ,
+    "PASSWORD"         : "X94Ggy%*p9X7m%P" ,
     "SCHEMA_NAME"      : "freedb_Din_Golan",
     "USERS_TABLE_NAME" : "users",
     "CONFIG_TABLE_NAME": "config"
