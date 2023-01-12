@@ -83,9 +83,9 @@ def combined_testing_function():
             user_id_combined_test   = get_user_id_combined_backend_test()
             url                     = f"http://{get_rest_host()}:{get_rest_port()}/{get_db_users_table_name()}/{user_id_combined_test}"
 
-            print("\n############################################")
+            print("\n#############################################")
             print("# Jenkins - Parameters For Combined Testing #")
-            print("############################################")
+            print("#############################################")
             print("[POST]             : " + str({'new_user_name': user_name_combined_test}))
             print("[GET, PUT, DELETE] : " + str({'user_id': user_id_combined_test, 'url': url}) + "\n")
 
