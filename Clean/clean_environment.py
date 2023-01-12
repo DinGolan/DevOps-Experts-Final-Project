@@ -129,8 +129,15 @@ def main():
     clean_server      = jenkins_arguments.clean_server
 
     if is_job_run:
-        if   clean_server == "REST_API": clean_rest_api_environment()
+        # Jenkins File - 1 #
+        if clean_server is None:
+            clean_rest_api_environment()
+            clean_web_app_environment()
+
+        # Jenkins File - 2 #
+        elif clean_server == "REST_API": clean_rest_api_environment()
         elif clean_server == "WEB_APP" : clean_web_app_environment()
+
     else:
         server_type = servers_menu()
         if   server_type == "REST_API": clean_rest_api_environment()

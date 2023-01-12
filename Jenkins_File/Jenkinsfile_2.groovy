@@ -61,31 +61,7 @@ pipeline {
             }
         }
 
-        /*
-        // Step 3 - Run REST API //
-        stage("Run `rest_app.py` (Backend)") {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                        bat 'start /min python REST_API\\rest_app.py -u %DB_USER_NAME% -p %DB_PASSWORD%'
-                    }
-                }
-            }
-        }
-
-        // Step 4 - Run WEB APP  //
-        stage("Run `web_app.py` (Frontend)") {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                        bat 'start /min python Web_Interface\\web_app.py -u %DB_USER_NAME% -p %DB_PASSWORD%'
-                    }
-                }
-            }
-        }
-        */
-
-        // Step 5 - Run Testings //
+        // Step 3 - Run Testings //
         stage("Upload Servers + Testing") {
             steps {
                 script {
@@ -124,7 +100,7 @@ pipeline {
             }
         }
 
-        // Step 6 - Run Clean Environment //
+        // Step 4 - Run Clean Environment //
         stage("Run `clean_environment.py` (Clean)") {
             steps {
                 script {
@@ -142,7 +118,7 @@ pipeline {
     post {
         failure {
             mail to: "dingolan100@gmail.com",
-            subject: "DevOps Experts - Final Project - Updates",
+            subject: "DevOps Experts - Final Project - Mail Updates",
             body: "${currentBuild.currentResult} : Job ${env.JOB_NAME}\nMore Info can be found here : ${env.BUILD_URL}\n"
             attachLog: true
         }
