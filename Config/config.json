@@ -13,7 +13,7 @@
     "HOST"             : "sql.freedb.tech",
     "PORT"             : 3306,
     "USER_NAME"        : "freedb_Din_Golan",
-    "PASSWORD"         : "X94Ggy%*p9X7m%P" ,
+    "PASSWORD"         : "keeBetw3%kG4k3R" ,
     "SCHEMA_NAME"      : "freedb_Din_Golan",
     "USERS_TABLE_NAME" : "users",
     "CONFIG_TABLE_NAME": "config"
