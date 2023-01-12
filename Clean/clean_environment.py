@@ -55,7 +55,8 @@ def clean_rest_api_environment():
     while True:
         try:
             proxies         = {"http": f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}", "https": f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}"}
-            requests_result = requests.get(url, proxies=proxies)
+            headers         = {'user-agent': 'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.5359.125 Mobile Safari/537.36'}
+            requests_result = requests.get(url, headers=headers, proxies=proxies)
 
             if requests_result.ok:
                 json_result = requests_result.json()
@@ -73,8 +74,8 @@ def clean_rest_api_environment():
         except Exception as exception_error:
             print(f"\n[Clear Environment] : REST API server didn't stopped. Exception is - {exception_error}\n")
 
-        # Going to Sleep for 5 Seconds #
-        time.sleep(5)
+        # Going to Sleep for 1 Second #
+        time.sleep(1)
 
 
 def clean_web_app_environment():
@@ -89,7 +90,8 @@ def clean_web_app_environment():
     while True:
         try:
             proxies         = {"http": f"http://{get_web_host()}:{get_web_port()}/{STOP_SERVER}", "https": f"http://{get_web_host()}:{get_web_port()}/{STOP_SERVER}"}
-            requests_result = requests.get(url, proxies=proxies)
+            headers         = {'user-agent': 'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.5359.125 Mobile Safari/537.36'}
+            requests_result = requests.get(url, headers=headers, proxies=proxies)
 
             if requests_result.ok:
                 json_result = requests_result.json()
@@ -107,8 +109,8 @@ def clean_web_app_environment():
         except Exception as exception_error:
             print(f"\n[Clear Environment] : WEB APP server didn't stopped. Exception is - {exception_error}")
 
-        # Going to Sleep for 5 Seconds #
-        time.sleep(5)
+        # Going to Sleep for 1 Second #
+        time.sleep(1)
 
 
 
