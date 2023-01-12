@@ -22,8 +22,12 @@ json_file.close()
 
 
 # Get JSON Data #
-def get_web_bind():
-    return json_data["web_app.py"]["BIND_WEB"]
+def get_web_host_bind():
+    return json_data["web_app.py"]["HOST_BIND_WEB"]
+
+
+def get_web_port_bind():
+    return json_data["web_app.py"]["PORT_BIND_WEB"]
 
 
 def get_web_host():
@@ -34,8 +38,12 @@ def get_web_port():
     return json_data["web_app.py"]["PORT_WEB"]
 
 
-def get_rest_bind():
-    return json_data["rest_app.py"]["BIND_REST"]
+def get_rest_host_bind():
+    return json_data["rest_app.py"]["HOST_BIND_REST"]
+
+
+def get_rest_port_bind():
+    return json_data["rest_app.py"]["PORT_BIND_REST"]
 
 
 def get_rest_host():

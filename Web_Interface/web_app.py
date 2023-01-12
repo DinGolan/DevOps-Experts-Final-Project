@@ -97,4 +97,4 @@ def page_not_found(exception):
 
 
 # Run Flask Application #
-web_app.run(host=get_web_bind(), debug=True, port=get_web_port())
+web_app.run(host=get_web_host_bind(), debug=True, port=get_web_port_bind())
