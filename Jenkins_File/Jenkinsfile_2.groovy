@@ -86,7 +86,7 @@ pipeline {
         */
 
         // Step 5 - Run Testings //
-        stage("Testing") {
+        stage("Upload Servers + Testing") {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {

@@ -6,6 +6,7 @@
 # Imports #
 import os
 import sys
+import time
 import signal
 import psutil
 
@@ -108,6 +109,7 @@ def kill_process():
 
     if process_name in ["python.exe", "/usr/bin/python"]:
         os.kill(os.getpid(), signal.CTRL_C_EVENT)
+        time.sleep(5)
         return True
     else:
         return False
