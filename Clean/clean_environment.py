@@ -133,12 +133,13 @@ def main():
     ###########
     # Jenkins #
     ###########
-    is_job_run = get_from_jenkins_arguments().is_job_run
+    jenkins_arguments = get_from_jenkins_arguments()
+    is_job_run        = jenkins_arguments.is_job_run
+    clean_server      = jenkins_arguments.clean_server
 
     if is_job_run:
-        clean_rest_api_environment()
-        # TODO - clean_web_app_environment()
-
+        if   clean_server == "REST_API": clean_rest_api_environment()
+        elif clean_server == "WEB_APP" : clean_web_app_environment()
     else:
         server_type = servers_menu()
         if   server_type == "REST_API": clean_rest_api_environment()

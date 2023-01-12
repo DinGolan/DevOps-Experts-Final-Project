@@ -61,6 +61,7 @@ pipeline {
             }
         }
 
+        /*
         // Step 3 - Run REST API //
         stage("Run `rest_app.py` (Backend)") {
             steps {
@@ -82,7 +83,9 @@ pipeline {
                 }
             }
         }
+        */
 
+         */
         // Step 5 - Run Testings //
         stage("Testing") {
             steps {
@@ -93,13 +96,27 @@ pipeline {
 
                         if (user_choice == "1") {
                             bat 'echo Run `frontend_testing.py` (Testing)'
+                            bat 'start /min python Web_Interface\\web_app.py -u %DB_USER_NAME% -p %DB_PASSWORD%'
                             bat 'python Testing\\frontend_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN%'
+
                         } else if (user_choice == "2") {
                             bat 'echo Run `backend_testing.py` (Testing)'
+                            bat 'start /min python REST_API\\rest_app.py -u %DB_USER_NAME% -p %DB_PASSWORD%'
                             bat 'python Testing\\backend_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%'
+
                         } else if (user_choice == "3") {
                             bat 'echo Run `combined_testing.py` (Testing)'
+
+                            def test_side = bat(script: 'echo %TEST_SIDE%', returnStdout: true).trim().readLines().drop(1).join("")
+                            echo "test_side : ${test_side}"
+
+                            if (test_side == "Backend") {
+                                bat 'start /min python REST_API\\rest_app.py -u %DB_USER_NAME% -p %DB_PASSWORD%'
+                            } else if (test_side == "Frontend") {
+                                bat 'start /min python Web_Interface\\web_app.py -u %DB_USER_NAME% -p %DB_PASSWORD%'
+                            }
                             bat 'python Testing\\combined_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE% -t %TEST_SIDE%'
+
                         } else {
                             bat 'echo \'User_Choice\' must to be between - [1, 2, 3] ...'
                         }
@@ -113,7 +130,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                        bat 'python Clean\\clean_environment.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN%'
+                        bat 'python Clean\\clean_environment.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -c %CLEAN_SERVER%'
                     }
                 }
             }

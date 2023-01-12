@@ -133,5 +133,6 @@ def get_from_jenkins_arguments():
     parser.add_argument('-i', '--is_job_run'  , required=False, choices=["True", "False"]                                         , help="Flag that tells me if Jenkins job is running or not ...")
     parser.add_argument('-r', '--request_type', required=False, choices=["POST", "GET", "GET_ALL", "PUT", "DELETE", "PRINT_TABLE"], help="Request type for REST API Server ...")
     parser.add_argument('-t', '--test_side'   , required=False, choices=["Backend", "Frontend"]                                   , help="Test side for `combined_testing.py` ...")
+    parser.add_argument('-c', '--clean_server', required=False, choices=["REST_API", "WEB_APP"]                                   , help="Clean environment ...")
     jenkins_arguments = parser.parse_args()
     return jenkins_arguments
