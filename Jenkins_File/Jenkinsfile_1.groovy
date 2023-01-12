@@ -4,6 +4,9 @@ pipeline {
         // Step 1 - Clone Git From GitHub //
         stage("Clone Git") {
             steps {
+                script {
+                    properties ([pipelineTriggers([pollSCM('H/30 * * * *')])])
+                }
                 git  credentialsId: 'github_credentials', url: 'https://github.com/DinGolan/DevOps-Experts-Final-Project.git', branch: 'main'
             }
         }
