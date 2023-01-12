@@ -33,7 +33,15 @@ def create_connection_to_db():
     :return: connection: (pymysql), cursor: (pymysql).
     """
     try:
-        connection = pymysql.connect(host=get_db_host(), port=get_db_port(), user=get_from_jenkins_arguments().user_name, passwd=get_from_jenkins_arguments().password, db=get_db_schema_name())
+        user_name = get_from_jenkins_arguments().user_name
+        if user_name is None:
+            user_name = get_db_user_name()
+
+        password = get_from_jenkins_arguments().password
+        if password is None:
+            password = get_db_password()
+
+        connection = pymysql.connect(host=get_db_host(), port=get_db_port(), user=user_name, passwd=password, db=get_db_schema_name())
         connection.autocommit(True)
 
         # Getting a cursor from DB #

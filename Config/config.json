@@ -11,6 +11,8 @@
   "db_connector.py": {
     "HOST"             : "sql.freedb.tech",
     "PORT"             : 3306,
+    "USER_NAME"        : "freedb_Din_Golan",
+    "PASSWORD"         : "6G24*7bAr5KaU3G" ,
     "SCHEMA_NAME"      : "freedb_Din_Golan",
     "USERS_TABLE_NAME" : "users",
     "CONFIG_TABLE_NAME": "config"

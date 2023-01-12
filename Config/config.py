@@ -46,6 +46,14 @@ def get_db_port():
     return json_data["db_connector.py"]["PORT"]
 
 
+def get_db_user_name():
+    return json_data["db_connector.py"]["USER_NAME"]
+
+
+def get_db_password():
+    return json_data["db_connector.py"]["PASSWORD"]
+
+
 def get_db_schema_name():
     return json_data["db_connector.py"]["SCHEMA_NAME"]
 
@@ -112,8 +120,8 @@ def get_from_jenkins_arguments():
     """
     # Argument Parser #
     parser = argparse.ArgumentParser(description='Get arguments from Jenkins ...')
-    parser.add_argument('-u', '--user_name'   , required=True , metavar=''                                                        , help="User name for connecting to DB ...")
-    parser.add_argument('-p', '--password'    , required=True , metavar=''                                                        , help="Password for connecting to DB ...")
+    parser.add_argument('-u', '--user_name'   , required=False, metavar=''                                                        , help="User name for connecting to DB ...")
+    parser.add_argument('-p', '--password'    , required=False, metavar=''                                                        , help="Password for connecting to DB ...")
     parser.add_argument('-i', '--is_job_run'  , required=False, choices=["True", "False"]                                         , help="Flag that tells me if Jenkins job is running or not ...")
     parser.add_argument('-r', '--request_type', required=False, choices=["POST", "GET", "GET_ALL", "PUT", "DELETE", "PRINT_TABLE"], help="Request type for REST API Server ...")
     parser.add_argument('-t', '--test_side'   , required=False, choices=["Backend", "Frontend"]                                   , help="Test side for `combined_testing.py` ...")
