@@ -82,7 +82,6 @@ pipeline {
             }
         }
 
-        /*
         // Step 5 - Run Backend Test //
         stage("Run `backend_testing.py` (Testing)") {
             steps {
@@ -94,6 +93,7 @@ pipeline {
             }
         }
 
+        /*
         // Step 6 - Run Frontend Test //
         stage("Run `frontend_testing.py` (Testing)") {
             steps {
