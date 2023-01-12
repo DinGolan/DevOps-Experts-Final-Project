@@ -72,7 +72,7 @@ def clean_rest_api_environment():
         print("\n[Clear Environment] : " + str({'message': message, 'url': url, 'status code': requests_result.status_code}) + "\n")
 
     except (Exception, ConnectionError, TimeoutError) as exception_error:
-        if isinstance(exception_error, requests.exceptions.ConnectionError):
+        if "ConnectionResetError" in str(exception_error):
             message = "REST API server stopped successfully ..."
             print("\n[Clear Environment] : " + str({'message': message, 'url': url, 'status code': requests_result.status_code}) + "\n")
         else:
@@ -109,7 +109,7 @@ def clean_web_app_environment():
         print("\n[Clear Environment] : " + str({'message': message, 'url': url, 'status code': requests_result.status_code}) + "\n")
 
     except (Exception, ConnectionError, TimeoutError) as exception_error:
-        if isinstance(exception_error, requests.exceptions.ConnectionError):
+        if "ConnectionResetError" in str(exception_error):
             message = "REST API server stopped successfully ..."
             print("\n[Clear Environment] : " + str({'message': message, 'url': url, 'status code': requests_result.status_code}) + "\n")
         else:
