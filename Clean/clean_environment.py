@@ -6,6 +6,7 @@
 # Imports #
 import os
 import sys
+import time
 import requests
 
 
@@ -51,23 +52,29 @@ def clean_rest_api_environment():
     """
     url = f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}"
 
-    try:
-        proxies         = {"http": f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}", "https": f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}"}
-        requests_result = requests.get(url, proxies=proxies)
+    while True:
+        try:
+            proxies         = {"http": f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}", "https": f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}"}
+            requests_result = requests.get(url, proxies=proxies)
 
-        if requests_result.ok:
-            json_result = requests_result.json()
-            message     = "REST API server stopped successfully ..." if json_result.get("status") == "Server Stopped" else "REST API server didn't stopped ..."
-        else:
-            message     = "REST API server didn't stopped ..."
+            if requests_result.ok:
+                json_result = requests_result.json()
+                message     = "REST API server stopped successfully ..." if json_result.get("status") == "Server Stopped" else "REST API server didn't stopped ..."
+            else:
+                message     = "REST API server didn't stopped ..."
 
-        print("\n[Clear Environment] : " + str({'message': message, 'url': url, 'status code': requests_result.status_code}) + "\n")
+            print("\n[Clear Environment] : " + str({'message': message, 'url': url, 'status code': requests_result.status_code}) + "\n")
 
-    except (ConnectionError, TimeoutError) as exception_error:
-        print(f"\n[Clear Environment] : REST API server didn't stopped. Exception is - {exception_error}\n")
+            break
 
-    except Exception as exception_error:
-        print(f"\n[Clear Environment] : REST API server didn't stopped. Exception is - {exception_error}\n")
+        except (ConnectionError, TimeoutError) as exception_error:
+            print(f"\n[Clear Environment] : REST API server didn't stopped. Exception is - {exception_error}\n")
+
+        except Exception as exception_error:
+            print(f"\n[Clear Environment] : REST API server didn't stopped. Exception is - {exception_error}\n")
+
+        # Going to Sleep for 5 Seconds #
+        time.sleep(5)
 
 
 def clean_web_app_environment():
@@ -79,23 +86,30 @@ def clean_web_app_environment():
     """
     url = f"http://{get_web_host()}:{get_web_port()}/{STOP_SERVER}"
 
-    try:
-        proxies         = {"http": f"http://{get_web_host()}:{get_web_port()}/{STOP_SERVER}", "https": f"http://{get_web_host()}:{get_web_port()}/{STOP_SERVER}"}
-        requests_result = requests.get(url, proxies=proxies)
+    while True:
+        try:
+            proxies         = {"http": f"http://{get_web_host()}:{get_web_port()}/{STOP_SERVER}", "https": f"http://{get_web_host()}:{get_web_port()}/{STOP_SERVER}"}
+            requests_result = requests.get(url, proxies=proxies)
 
-        if requests_result.ok:
-            json_result = requests_result.json()
-            message     = "WEB APP server stopped successfully ..." if json_result.get("status") == "Server Stopped" else "WEB APP server didn't stopped ..."
-        else:
-            message     = "WEB APP server didn't stopped ..."
+            if requests_result.ok:
+                json_result = requests_result.json()
+                message     = "WEB APP server stopped successfully ..." if json_result.get("status") == "Server Stopped" else "WEB APP server didn't stopped ..."
+            else:
+                message     = "WEB APP server didn't stopped ..."
 
-        print("\n[Clear Environment] : " + str({'message': message, 'url': url, 'status code': requests_result.status_code}) + "\n")
+            print("\n[Clear Environment] : " + str({'message': message, 'url': url, 'status code': requests_result.status_code}) + "\n")
 
-    except (ConnectionError, TimeoutError) as exception_error:
-        print(f"\n[Clear Environment] : WEB APP server didn't stopped. Exception is - {exception_error}")
+            break
 
-    except Exception as exception_error:
-        print(f"\n[Clear Environment] : WEB APP server didn't stopped. Exception is - {exception_error}")
+        except (ConnectionError, TimeoutError) as exception_error:
+            print(f"\n[Clear Environment] : WEB APP server didn't stopped. Exception is - {exception_error}")
+
+        except Exception as exception_error:
+            print(f"\n[Clear Environment] : WEB APP server didn't stopped. Exception is - {exception_error}")
+
+        # Going to Sleep for 5 Seconds #
+        time.sleep(5)
+
 
 
 def main():
