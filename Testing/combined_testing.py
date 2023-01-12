@@ -83,6 +83,12 @@ def combined_testing_function():
             user_id_combined_test   = get_user_id_combined_backend_test()
             url                     = f"http://{get_rest_host()}:{get_rest_port()}/{get_db_users_table_name()}/{user_id_combined_test}"
 
+            print("\n############################################")
+            print("# Jenkins - Parameters For Backend Testing #")
+            print("############################################\n")
+            print("[POST]             : " + str({'new_user_name': user_name_combined_test}))
+            print("[GET, PUT, DELETE] : " + str({'user_id': user_id_combined_test, 'url': url}))
+
             if   request_type == "POST"   : send_post_request(user_name_combined_test)
             elif request_type == "GET"    : send_get_request(url, user_id_combined_test)
             elif request_type == "GET_ALL": send_get_all_request(url)
@@ -94,6 +100,12 @@ def combined_testing_function():
 
         elif test_side == "Frontend":
             url, browser = get_details_from_external_user_for_frontend("Frontend", user_id_frontend_test=get_user_id_combined_frontend_test())
+
+            print("\n#############################################")
+            print("# Jenkins - Parameters For Frontend Testing #")
+            print("#############################################\n")
+            print(print("[GET] : " + str({'user_id': get_user_id_frontend_test(), 'url': url, 'browser': browser})))
+
             open_chrome_web_browser(url, browser)
 
     else:

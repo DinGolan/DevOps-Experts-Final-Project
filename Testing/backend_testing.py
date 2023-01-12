@@ -283,10 +283,16 @@ def backend_testing_function():
         # Get `request_type` from Jenkins #
         request_type = get_from_jenkins_arguments().request_type
 
-        # Parameters For Backend Testing #
+        # Jenkins - Parameters For Backend Testing #
         user_name_backend_test = get_user_name_backend_test()
         user_id_backend_test   = get_user_id_backend_test()
         url                    = f"http://{get_rest_host()}:{get_rest_port()}/{get_db_users_table_name()}/{user_id_backend_test}"
+
+        print("\n############################################")
+        print("# Jenkins - Parameters For Backend Testing #")
+        print("############################################\n")
+        print("[POST]             : " + str({'new_user_name': user_name_backend_test}))
+        print("[GET, PUT, DELETE] : " + str({'user_id': user_id_backend_test, 'url': url}))
 
         if   request_type == "POST"       : send_post_request(user_name_backend_test)
         elif request_type == "GET"        : send_get_request(url, user_id_backend_test)
