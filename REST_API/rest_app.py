@@ -50,7 +50,7 @@ def rest_api_requests(user_id):
         user_name = get_user_name_of_specific_user_id_from_users_table(user_id)
 
         if user_name is None:
-            return {"status": "error", "reason": "no such ID"}, 500
+            return {"status": "error", "reason": f"No such ID - {user_id}"}, 500
 
         return {"status": "OK", "user_name": user_name}, 200
 
@@ -60,7 +60,7 @@ def rest_api_requests(user_id):
         update_result = update_user_in_table(user_id, new_user_name, get_db_users_table_name()) and update_user_in_table(user_id, new_user_name, get_db_config_table_name())
 
         if update_result is False:
-            return {"status": "error", "reason": "no such id"}, 500
+            return {"status": "error", "reason": f"No such ID - {user_id}"}, 500
 
         return {"status": "OK", "user_updated": new_user_name}, 200
 
@@ -68,7 +68,7 @@ def rest_api_requests(user_id):
         delete_result = delete_user_from_table(user_id, get_db_users_table_name()) and delete_user_from_table(user_id, get_db_config_table_name())
 
         if delete_result is False:
-            return {"status": "error", "reason": "no such id"}, 500
+            return {"status": "error", "reason": f"No such ID - {user_id}"}, 500
 
         return {"status": "OK", "user_deleted": user_id}, 200
 
