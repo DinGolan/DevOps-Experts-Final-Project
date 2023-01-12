@@ -1,10 +1,10 @@
 {
   "web_app.py": {
-    "HOST_WEB": "127.0.0.1",
+    "HOST_WEB": "0.0.0.0",
     "PORT_WEB": 5001
   },
   "rest_app.py": {
-    "HOST_REST": "127.0.0.1",
+    "HOST_REST": "0.0.0.0",
     "PORT_REST": 5000
   },
   "db_connector.py": {
