@@ -84,7 +84,7 @@ def combined_testing_function():
             url                     = f"http://{get_rest_host()}:{get_rest_port()}/{get_db_users_table_name()}/{user_id_combined_test}"
 
             print("\n############################################")
-            print("# Jenkins - Parameters For Backend Testing #")
+            print("# Jenkins - Parameters For Combined Testing #")
             print("############################################")
             print("[POST]             : " + str({'new_user_name': user_name_combined_test}))
             print("[GET, PUT, DELETE] : " + str({'user_id': user_id_combined_test, 'url': url}) + "\n")
@@ -102,7 +102,7 @@ def combined_testing_function():
             url, browser = get_details_from_external_user_for_frontend("Frontend", user_id_frontend_test=get_user_id_combined_frontend_test())
 
             print("\n#############################################")
-            print("# Jenkins - Parameters For Frontend Testing #")
+            print("# Jenkins - Parameters For Combined Testing #")
             print("#############################################")
             print("[GET] : " + str({'user_id': get_user_id_frontend_test(), 'url': url, 'browser': browser}) + "\n")
 
