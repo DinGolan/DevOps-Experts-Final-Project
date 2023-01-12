@@ -26,10 +26,6 @@ def get_web_host_bind():
     return json_data["web_app.py"]["HOST_BIND_WEB"]
 
 
-def get_web_port_bind():
-    return json_data["web_app.py"]["PORT_BIND_WEB"]
-
-
 def get_web_host():
     return json_data["web_app.py"]["HOST_WEB"]
 
@@ -40,10 +36,6 @@ def get_web_port():
 
 def get_rest_host_bind():
     return json_data["rest_app.py"]["HOST_BIND_REST"]
-
-
-def get_rest_port_bind():
-    return json_data["rest_app.py"]["PORT_BIND_REST"]
 
 
 def get_rest_host():

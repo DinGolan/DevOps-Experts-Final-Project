@@ -1,13 +1,11 @@
 {
   "web_app.py": {
     "HOST_BIND_WEB": "0.0.0.0",
-    "PORT_BIND_WEB": 50005,
     "HOST_WEB"     : "127.0.0.1",
     "PORT_WEB"     : 5001
   },
   "rest_app.py": {
     "HOST_BIND_REST": "0.0.0.0",
-    "PORT_BIND_REST": 50005,
     "HOST_REST"     : "127.0.0.1",
     "PORT_REST"     : 5000
   },
