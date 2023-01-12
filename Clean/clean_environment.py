@@ -56,9 +56,10 @@ def clean_rest_api_environment():
         try:
             proxies         = {"http": f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}", "https": f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}"}
             headers         = {
-                                'user-agent': "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.5359.125 Mobile Safari/537.36",
-                                'Connection': "keep-alive",
-                                'method'    : "GET"
+                                'user-agent'     : "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.5359.125 Mobile Safari/537.36",
+                                'Connection'     : "keep-alive",
+                                'Accept-Encoding': "*",
+                                'method'         : "GET"
                             }
             requests_result = requests.get(url, headers=headers, proxies=proxies)
 
@@ -97,6 +98,7 @@ def clean_web_app_environment():
             headers         = {
                                 'user-agent': "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.5359.125 Mobile Safari/537.36",
                                 'Connection':"keep-alive",
+                                'Accept-Encoding': "*",
                                 'method'    :"GET"
                             }
             requests_result = requests.get(url, headers=headers, proxies=proxies)
