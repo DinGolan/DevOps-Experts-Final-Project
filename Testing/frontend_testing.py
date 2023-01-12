@@ -122,8 +122,8 @@ def frontend_testing_function():
 
         print("\n#############################################")
         print("# Jenkins - Parameters For Frontend Testing #")
-        print("#############################################\n")
-        print(print("[GET] : " + str({'user_id': get_user_id_frontend_test(), 'url': url, 'browser': browser})))
+        print("#############################################")
+        print("[GET] : " + str({'user_id': get_user_id_frontend_test(), 'url': url, 'browser': browser}) + "\n")
 
         open_chrome_web_browser(url, browser)
 

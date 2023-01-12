@@ -290,9 +290,9 @@ def backend_testing_function():
 
         print("\n############################################")
         print("# Jenkins - Parameters For Backend Testing #")
-        print("############################################\n")
+        print("############################################")
         print("[POST]             : " + str({'new_user_name': user_name_backend_test}))
-        print("[GET, PUT, DELETE] : " + str({'user_id': user_id_backend_test, 'url': url}))
+        print("[GET, PUT, DELETE] : " + str({'user_id': user_id_backend_test, 'url': url}) + "\n")
 
         if   request_type == "POST"       : send_post_request(user_name_backend_test)
         elif request_type == "GET"        : send_get_request(url, user_id_backend_test)

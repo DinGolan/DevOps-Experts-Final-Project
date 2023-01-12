@@ -85,9 +85,9 @@ def combined_testing_function():
 
             print("\n############################################")
             print("# Jenkins - Parameters For Backend Testing #")
-            print("############################################\n")
+            print("############################################")
             print("[POST]             : " + str({'new_user_name': user_name_combined_test}))
-            print("[GET, PUT, DELETE] : " + str({'user_id': user_id_combined_test, 'url': url}))
+            print("[GET, PUT, DELETE] : " + str({'user_id': user_id_combined_test, 'url': url}) + "\n")
 
             if   request_type == "POST"   : send_post_request(user_name_combined_test)
             elif request_type == "GET"    : send_get_request(url, user_id_combined_test)
@@ -103,8 +103,8 @@ def combined_testing_function():
 
             print("\n#############################################")
             print("# Jenkins - Parameters For Frontend Testing #")
-            print("#############################################\n")
-            print(print("[GET] : " + str({'user_id': get_user_id_frontend_test(), 'url': url, 'browser': browser})))
+            print("#############################################")
+            print("[GET] : " + str({'user_id': get_user_id_frontend_test(), 'url': url, 'browser': browser}) + "\n")
 
             open_chrome_web_browser(url, browser)
 
