@@ -125,7 +125,6 @@ def clean_web_app_environment():
         time.sleep(1)
 
 
-
 def main():
     print("\n--------------------------")
     print("| Clean Environment Test |")
@@ -138,7 +137,7 @@ def main():
 
     if is_job_run:
         clean_rest_api_environment()
-        clean_web_app_environment()
+        # TODO - clean_web_app_environment()
 
     else:
         server_type = servers_menu()
