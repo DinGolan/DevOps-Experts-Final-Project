@@ -5,7 +5,7 @@ pipeline {
         // Step 1 - Clone Git From GitHub //
         stage("Clone Git") {
             steps {
-                git  credentialsId: "github_credentials", url: "https://github.com/DinGolan/DevOps-Experts-Final-Project.git"
+                git  credentialsId: "github_credentials", url: "https://github.com/DinGolan/DevOps-Experts-Final-Project.git", branch: 'main'
             }
         }
 
@@ -13,7 +13,50 @@ pipeline {
         stage("Run `pip install`") {
             steps {
                 script {
-                    bat 'pip install --ignore-installed pymysql requests selenium flask prettytable pypika psutil'
+                    def installed_packages = bat(script: 'pip freeze', returnStdout: true).trim().readLines().join(" ")
+                    echo "installed_packages :\n${installed_packages}"
+
+                    if (installed_packages.contains('PyMySQL')) {
+                        echo 'pymysql - Already Exist ...'
+                    } else {
+                        bat 'pip install pymysql'
+                    }
+
+                    if (installed_packages.contains('requests')) {
+                        echo 'requests - Already Exist ...'
+                    } else {
+                        bat 'pip install requests'
+                    }
+
+                    if (installed_packages.contains('selenium')) {
+                        echo 'selenium - Already Exist ...'
+                    } else {
+                        bat 'pip install selenium'
+                    }
+
+                    if (installed_packages.contains('Flask')) {
+                        echo 'flask - Already Exist ...'
+                    } else {
+                        bat 'pip install flask'
+                    }
+
+                    if (installed_packages.contains('prettytable')) {
+                        echo 'prettytable - Already Exist ...'
+                    } else {
+                        bat 'pip install prettytable'
+                    }
+
+                    if (installed_packages.contains('PyPika')) {
+                        echo 'pypika - Already Exist ...'
+                    } else {
+                        bat 'pip install pypika'
+                    }
+
+                    if (installed_packages.contains('psutil')) {
+                        echo 'psutil - Already Exist ...'
+                    } else {
+                        bat 'pip install psutil'
+                    }
                 }
             }
         }
@@ -23,7 +66,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                        bat 'start /min python REST_API\\rest_app.py -u ${DB_USER_NAME} -p ${DB_PASSWORD}'
+                        bat 'start /min python REST_API\\rest_app.py -u %DB_USER_NAME% -p %DB_PASSWORD%'
                     }
                 }
             }
@@ -34,7 +77,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                        bat 'start /min Web_Interface\\python web_app.py -u ${DB_USER_NAME} -p ${DB_PASSWORD}'
+                        bat 'start /min Web_Interface\\python web_app.py -u %DB_USER_NAME% -p %DB_PASSWORD%'
                     }
                 }
             }
@@ -45,17 +88,18 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                        if (${User_Choice} == '1') {
+
+                        if ("%User_Choice%" == '1') {
                             bat 'echo Run `backend_testing.py` (Testing)'
-                            bat 'python Testing\\backend_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}'
-                        } else if (${User_Choice} == '2') {
+                            bat 'python Testing\\backend_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%'
+                        } else if ("%User_Choice%" == '2') {
                             bat 'echo Run `frontend_testing.py` (Testing)'
-                            bat 'python Testing\\frontend_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN}'
-                        } else if (${User_Choice} == '3') {
+                            bat 'python Testing\\frontend_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN%'
+                        } else if ("%User_Choice%" == '3') {
                             bat 'echo Run `combined_testing.py` (Testing)'
-                            bat 'python Testing\\combined_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE} -t ${TEST_SIDE}'
+                            bat 'python Testing\\combined_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE% -t %TEST_SIDE%'
                         } else {
-                            bat 'echo \'User_Choice\' must to be between - [1, 2, 3]'
+                            bat 'echo \'User_Choice\' must to be between - [1, 2, 3] ...'
                         }
                     }
                 }
@@ -65,7 +109,11 @@ pipeline {
         // Step 6 - Run Clean Environment //
         stage("Run `clean_environment.py` (Clean)") {
             steps {
-                bat 'python Clean\\clean_environment.py -i ${IS_JOB_RUN}'
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                        bat 'python Clean\\clean_environment.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN%'
+                    }
+                }
             }
         }
     }
