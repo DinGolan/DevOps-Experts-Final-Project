@@ -197,10 +197,11 @@ Chrome Web Driver supporting Chrome Version 108.0.5359.125 (Official Build) (64-
 2 - Install Packages.
 3 - Start Flask Server (REST API).
 4 - Start Flask Server (WEB APP).
-5 - Run Test (Backebd).
-6 - Run Test (Frontend).
-7 - Run Test (Combined).
-8 - Stop Flask Servers (REST API, WEB APP) + Drop DB Tables.
+5 - Drop DB Tables (If Exists Already).
+6 - Run Test (Backebd).
+7 - Run Test (Frontend).
+8 - Run Test (Combined).
+9 - Stop Flask Servers (REST API, WEB APP).
 ```
 
 ---
