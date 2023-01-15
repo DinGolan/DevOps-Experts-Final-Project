@@ -134,10 +134,14 @@ pipeline {
 
 /* Functions */
 String checkPackages() {
+
+    /* Vars */
+    def installed_packages
+
     if (checkOS() == "Windows") {
-        def installed_packages = bat(script: 'pip freeze', returnStdout: true).trim().readLines().drop(1).join(" ")
+        installed_packages = bat(script: 'pip freeze', returnStdout: true).trim().readLines().drop(1).join(" ")
     } else {
-        def installed_packages = sh(script: 'pip freeze', returnStdout: true).trim().readLines().drop(1).join(" ")
+        installed_packages = sh(script: 'pip freeze', returnStdout: true).trim().readLines().drop(1).join(" ")
     }
     echo "installed_packages :\n${installed_packages}"
 
