@@ -2,6 +2,11 @@
 pipeline {
     agent any
 
+    // Log Rotator //
+    options {
+        buildDiscarder(logRotator(daysToKeepStr: '5', numToKeepStr: '20'))
+    }
+
     stages {
         // Step 1 - Clone Git From GitHub //
         stage("Clone Git") {
@@ -119,14 +124,27 @@ pipeline {
     }
 
     // Step - Sending Mail //
-    // Note - This section is not supported because I've Two Factor Authentication Gmail //
+    // Note - This section is not supported because I've Two Factor Authentication For Gmail //
     /*
     post {
+        always {
+            echo 'Pipeline done, checking if any failure for sending an email ...'
+        }
+        success {
+            echo 'successfully done, no need to send email, see you next time ...'
+        }
         failure {
-            mail to: "dingolan100@gmail.com",
+            mail to: "$DEFAULT_RECIPIENTS",
             subject: "DevOps Experts - Final Project - Mail Updates",
-            body: "${currentBuild.currentResult} : Job ${env.JOB_NAME}\nMore Info can be found here : ${env.BUILD_URL}\n"
+            body: 'Job name: '  + "${env.JOB_NAME}"  + ' pipeline<br>' +
+                  'Build URL: ' + "${env.BUILD_URL}" + '<br>'
             attachLog: true
+        }
+        unstable {
+            echo 'run was marked as unstable ...'
+        }
+        changed {
+            echo 'Pipeline was changed from last run, please follow logs ...'
         }
     }
     */
