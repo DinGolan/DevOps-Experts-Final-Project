@@ -1,3 +1,4 @@
+/* Pipeline */
 pipeline {
     agent any
 
@@ -13,49 +14,14 @@ pipeline {
         stage("Run `pip install`") {
             steps {
                 script {
-                    def installed_packages = bat(script: 'pip freeze', returnStdout: true).trim().readLines().drop(1).join(" ")
-                    echo "`installed_packages` :\n${installed_packages}"
-
-                    if (installed_packages.contains('PyMySQL')) {
-                        echo 'pymysql - Already Exist ...'
+                    if (checkPackages() == "Already Exists") {
+                        echo '[pymysql, requests, selenium, flask, prettytable, pypika, psutil] - Already Exist ...'
                     } else {
-                        bat 'pip install pymysql'
-                    }
-
-                    if (installed_packages.contains('requests')) {
-                        echo 'requests - Already Exist ...'
-                    } else {
-                        bat 'pip install requests'
-                    }
-
-                    if (installed_packages.contains('selenium')) {
-                        echo 'selenium - Already Exist ...'
-                    } else {
-                        bat 'pip install selenium'
-                    }
-
-                    if (installed_packages.contains('Flask')) {
-                        echo 'flask - Already Exist ...'
-                    } else {
-                        bat 'pip install flask'
-                    }
-
-                    if (installed_packages.contains('prettytable')) {
-                        echo 'prettytable - Already Exist ...'
-                    } else {
-                        bat 'pip install prettytable'
-                    }
-
-                    if (installed_packages.contains('PyPika')) {
-                        echo 'pypika - Already Exist ...'
-                    } else {
-                        bat 'pip install pypika'
-                    }
-
-                    if (installed_packages.contains('psutil')) {
-                        echo 'psutil - Already Exist ...'
-                    } else {
-                        bat 'pip install psutil'
+                        if (checkOS() == "Windows") {
+                            bat 'pip install --ignore-installed pymysql requests selenium flask prettytable pypika psutil'
+                        } else {
+                            sh 'pip install --ignore-installed pymysql requests selenium flask prettytable pypika psutil'
+                        }
                     }
                 }
             }
@@ -65,35 +31,69 @@ pipeline {
         stage("Upload Servers + Testing") {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                        def user_choice = bat(script: 'echo %User_Choice%', returnStdout: true).trim().readLines().drop(1).join("")
-                        echo "`user_choice` : ${user_choice}"
+                    if (checkOS() == "Windows") {
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                            def user_choice = bat(script: 'echo %User_Choice%', returnStdout: true).trim().readLines().drop(1).join("")
+                            echo "`user_choice` : ${user_choice}"
 
-                        if (user_choice == "1") {
-                            bat 'echo Run `frontend_testing.py` (Testing)'
-                            bat 'start /min python Web_Interface\\web_app.py -u %DB_USER_NAME% -p %DB_PASSWORD%'
-                            bat 'python Testing\\frontend_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN%'
-
-                        } else if (user_choice == "2") {
-                            bat 'echo Run `backend_testing.py` (Testing)'
-                            bat 'start /min python REST_API\\rest_app.py -u %DB_USER_NAME% -p %DB_PASSWORD%'
-                            bat 'python Testing\\backend_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%'
-
-                        } else if (user_choice == "3") {
-                            bat 'echo Run `combined_testing.py` (Testing)'
-
-                            def test_side = bat(script: 'echo %TEST_SIDE%', returnStdout: true).trim().readLines().drop(1).join("")
-                            echo "`test_side` : ${test_side}"
-
-                            if (test_side == "Backend") {
-                                bat 'start /min python REST_API\\rest_app.py -u %DB_USER_NAME% -p %DB_PASSWORD%'
-                            } else if (test_side == "Frontend") {
+                            if (user_choice == "1") {
+                                bat 'echo Run `frontend_testing.py` (Testing)'
                                 bat 'start /min python Web_Interface\\web_app.py -u %DB_USER_NAME% -p %DB_PASSWORD%'
-                            }
-                            bat 'python Testing\\combined_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE% -t %TEST_SIDE%'
+                                bat 'python Testing\\frontend_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN%'
 
-                        } else {
-                            bat 'echo `User_Choice` must to be between - [1, 2, 3] ...'
+                            } else if (user_choice == "2") {
+                                bat 'echo Run `backend_testing.py` (Testing)'
+                                bat 'start /min python REST_API\\rest_app.py -u %DB_USER_NAME% -p %DB_PASSWORD%'
+                                bat 'python Testing\\backend_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%'
+
+                            } else if (user_choice == "3") {
+                                bat 'echo Run `combined_testing.py` (Testing)'
+
+                                def test_side = bat(script: 'echo %TEST_SIDE%', returnStdout: true).trim().readLines().drop(1).join("")
+                                echo "`test_side` : ${test_side}"
+
+                                if (test_side == "Backend") {
+                                    bat 'start /min python REST_API\\rest_app.py -u %DB_USER_NAME% -p %DB_PASSWORD%'
+                                } else if (test_side == "Frontend") {
+                                    bat 'start /min python Web_Interface\\web_app.py -u %DB_USER_NAME% -p %DB_PASSWORD%'
+                                }
+                                bat 'python Testing\\combined_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE% -t %TEST_SIDE%'
+
+                            } else {
+                                bat 'echo `User_Choice` must to be between - [1, 2, 3] ...'
+                            }
+                        }
+                    } else {
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                            def user_choice = sh(script: 'echo %User_Choice%', returnStdout: true).trim().readLines().drop(1).join("")
+                            echo "`user_choice` : ${user_choice}"
+
+                            if (user_choice == "1") {
+                                sh 'echo Run `frontend_testing.py` (Testing)'
+                                sh 'start /min python Web_Interface\\web_app.py -u %DB_USER_NAME% -p %DB_PASSWORD%'
+                                sh 'python Testing\\frontend_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN%'
+
+                            } else if (user_choice == "2") {
+                                sh 'echo Run `backend_testing.py` (Testing)'
+                                sh 'start /min python REST_API\\rest_app.py -u %DB_USER_NAME% -p %DB_PASSWORD%'
+                                sh 'python Testing\\backend_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%'
+
+                            } else if (user_choice == "3") {
+                                sh 'echo Run `combined_testing.py` (Testing)'
+
+                                def test_side = sh(script: 'echo %TEST_SIDE%', returnStdout: true).trim().readLines().drop(1).join("")
+                                echo "`test_side` : ${test_side}"
+
+                                if (test_side == "Backend") {
+                                    sh 'start /min python REST_API\\rest_app.py -u %DB_USER_NAME% -p %DB_PASSWORD%'
+                                } else if (test_side == "Frontend") {
+                                    sh 'start /min python Web_Interface\\web_app.py -u %DB_USER_NAME% -p %DB_PASSWORD%'
+                                }
+                                sh 'python Testing\\combined_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE% -t %TEST_SIDE%'
+
+                            } else {
+                                sh 'echo `User_Choice` must to be between - [1, 2, 3] ...'
+                            }
                         }
                     }
                 }
@@ -104,8 +104,14 @@ pipeline {
         stage("Run `clean_environment.py` (Clean)") {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                        bat 'python Clean\\clean_environment.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -c %CLEAN_SERVER%'
+                    if (checkOS() == "Windows") {
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                            bat 'python Clean\\clean_environment.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -c %CLEAN_SERVER%'
+                        }
+                    } else {
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                            sh 'python Clean\\clean_environment.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -c %CLEAN_SERVER%'
+                        }
                     }
                 }
             }
@@ -124,4 +130,33 @@ pipeline {
         }
     }
     */
+}
+
+/* Functions */
+String checkPackages() {
+    if (checkOS() == "Windows") {
+        def installed_packages = bat(script: 'pip freeze', returnStdout: true).trim().readLines().drop(1).join(" ")
+    } else {
+        def installed_packages = sh(script: 'pip freeze', returnStdout: true).trim().readLines().drop(1).join(" ")
+    }
+    echo "installed_packages :\n${installed_packages}"
+
+    if (installed_packages.contains('PyMySQL') && installed_packages.contains('requests') && installed_packages.contains('selenium') && installed_packages.contains('Flask') && installed_packages.contains('prettytable') && installed_packages.contains('PyPika') && installed_packages.contains('psutil')) {
+        return "Already Exists"
+    } else {
+        return "Not Exist"
+    }
+}
+
+def checkOS() {
+    if (isUnix()) {
+        def uname = sh script: 'uname', returnStdout: true
+        if (uname.startsWith("Darwin")) {
+            return "Macos"
+        } else {
+            return "Linux"
+        }
+    } else {
+        return "Windows"
+    }
 }

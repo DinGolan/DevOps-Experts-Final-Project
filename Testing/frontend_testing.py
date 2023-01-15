@@ -26,7 +26,7 @@ def create_web_driver_session(browser):
 
     :return: web_driver (webdriver).
     """
-    driver_path = f"C:\\Users\\ding\\OneDrive - NVIDIA Corporation\\Desktop\\DevOps Engineer - Road Map\\DevOps Experts - Course DevOps\\פרויקט\\חלק - 1\\Driver\\{browser}driver.exe"
+    driver_path = os.path.join("C:", "Users", "ding", "OneDrive - NVIDIA Corporation", "Desktop", "DevOps Engineer - Road Map", "DevOps Experts - Course DevOps","פרויקט", "חלק - 1", "Driver", f"{browser}driver.exe")
     options     = webdriver.ChromeOptions()
     options.add_argument("--ignore-ssl-errors=yes")
     options.add_argument("--ignore-certificate-errors")

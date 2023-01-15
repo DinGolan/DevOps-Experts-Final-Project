@@ -8,6 +8,7 @@ import os
 import sys
 import signal
 import psutil
+import platform
 
 
 # Sys Path #
@@ -56,7 +57,10 @@ def kill_process():
     process_name = process.name()
 
     if process_name in ["python.exe", "/usr/bin/python"]:
-        os.kill(os.getpid(), signal.CTRL_C_EVENT)
+        if platform.system() == "Windows":
+            os.kill(pid, signal.CTRL_C_EVENT)
+        elif platform.system() == 'Darwin' or platform.system() == 'Linux':
+            os.kill(pid, signal.SIGTERM)
         return True
     else:
         return False
