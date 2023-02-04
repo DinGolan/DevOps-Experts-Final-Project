@@ -216,7 +216,7 @@ Chrome Web Driver supporting Chrome Version 108.0.5359.125 (Official Build) (64-
 services:
   database:
     env_file:
-      - Project_Vars/project_vars.env
+      - Project_Vars/.env
     image: "dingolan/devops_experts_final_project:${DB_TAG}${BUILD_NUMBER}"
     build:
       context: .
@@ -226,7 +226,7 @@ services:
 
   python:
     env_file:
-      - Project_Vars/project_vars.env
+      - Project_Vars/.env
     image: "dingolan/devops_experts_final_project:${PY_TAG}${BUILD_NUMBER}"
     build:
       context: .
@@ -244,7 +244,7 @@ services:
 
 ### Start Docker Compose ###
 ```bash
-docker-compose --env-file Project_Vars/project_vars.env --file docker-compose.yml up
+docker-compose --env-file Project_Vars/.env --file docker-compose.yml up
 ```
 
 ---

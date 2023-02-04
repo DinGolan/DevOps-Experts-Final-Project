@@ -2,26 +2,38 @@ version: "3.9"
 services:
   database:
     env_file:
-      - Project_Vars/project_vars.env
-    image: "dingolan/devops_experts_final_project:${DB_TAG}${BUILD_NUMBER}"
-    build:
-      context: .
-      dockerfile: Dockerfile_DB
+      - ../.env
+    image: "mysql:8.0.32"
+    environment:
+      MYSQL_SCHEMA_NAME: ${MYSQL_SCHEMA_NAME}
+      MYSQL_USER_NAME: ${MYSQL_USER_NAME}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "5506:3306"
     command:
       - mysqld
 
   python:
     env_file:
-      - Project_Vars/project_vars.env
+      - ../.env
     image: "dingolan/devops_experts_final_project:${PY_TAG}${BUILD_NUMBER}"
+    ports:
+      - "5000:5000"
     build:
       context: .
       dockerfile: Dockerfile_Python
     command:
-      - python Testing/docker_backend_testing.py
+      - python /DevOps_Experts_Final_Project/Testing/docker_backend_testing.py
     volumes:
-      - .:/Testing
-      - ./requirements.txt:/Testing/requirements.txt
+      - ../Clean:/DevOps_Experts_Final_Project/Clean
+      - ../Config:/DevOps_Experts_Final_Project/Config
+      - ../DB:/DevOps_Experts_Final_Project/DB
+      - ../Driver:/DevOps_Experts_Final_Project/Driver
+      - ../HTML_FILES:/DevOps_Experts_Final_Project/HTML_FILES
+      - ../Packages:/DevOps_Experts_Final_Project/Packages
+      - ../REST_API:/DevOps_Experts_Final_Project/REST_API
+      - ../Testing:/DevOps_Experts_Final_Project/Testing
+      - ../Web_Interface:/DevOps_Experts_Final_Project/Web_Interface
     links:
       - database
     depends_on:

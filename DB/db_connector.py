@@ -6,6 +6,8 @@
 # Imports #
 import os
 import sys
+import time
+import socket
 import pymysql
 import datetime
 import itertools
@@ -25,6 +27,26 @@ from pypika         import Schema, Query
 ###########################
 # Connection - DB Section #
 ###########################
+def wait_for_db(host, port):
+    """
+    :explanations:
+    - Wait for connection to DB.
+
+    :param: host (string).
+    :param: port (string).
+
+    :return: return True, when DB is connected.
+    """
+    while True:
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.connect((host, port))
+            return True
+
+        except socket.error:
+            time.sleep(1)
+
+
 def create_connection_to_db():
     """
     :explanations:
@@ -32,28 +54,30 @@ def create_connection_to_db():
 
     :return: connection: (pymysql), cursor: (pymysql).
     """
-    try:
-        user_name = get_from_jenkins_arguments().user_name
-        if user_name is None:
-            user_name = get_db_user_name()
+    if wait_for_db(host=get_db_host(), port=get_db_port()) is True:
 
-        password = get_from_jenkins_arguments().password
-        if password is None:
-            password = get_db_password()
+        try:
+            user_name = get_from_jenkins_arguments().user_name
+            if user_name is None:
+                user_name = get_db_user_name()
 
-        connection = pymysql.connect(host=get_db_host(), port=get_db_port(), user=user_name, passwd=password, db=get_db_schema_name())
-        connection.autocommit(True)
+            password = get_from_jenkins_arguments().password
+            if password is None:
+                password = get_db_password()
 
-        # Getting a cursor from DB #
-        return connection, connection.cursor()
+            connection = pymysql.connect(host=get_db_host(), port=get_db_port(), user=user_name, passwd=password, db=get_db_schema_name())
+            connection.autocommit(True)
 
-    except pymysql.Error as error_exception:
-        print(f"\nError : {error_exception} ...\n")
-        sys.exit(1)
+            # Getting a cursor from DB #
+            return connection, connection.cursor()
 
-    except TypeError as type_exception:
-        print(f"\nError : {type_exception} ...\n")
-        sys.exit(1)
+        except pymysql.Error as error_exception:
+            print(f"\nError : {error_exception} ...\n")
+            sys.exit(1)
+
+        except TypeError as type_exception:
+            print(f"\nError : {type_exception} ...\n")
+            sys.exit(1)
 
 
 def close_connection_of_db(connection, cursor):

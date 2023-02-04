@@ -2,17 +2,18 @@
 pipeline {
     agent any
 
+    // Log Rotator //
+    options {
+        buildDiscarder(logRotator(daysToKeepStr: '5', numToKeepStr: '20'))
+    }
+
     // Environments //
     environment {
         DOCKER_REPOSITORY   = "dingolan/devops_experts_final_project"
         DOCKER_COMPOSE_FILE = "docker-compose.yml"
         DB_TAG              = "db_app_version_"
         PY_TAG              = "py_app_version_"
-    }
-
-    // Log Rotator //
-    options {
-        buildDiscarder(logRotator(daysToKeepStr: '5', numToKeepStr: '20'))
+        MYSQL_SCHEMA_NAME   = "freedb_Din_Golan"
     }
 
     stages {
@@ -26,24 +27,86 @@ pipeline {
             }
         }
 
-        // Step 2 - Update `.env` File //
-        stage("Update `.env` File") {
+        // Step 2 - Install Pip Packages //
+        stage("Run `pip install`") {
             steps {
                 script {
-                    if (checkOS() == "Windows") {
-                        bat 'echo BUILD_NUMBER=%BUILD_NUMBER% > Project_Vars\\project_vars.env'
-                        bat 'echo DB_TAG=%DB_TAG% >> Project_Vars\\project_vars.env'
-                        bat 'echo PY_TAG=%PY_TAG% >> Project_Vars\\project_vars.env'
+                    if (checkPackages() == "Already Exists") {
+                        echo '[pymysql, requests, selenium, flask, prettytable, pypika, psutil] - Already Exist ...'
                     } else {
-                        sh 'echo BUILD_NUMBER=${BUILD_NUMBER} > Project_Vars/project_vars.env'
-                        sh 'echo DB_TAG=${DB_TAG} >> Project_Vars/project_vars.env'
-                        sh 'echo PY_TAG=${PY_TAG} >> Project_Vars/project_vars.env'
+                        if (checkOS() == "Windows") {
+                            bat 'python -m pip install --ignore-installed --trusted-host pypi.python.org -r Packages\\requirements.txt'
+                        } else {
+                            sh '/usr/local/bin/python -m pip install --ignore-installed --trusted-host pypi.python.org -r Packages/requirements.txt'
+                        }
                     }
                 }
             }
         }
 
-        // Step 3 - Login to Docker Hub //
+        // Step 3 - Run REST API //
+        stage("Run `rest_app.py` (Backend)") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                            bat 'start /min python REST_API\\rest_app.py -u %DB_USER_NAME% -p %DB_PASSWORD%'
+                        }
+                    } else {
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                            sh 'start /min python REST_API/rest_app.py -u ${DB_USER_NAME} -p ${DB_PASSWORD}'
+                        }
+                    }
+                }
+            }
+        }
+
+        // Step 4 - Run Backend Test //
+        stage("Run `backend_testing.py` (Testing)") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                            bat 'python Testing\\backend_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%'
+                        }
+                    } else {
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                            sh 'python Testing/backend_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}'
+                        }
+                    }
+                }
+            }
+        }
+
+        // Step 5 - Run Clean Environment //
+        stage("Run `clean_environment.py` (Clean)") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                            bat 'python Clean\\clean_environment.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN%'
+                        }
+                    } else {
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                            sh 'python Clean/clean_environment.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN}'
+                        }
+                    }
+                }
+            }
+        }
+
+        // Step 6 - Update `.env` File //
+        stage("Update `.env` File") {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                        setEnvFile()
+                    }
+                }
+            }
+        }
+
+        // Step 7 - Login to Docker Hub //
         stage("Login to Docker Hub") {
             steps {
                 script {
@@ -60,20 +123,20 @@ pipeline {
             }
         }
 
-        // Step 4 - Build Docker Compose YAML File //
+        // Step 8 - Build Docker Compose YAML File //
         stage("Build Docker Compose") {
             steps {
                 script {
                     if (checkOS() == "Windows") {
-                        bat 'docker-compose --env-file Project_Vars\\project_vars.env --file %DOCKER_COMPOSE_FILE% build'
+                        bat 'docker-compose --env-file .env --file %DOCKER_COMPOSE_FILE% build'
                     } else {
-                        sh 'docker-compose --env-file Project_Vars/project_vars.env --file ${DOCKER_COMPOSE_FILE} build'
+                        sh 'docker-compose --env-file .env --file ${DOCKER_COMPOSE_FILE} build'
                     }
                 }
             }
         }
 
-        // Step 5 - Push Docker Compose //
+        // Step 9 - Push Docker Compose //
         stage("Push Docker Compose") {
             steps {
                 script {
@@ -86,20 +149,20 @@ pipeline {
             }
         }
 
-        // Step 6 - Run Docker Compose //
+        // Step 10 - Run Docker Compose //
         stage("Run Docker Compose") {
             steps {
                 script {
                     if (checkOS() == "Windows") {
-                        bat 'docker-compose --env-file Project_Vars\\project_vars.env --file %DOCKER_COMPOSE_FILE% up -d'
+                        bat 'docker-compose --env-file .env --file %DOCKER_COMPOSE_FILE% up -d'
                     } else {
-                        sh 'docker-compose --env-file Project_Vars/project_vars.env --file ${DOCKER_COMPOSE_FILE} up -d'
+                        sh 'docker-compose --env-file .env --file ${DOCKER_COMPOSE_FILE} up -d'
                     }
                 }
             }
         }
 
-        // Step 7 - Clean & Remove Docker Images Build & Push //
+        // Step 11 - Clean & Remove Docker Images Build & Push //
         post {
             always {
                 if (checkOS() == "Windows") {
@@ -117,6 +180,41 @@ pipeline {
 }
 
 /* Functions */
+String checkPackages() {
+
+    /* Vars */
+    def installed_packages
+
+    if (checkOS() == "Windows") {
+        installed_packages = bat(script: 'pip freeze', returnStdout: true).trim().readLines().drop(1).join(" ")
+    } else {
+        installed_packages = sh(script: 'pip freeze', returnStdout: true).trim().readLines().drop(1).join(" ")
+    }
+    echo "installed_packages :\n${installed_packages}"
+
+    if (installed_packages.contains('PyMySQL') && installed_packages.contains('requests') && installed_packages.contains('selenium') && installed_packages.contains('Flask') && installed_packages.contains('prettytable') && installed_packages.contains('PyPika') && installed_packages.contains('psutil')) {
+        return "Already Exists"
+    } else {
+        return "Not Exist"
+    }
+}
+
+def setEnvFile() {
+    if (checkOs() == 'Windows') {
+        bat 'echo BUILD_NUMBER=%BUILD_NUMBER% > .env'
+        bat 'echo PY_TAG=%PY_TAG% >> .env'
+        bat 'echo MYSQL_SCHEMA_NAME=%MYSQL_SCHEMA_NAME% >> .env'
+        bat 'echo MYSQL_USER_NAME=%DB_USER_NAME% >> .env'
+        bat 'echo MYSQL_PASSWORD=%DB_PASSWORD% >> .env'
+    } else {
+        sh 'echo BUILD_NUMBER=${BUILD_NUMBER} > .env'
+        sh 'echo PY_TAG=${PY_TAG} >> .env'
+        sh 'echo MYSQL_DATABASE=${MYSQL_DATABASE} >> .env'
+        sh 'echo MYSQL_USER_NAME=${DB_USER_NAME} >> .env'
+        sh 'echo MYSQL_PASSWORD=${DB_PASSWORD} >> .env'
+    }
+}
+
 def checkOS() {
     if (isUnix()) {
         def uname = sh script: 'uname', returnStdout: true

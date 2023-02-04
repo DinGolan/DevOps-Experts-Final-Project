@@ -1,17 +1,32 @@
 # From Image #
 FROM python:3.10.5
 
+RUN apk add --no-cache  build-base linux-headers dos2unix vim
+
 # Set working directory in container #
-WORKDIR Testing/
+WORKDIR /DevOps_Experts_Final_Project
 
 # Copy `docker_backend_testing.py` to the container #
-COPY ../Testing/docker_backend_testing.py /Testing/docker_backend_testing.py
+COPY ../Clean         /DevOps_Experts_Final_Project/Clean
+COPY ../Config        /DevOps_Experts_Final_Project/Config
+COPY ../DB            /DevOps_Experts_Final_Project/DB
+COPY ../Driver        /DevOps_Experts_Final_Project/Driver
+COPY ../HTML_Files    /DevOps_Experts_Final_Project/HTML_Files
+COPY ../Packages      /DevOps_Experts_Final_Project/Packages
+COPY ../REST_API      /DevOps_Experts_Final_Project/REST_API
+COPY ../Testing       /DevOps_Experts_Final_Project/Testing
+COPY ../Web_Interface /DevOps_Experts_Final_Project/Web_Interface
 
-# Copy the requirements file to the container #
-COPY ../Packages/requirements.txt /Testing/requirements.txt
+# dos2unix - change file encoding
+RUN dos2unix /DevOps_Experts_Final_Project/Testing/docker_backend_testing.py
 
-# Install all packages from `requirements.txt` #
-RUN pip install --trusted-host pypi.python.org -r /Testing/requirements.txt
+# Add Permission #
+RUN chmod +x /DevOps_Experts_Final_Project/Testing/docker_backend_testing.py
+
+# Pip Commands #
+RUN python -m pip install --upgrade pip
+RUN pip install --trusted-host pypi.python.org -r /DevOps_Experts_Final_Project/Packages/requirements.txt
+
 
 # Run Command #
-CMD ["python", "docker_backend_testing.py"]
+CMD ["python", "/DevOps_Experts_Final_Project/Testing/docker_backend_testing.py"]

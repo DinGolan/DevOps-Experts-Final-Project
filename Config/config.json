@@ -5,9 +5,9 @@
     "PORT_WEB"     : 5001
   },
   "rest_app.py": {
-    "HOST_BIND_REST": "0.0.0.0",
-    "HOST_REST"     : "127.0.0.1",
-    "PORT_REST"     : 5000
+    "HOST_BIND_REST"  : "0.0.0.0",
+    "HOST_REST"       : "127.0.0.1",
+    "PORT_REST"       : 5000
   },
   "db_connector.py": {
     "HOST"             : "sql.freedb.tech",
