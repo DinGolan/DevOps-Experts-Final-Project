@@ -1,0 +1,17 @@
+# From Image #
+FROM mysql:8.0.31
+
+# User Name #
+ENV MYSQL_USER_NAME=freedb_Din_Golan
+
+# Password #
+ENV MYSQL_PASSWORD=keeBetw3%kG4k3R
+
+# Schema Name #
+ENV MYSQL_SCHEMA_NAME=freedb_Din_Golan
+
+# Expose Port #
+EXPOSE 3306
+
+# Run Command #
+CMD ["mysqld"]

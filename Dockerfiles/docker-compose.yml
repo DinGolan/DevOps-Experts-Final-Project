@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  database:
+    env_file:
+      - Project_Vars/project_vars.env
+    image: "dingolan/devops_experts_final_project:${DB_TAG}${BUILD_NUMBER}"
+    build:
+      context: .
+      dockerfile: Dockerfile_DB
+    command:
+      - mysqld
+
+  python:
+    env_file:
+      - Project_Vars/project_vars.env
+    image: "dingolan/devops_experts_final_project:${PY_TAG}${BUILD_NUMBER}"
+    build:
+      context: .
+      dockerfile: Dockerfile_Python
+    command:
+      - python Testing/docker_backend_testing.py
+    volumes:
+      - .:/Testing
+      - ./requirements.txt:/Testing/requirements.txt
+    links:
+      - database
+    depends_on:
+      - database

@@ -1,0 +1,17 @@
+# From Image #
+FROM python:3.10.5
+
+# Set working directory in container #
+WORKDIR Testing/
+
+# Copy `docker_backend_testing.py` to the container #
+COPY ../Testing/docker_backend_testing.py /Testing/docker_backend_testing.py
+
+# Copy the requirements file to the container #
+COPY ../Packages/requirements.txt /Testing/requirements.txt
+
+# Install all packages from `requirements.txt` #
+RUN pip install --trusted-host pypi.python.org -r /Testing/requirements.txt
+
+# Run Command #
+CMD ["python", "docker_backend_testing.py"]
