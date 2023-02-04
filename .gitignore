@@ -1,5 +1,5 @@
 .env
 .idea
-./*.iml
-./*.jar
-./*.xml
+./Jenkins_File/*.iml
+./Jenkins_File/*.jar
+./Jenkins_File/*.xml
