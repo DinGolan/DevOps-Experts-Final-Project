@@ -16,7 +16,7 @@ services:
   python:
     env_file:
       - ../.env
-    image: "dingolan/devops_experts_final_project:${PY_TAG}${BUILD_NUMBER}"
+    image: "dingolan/devops_experts_final_project:${PY_TAG}${IMAGE_TAG}"
     ports:
       - "5000:5000"
     build:

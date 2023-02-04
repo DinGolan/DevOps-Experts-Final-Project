@@ -162,17 +162,30 @@ pipeline {
             }
         }
 
-        // Step 11 - Clean & Remove Docker Images Build & Push //
-        post {
-            always {
+        // Step 11 - Run Backend Test (On Docker Compose Environments) //
+        stage("Run `backend_testing.py` (Testing Docker Compose)") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                            bat 'python Testing\\backend_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%'
+                        }
+                    } else {
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                            sh 'python Testing/backend_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}'
+                        }
+                    }
+                }
+            }
+        }
+
+        // Step 12 - Clean & Remove Docker Images Build & Push //
+        stage ('Clean Docker Environment') {
+            steps {
                 if (checkOS() == "Windows") {
-                    bat 'docker-compose --file Dockerfiles\\%DOCKER_COMPOSE_FILE% down --volumes'
-                    bat 'docker rmi -f %DOCKER_REPOSITORY%:%DB_TAG%%BUILD_NUMBER%'
-                    bat 'docker rmi -f %DOCKER_REPOSITORY%:%PY_TAG%%BUILD_NUMBER%'
+                    bat 'docker-compose --file Dockerfiles\\%DOCKER_COMPOSE_FILE% down --rmi all --volumes'
                 } else {
-                    sh 'docker-compose --file Dockerfiles/${DOCKER_COMPOSE_FILE} down --volumes'
-                    sh 'docker rmi -f ${DOCKER_REPOSITORY}:${DB_TAG}${BUILD_NUMBER}'
-                    sh 'docker rmi -f ${DOCKER_REPOSITORY}:${PY_TAG}${BUILD_NUMBER}'
+                    sh 'docker-compose --file Dockerfiles/${DOCKER_COMPOSE_FILE} down --rmi all --volumes'
                 }
             }
         }
@@ -201,13 +214,13 @@ String checkPackages() {
 
 def setEnvFile() {
     if (checkOs() == 'Windows') {
-        bat 'echo BUILD_NUMBER=%BUILD_NUMBER% > .env'
+        bat 'echo IMAGE_TAG=%BUILD_NUMBER% > .env'
         bat 'echo PY_TAG=%PY_TAG% >> .env'
         bat 'echo MYSQL_SCHEMA_NAME=%MYSQL_SCHEMA_NAME% >> .env'
         bat 'echo MYSQL_USER_NAME=%DB_USER_NAME% >> .env'
         bat 'echo MYSQL_PASSWORD=%DB_PASSWORD% >> .env'
     } else {
-        sh 'echo BUILD_NUMBER=${BUILD_NUMBER} > .env'
+        sh 'echo IMAGE_TAG=${BUILD_NUMBER} > .env'
         sh 'echo PY_TAG=${PY_TAG} >> .env'
         sh 'echo MYSQL_DATABASE=${MYSQL_DATABASE} >> .env'
         sh 'echo MYSQL_USER_NAME=${DB_USER_NAME} >> .env'
