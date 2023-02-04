@@ -9,7 +9,7 @@ services:
       MYSQL_USER_NAME: ${MYSQL_USER_NAME}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "5506:3306"
+      - "3306:3306"
     command:
       - mysqld
 
@@ -20,7 +20,7 @@ services:
     ports:
       - "5000:5000"
     build:
-      context: .
+      context: ..
       dockerfile: Dockerfile_Python
     command:
       - python /DevOps_Experts_Final_Project/Testing/docker_backend_testing.py
