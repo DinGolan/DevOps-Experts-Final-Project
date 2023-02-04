@@ -6,8 +6,8 @@ pipeline {
     environment {
         DOCKER_REPOSITORY   = "dingolan/devops_experts_final_project"
         DOCKER_COMPOSE_FILE = "docker-compose.yml"
-        DB_TAG              = "db_app"
-        PY_TAG              = "py_app"
+        DB_TAG              = "db_app_version_"
+        PY_TAG              = "py_app_version_"
     }
 
     // Log Rotator //
@@ -31,13 +31,13 @@ pipeline {
             steps {
                 script {
                     if (checkOS() == "Windows") {
-                        bat 'echo BUILD_NUMBER=%BUILD_NUMBER% > project_envs.env'
-                        bat 'echo DB_TAG=%DB_TAG% >> project_envs.env'
-                        bat 'echo PY_TAG=%PY_TAG% >> project_envs.env'
+                        bat 'echo BUILD_NUMBER=%BUILD_NUMBER% > Project_Vars\\project_vars.env'
+                        bat 'echo DB_TAG=%DB_TAG% >> Project_Vars\\project_vars.env'
+                        bat 'echo PY_TAG=%PY_TAG% >> Project_Vars\\project_vars.env'
                     } else {
-                        sh 'echo BUILD_NUMBER=${BUILD_NUMBER} > project_envs.env'
-                        sh 'echo DB_TAG=${DB_TAG} >> project_envs.env'
-                        sh 'echo PY_TAG=${PY_TAG} >> project_envs.env'
+                        sh 'echo BUILD_NUMBER=${BUILD_NUMBER} > Project_Vars/project_vars.env'
+                        sh 'echo DB_TAG=${DB_TAG} >> Project_Vars/project_vars.env'
+                        sh 'echo PY_TAG=${PY_TAG} >> Project_Vars/project_vars.env'
                     }
                 }
             }
@@ -53,7 +53,7 @@ pipeline {
                         }
                     } else {
                         withCredentials([usernamePassword(credentialsId: 'docker_hub', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
-                            sh 'docker login --username "${DOCKER_HUB_PASSWORD}" --password "$DOCKER_HUB_USERNAME}"'
+                            sh 'docker login --username "${DOCKER_HUB_PASSWORD}" --password "${DOCKER_HUB_USERNAME}"'
                         }
                     }
                 }
