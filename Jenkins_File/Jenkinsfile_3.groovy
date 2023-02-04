@@ -141,9 +141,9 @@ pipeline {
             steps {
                 script {
                     if (checkOS() == "Windows") {
-                        bat 'docker-compose push'
+                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% push'
                     } else {
-                        sh 'docker-compose push'
+                        sh 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} push'
                     }
                 }
             }
