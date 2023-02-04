@@ -211,40 +211,8 @@ Chrome Web Driver supporting Chrome Version 108.0.5359.125 (Official Build) (64-
 ## Docker ##
 ### Docker Compose Installation ###
 ```bash
-• Create 'docker-compose.yml' locally on your machine using context below :
-
-services:
-  database:
-    env_file:
-      - Project_Vars/.env
-    image: "dingolan/devops_experts_final_project:${DB_TAG}${BUILD_NUMBER}"
-    build:
-      context: .
-      dockerfile: Dockerfile_DB
-    command:
-      - mysqld
-
-  python:
-    env_file:
-      - Project_Vars/.env
-    image: "dingolan/devops_experts_final_project:${PY_TAG}${BUILD_NUMBER}"
-    build:
-      context: .
-      dockerfile: Dockerfile_Python
-    command:
-      - python Testing/docker_backend_testing.py
-    volumes:
-      - .:/Testing
-      - ./requirements.txt:/Testing/requirements.txt
-    links:
-      - database
-    depends_on:
-      - database
-```
-
-### Start Docker Compose ###
-```bash
-docker-compose --env-file Project_Vars/.env --file docker-compose.yml up
+1 - Create 'docker-compose.yml' locally on your machine.
+2 - Run docker compose with the following command ---> `docker-compose --env-file .env --file docker-compose.yml up`.
 ```
 
 ---
