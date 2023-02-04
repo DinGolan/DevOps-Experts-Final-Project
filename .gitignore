@@ -1,5 +1,4 @@
 .env
 .idea
-./Jenkins_File/lib/*.iml
-./Jenkins_File/lib/*.jar
-./Jenkins_File/lib/*.xml
+Jenkins_File/lib/groovy*.jar
+Jenkins_File/Jenkins_File.iml
