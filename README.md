@@ -209,7 +209,7 @@ Chrome Web Driver supporting Chrome Version 108.0.5359.125 (Official Build) (64-
 ---
 
 ## Docker ##
-### Docker Compose Installation ###
+### Docker Compose Instructions ###
 ```bash
 1 - Create 'docker-compose.yml' locally on your machine.
 2 - Run docker compose with the following command : 'docker-compose --env-file .env --file docker-compose.yml up'.
