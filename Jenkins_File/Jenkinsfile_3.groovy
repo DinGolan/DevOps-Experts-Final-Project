@@ -128,9 +128,9 @@ pipeline {
             steps {
                 script {
                     if (checkOS() == "Windows") {
-                        bat 'docker-compose --env-file .env --file %DOCKER_COMPOSE_FILE% build'
+                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% build'
                     } else {
-                        sh 'docker-compose --env-file .env --file ${DOCKER_COMPOSE_FILE} build'
+                        sh 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} build'
                     }
                 }
             }
@@ -154,9 +154,9 @@ pipeline {
             steps {
                 script {
                     if (checkOS() == "Windows") {
-                        bat 'docker-compose --env-file .env --file %DOCKER_COMPOSE_FILE% up -d'
+                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% up -d'
                     } else {
-                        sh 'docker-compose --env-file .env --file ${DOCKER_COMPOSE_FILE} up -d'
+                        sh 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} up -d'
                     }
                 }
             }
@@ -166,11 +166,11 @@ pipeline {
         post {
             always {
                 if (checkOS() == "Windows") {
-                    bat 'docker-compose --file %DOCKER_COMPOSE_FILE% down --volumes'
+                    bat 'docker-compose --file Dockerfiles\\%DOCKER_COMPOSE_FILE% down --volumes'
                     bat 'docker rmi -f %DOCKER_REPOSITORY%:%DB_TAG%%BUILD_NUMBER%'
                     bat 'docker rmi -f %DOCKER_REPOSITORY%:%PY_TAG%%BUILD_NUMBER%'
                 } else {
-                    sh 'docker-compose --file ${DOCKER_COMPOSE_FILE} down --volumes'
+                    sh 'docker-compose --file Dockerfiles/${DOCKER_COMPOSE_FILE} down --volumes'
                     sh 'docker rmi -f ${DOCKER_REPOSITORY}:${DB_TAG}${BUILD_NUMBER}'
                     sh 'docker rmi -f ${DOCKER_REPOSITORY}:${PY_TAG}${BUILD_NUMBER}'
                 }
