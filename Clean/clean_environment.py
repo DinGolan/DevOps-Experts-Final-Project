@@ -134,7 +134,7 @@ def main():
             clean_rest_api_environment()
             clean_web_app_environment()
 
-        # Jenkins File - 2 #
+        # Jenkins File - 2 / 3 #
         elif clean_server == "REST_API": clean_rest_api_environment()
         elif clean_server == "WEB_APP" : clean_web_app_environment()
 
