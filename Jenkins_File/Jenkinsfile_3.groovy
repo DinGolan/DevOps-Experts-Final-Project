@@ -101,17 +101,17 @@ pipeline {
         }
 
         // Step 6 - Update `.env` File //
-//        stage("Update `.env` File") {
-//            steps {
-//                script {
-//                    withCredentials([usernamePassword(credentialsId: 'docker_database_credentials', usernameVariable: 'MYSQL_ROOT_USER', passwordVariable: 'MYSQL_ROOT_PASSWORD'),
-//                                     usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-//                        setEnvFile()
-//                    }
-//                }
-//            }
-//        }
-//
+        stage("Update `.env` File") {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'docker_database_credentials', usernameVariable: 'MYSQL_ROOT_USER', passwordVariable: 'MYSQL_ROOT_PASSWORD'),
+                                     usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                        setEnvFile()
+                    }
+                }
+            }
+        }
+
 //        // Step 7 - Login to Docker Hub //
 //        stage("Login to Docker Hub") {
 //            steps {
