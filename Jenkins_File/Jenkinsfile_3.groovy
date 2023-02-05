@@ -101,149 +101,149 @@ pipeline {
         }
 
         // Step 6 - Update `.env` File //
-        stage("Update `.env` File") {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'docker_database_credentials', usernameVariable: 'MYSQL_ROOT_USER', passwordVariable: 'MYSQL_ROOT_PASSWORD'),
-                                     usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-                        setEnvFile()
-                    }
-                }
-            }
-        }
-
-        // Step 7 - Login to Docker Hub //
-        stage("Login to Docker Hub") {
-            steps {
-                script {
-                    if (checkOS() == "Windows") {
-                        withCredentials([usernamePassword(credentialsId: 'docker_hub', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
-                            bat 'docker login --username "%DOCKER_HUB_PASSWORD%" --password "%DOCKER_HUB_USERNAME%"'
-                        }
-                    } else {
-                        withCredentials([usernamePassword(credentialsId: 'docker_hub', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
-                            sh 'docker login --username "${DOCKER_HUB_PASSWORD}" --password "${DOCKER_HUB_USERNAME}"'
-                        }
-                    }
-                }
-            }
-        }
-
-        // Step 8 - Build & Up Docker Compose //
-        stage("Build & Up Docker Compose") {
-            steps {
-                script {
-                    if (checkOS() == "Windows") {
-                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% up -d --build & docker ps -a'
-                    } else {
-                        sh 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} up -d --build & docker ps -a'
-                    }
-                    sleep(time: 10, unit: "SECONDS")
-                }
-            }
-        }
-
-        // Step 9 - Push Docker Compose //
-        stage("Push Docker Compose") {
-            steps {
-                script {
-                    if (checkOS() == "Windows") {
-                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% push'
-                    } else {
-                        sh 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} push'
-                    }
-                }
-            }
-        }
-
-        // Step 10 - Check Docker Service Healthy //
-        stage("Check Docker Compose Services Health") {
-            steps {
-                script {
-                    if (checkOS() == "Windows") {
-                        def servicesOutput = bat(script: 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% ps --services', returnStdout: true).trim().readLines().drop(1)
-                        for (def service : servicesOutput) {
-                            def containers = bat(script: "docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% ps -q --services ${service}", returnStdout: true).trim().readLines().drop(1)
-                            for (def container : containers) {
-                                def inspectStateStatusOutput = bat(script: "docker inspect ${container} --format '{{.State.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
-                                def inspectHealthStatusOutput = bat(script: "docker inspect ${container} --format '{{.State.Health.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
-                                if (inspectStateStatusOutput != "running" || inspectStateStatusOutput == null || inspectStateStatusOutput == "") {
-                                    error("Container id: ${container} from Service name: ${service} Has State status: ${inspectStateStatusOutput}")
-                                    return
-                                } else if (inspectHealthStatusOutput != "healthy" || inspectHealthStatusOutput == null || inspectHealthStatusOutput == "") {
-                                    error("Service ${service} is not healthy. Container id: ${container} has health status: ${inspectHealthStatusOutput}")
-                                    return
-                                } else {
-                                    echo "Service name : ${service} is in state : ${inspectStateStatusOutput} , Container id : ${container} has health status : ${inspectHealthStatusOutput}"
-                                }
-                            }
-                        }
-                    } else {
-                        def servicesOutput = sh(script: 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} ps --services', returnStdout: true).trim().readLines().drop(1)
-                        for (def service : servicesOutput) {
-                            def containers = sh(script: 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} ps -q --services ${service}', returnStdout: true).trim().readLines().drop(1)
-                            for (def container : containers) {
-                                def inspectStateStatusOutput = sh(script: "docker inspect ${container} --format '{{.State.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
-                                def inspectHealthStatusOutput = sh(script: "docker inspect ${container} --format '{{.State.Health.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
-                                if (inspectStateStatusOutput != "running" || inspectStateStatusOutput == null) {
-                                    error("Container id: ${container} from Service name: ${service} Has State status: ${inspectStateStatusOutput}")
-                                    return
-                                } else if (inspectHealthStatusOutput != "healthy" || inspectHealthStatusOutput == null) {
-                                    error("Service ${service} is not healthy. Container id: ${container} has health status: ${inspectHealthStatusOutput}")
-                                    return
-                                } else {
-                                    echo "Service name : ${service} is in state : ${inspectStateStatusOutput} , Container id : ${container} has health status : ${inspectHealthStatusOutput}"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // Step 11 - Run Backend Test (On Docker Compose Environments) //
-        stage("Run `backend_testing.py` (Testing Docker Compose)") {
-            steps {
-                script {
-                    if (checkOS() == "Windows") {
-                        def containerId = bat(script: 'docker ps --filter "name=%PYTHON_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
-                        sleep(time: 2, unit: "SECONDS")
-                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-                            bat 'docker exec -i ${containerId} sh -c \"/usr/local/bin/python Testing\\docker_backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%\"'
-                        }
-                    } else {
-                        def containerId = sh(script: 'docker ps --filter "name=${PYTHON_CONTAINER_NAME}" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
-                        sleep(time: 2, unit: "SECONDS")
-                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-                            sh 'docker exec -i ${containerId} sh \"/usr/local/bin/python Testing/docker_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}\""'
-                        }
-                    }
-                }
-            }
-        }
-
-        // Step 12 - Docker App - Stop Flask Servers //
-        stage ('Docker App - Stop Flask Servers') {
-            steps {
-                sleep(time: 2, unit: "SECONDS")
-                if (checkOS() == "Windows") {
-                    bat "curl -i http://127.0.0.1:5000/stop_server"
-                } else {
-                    sh "curl -i http://127.0.0.1:5000/stop_server"
-                }
-            }
-        }
-
-        // Step 13 - Clean & Remove Docker Images Build & Push //
-        stage ('Clean Docker Environment') {
-            steps {
-                if (checkOS() == "Windows") {
-                    bat 'docker-compose --file Dockerfiles\\%DOCKER_COMPOSE_FILE% down --rmi all --volumes'
-                } else {
-                    sh 'docker-compose --file Dockerfiles/${DOCKER_COMPOSE_FILE} down --rmi all --volumes'
-                }
-            }
-        }
+//        stage("Update `.env` File") {
+//            steps {
+//                script {
+//                    withCredentials([usernamePassword(credentialsId: 'docker_database_credentials', usernameVariable: 'MYSQL_ROOT_USER', passwordVariable: 'MYSQL_ROOT_PASSWORD'),
+//                                     usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+//                        setEnvFile()
+//                    }
+//                }
+//            }
+//        }
+//
+//        // Step 7 - Login to Docker Hub //
+//        stage("Login to Docker Hub") {
+//            steps {
+//                script {
+//                    if (checkOS() == "Windows") {
+//                        withCredentials([usernamePassword(credentialsId: 'docker_hub', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
+//                            bat 'docker login --username "%DOCKER_HUB_PASSWORD%" --password "%DOCKER_HUB_USERNAME%"'
+//                        }
+//                    } else {
+//                        withCredentials([usernamePassword(credentialsId: 'docker_hub', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
+//                            sh 'docker login --username "${DOCKER_HUB_PASSWORD}" --password "${DOCKER_HUB_USERNAME}"'
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        // Step 8 - Build & Up Docker Compose //
+//        stage("Build & Up Docker Compose") {
+//            steps {
+//                script {
+//                    if (checkOS() == "Windows") {
+//                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% up -d --build & docker ps -a'
+//                    } else {
+//                        sh 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} up -d --build & docker ps -a'
+//                    }
+//                    sleep(time: 10, unit: "SECONDS")
+//                }
+//            }
+//        }
+//
+//        // Step 9 - Push Docker Compose //
+//        stage("Push Docker Compose") {
+//            steps {
+//                script {
+//                    if (checkOS() == "Windows") {
+//                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% push'
+//                    } else {
+//                        sh 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} push'
+//                    }
+//                }
+//            }
+//        }
+//
+//        // Step 10 - Check Docker Service Healthy //
+//        stage("Check Docker Compose Services Health") {
+//            steps {
+//                script {
+//                    if (checkOS() == "Windows") {
+//                        def servicesOutput = bat(script: 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% ps --services', returnStdout: true).trim().readLines().drop(1)
+//                        for (def service : servicesOutput) {
+//                            def containers = bat(script: "docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% ps -q --services ${service}", returnStdout: true).trim().readLines().drop(1)
+//                            for (def container : containers) {
+//                                def inspectStateStatusOutput = bat(script: "docker inspect ${container} --format '{{.State.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
+//                                def inspectHealthStatusOutput = bat(script: "docker inspect ${container} --format '{{.State.Health.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
+//                                if (inspectStateStatusOutput != "running" || inspectStateStatusOutput == null || inspectStateStatusOutput == "") {
+//                                    error("Container id: ${container} from Service name: ${service} Has State status: ${inspectStateStatusOutput}")
+//                                    return
+//                                } else if (inspectHealthStatusOutput != "healthy" || inspectHealthStatusOutput == null || inspectHealthStatusOutput == "") {
+//                                    error("Service ${service} is not healthy. Container id: ${container} has health status: ${inspectHealthStatusOutput}")
+//                                    return
+//                                } else {
+//                                    echo "Service name : ${service} is in state : ${inspectStateStatusOutput} , Container id : ${container} has health status : ${inspectHealthStatusOutput}"
+//                                }
+//                            }
+//                        }
+//                    } else {
+//                        def servicesOutput = sh(script: 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} ps --services', returnStdout: true).trim().readLines().drop(1)
+//                        for (def service : servicesOutput) {
+//                            def containers = sh(script: 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} ps -q --services ${service}', returnStdout: true).trim().readLines().drop(1)
+//                            for (def container : containers) {
+//                                def inspectStateStatusOutput = sh(script: "docker inspect ${container} --format '{{.State.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
+//                                def inspectHealthStatusOutput = sh(script: "docker inspect ${container} --format '{{.State.Health.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
+//                                if (inspectStateStatusOutput != "running" || inspectStateStatusOutput == null) {
+//                                    error("Container id: ${container} from Service name: ${service} Has State status: ${inspectStateStatusOutput}")
+//                                    return
+//                                } else if (inspectHealthStatusOutput != "healthy" || inspectHealthStatusOutput == null) {
+//                                    error("Service ${service} is not healthy. Container id: ${container} has health status: ${inspectHealthStatusOutput}")
+//                                    return
+//                                } else {
+//                                    echo "Service name : ${service} is in state : ${inspectStateStatusOutput} , Container id : ${container} has health status : ${inspectHealthStatusOutput}"
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        // Step 11 - Run Backend Test (On Docker Compose Environments) //
+//        stage("Run `backend_testing.py` (Testing Docker Compose)") {
+//            steps {
+//                script {
+//                    if (checkOS() == "Windows") {
+//                        def containerId = bat(script: 'docker ps --filter "name=%PYTHON_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
+//                        sleep(time: 2, unit: "SECONDS")
+//                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+//                            bat 'docker exec -i ${containerId} sh -c \"/usr/local/bin/python Testing\\docker_backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%\"'
+//                        }
+//                    } else {
+//                        def containerId = sh(script: 'docker ps --filter "name=${PYTHON_CONTAINER_NAME}" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
+//                        sleep(time: 2, unit: "SECONDS")
+//                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+//                            sh 'docker exec -i ${containerId} sh \"/usr/local/bin/python Testing/docker_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}\""'
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        // Step 12 - Docker App - Stop Flask Servers //
+//        stage ('Docker App - Stop Flask Servers') {
+//            steps {
+//                sleep(time: 2, unit: "SECONDS")
+//                if (checkOS() == "Windows") {
+//                    bat "curl -i http://127.0.0.1:5000/stop_server"
+//                } else {
+//                    sh "curl -i http://127.0.0.1:5000/stop_server"
+//                }
+//            }
+//        }
+//
+//        // Step 13 - Clean & Remove Docker Images Build & Push //
+//        stage ('Clean Docker Environment') {
+//            steps {
+//                if (checkOS() == "Windows") {
+//                    bat 'docker-compose --file Dockerfiles\\%DOCKER_COMPOSE_FILE% down --rmi all --volumes'
+//                } else {
+//                    sh 'docker-compose --file Dockerfiles/${DOCKER_COMPOSE_FILE} down --rmi all --volumes'
+//                }
+//            }
+//        }
     }
 }
 
