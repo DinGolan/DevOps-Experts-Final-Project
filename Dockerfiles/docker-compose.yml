@@ -4,6 +4,7 @@ services:
     env_file:
       - ../.env
     image: "mysql:8.0.32"
+    container_name: ${MYSQL_CONTAINER_NAME}
     environment:
       MYSQL_SCHEMA_NAME: ${MYSQL_SCHEMA_NAME}
       MYSQL_USER_NAME: ${MYSQL_USER_NAME}
@@ -12,18 +13,28 @@ services:
       - "3306:3306"
     command:
       - mysqld
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      interval: 2s
+      timeout: 10s
+      retries: 5
 
   python:
     env_file:
       - ../.env
     image: "dingolan/devops_experts_final_project:${PY_TAG}${IMAGE_TAG}"
+    container_name: ${PYTHON_CONTAINER_NAME}
     ports:
       - "5000:5000"
+    hostname: python
+    healthcheck:
+      test: [ "CMD-SHELL", "ping -c 1 python" ]
+      interval: 2s
+      timeout: 10s
+      retries: 5
     build:
       context: ..
-      dockerfile: Dockerfile_Python
-    command:
-      - python /DevOps_Experts_Final_Project/Testing/docker_backend_testing.py
+      dockerfile: /Dockerfiles/Dockerfile_Python
     volumes:
       - ../Clean:/DevOps_Experts_Final_Project/Clean
       - ../Config:/DevOps_Experts_Final_Project/Config
@@ -37,4 +48,5 @@ services:
     links:
       - database
     depends_on:
-      - database
+      database:
+        condition: service_healthy

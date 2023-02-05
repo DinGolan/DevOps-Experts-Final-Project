@@ -1,3 +1,6 @@
+/* Imports */
+import groovy.json.JsonSlurper
+
 /* Pipeline */
 pipeline {
     agent any
@@ -9,11 +12,13 @@ pipeline {
 
     // Environments //
     environment {
-        DOCKER_REPOSITORY   = "dingolan/devops_experts_final_project"
-        DOCKER_COMPOSE_FILE = "docker-compose.yml"
-        DB_TAG              = "db_app_version_"
-        PY_TAG              = "py_app_version_"
-        MYSQL_SCHEMA_NAME   = "freedb_Din_Golan"
+        DOCKER_REPOSITORY     = "dingolan/devops_experts_final_project"
+        DOCKER_COMPOSE_FILE   = "docker-compose.yml"
+        MYSQL_CONTAINER_NAME  = "mysql_container"
+        PYTHON_CONTAINER_NAME = "python_container"
+        DB_TAG                = "db_app_version_"
+        PY_TAG                = "py_app_version_"
+        MYSQL_SCHEMA_NAME     = "freedb_Din_Golan"
     }
 
     stages {
@@ -123,15 +128,16 @@ pipeline {
             }
         }
 
-        // Step 8 - Build Docker Compose YAML File //
-        stage("Build Docker Compose") {
+        // Step 8 - Build & Up Docker Compose //
+        stage("Build & Up Docker Compose") {
             steps {
                 script {
                     if (checkOS() == "Windows") {
-                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% build'
+                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% up -d --build & docker ps -a'
                     } else {
-                        sh 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} build'
+                        sh 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} up -d --build & docker ps -a'
                     }
+                    sleep(time: 10, unit: "SECONDS")
                 }
             }
         }
@@ -149,14 +155,32 @@ pipeline {
             }
         }
 
-        // Step 10 - Run Docker Compose //
-        stage("Run Docker Compose") {
+        // Step 10 - Test Docker Service Healthy //
+        stage("Check Docker Compose Services Health") {
             steps {
                 script {
                     if (checkOS() == "Windows") {
-                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% up -d'
+                        def servicesOutput = bat(script: 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% ps --services', returnStdout: true).trim().readLines().drop(1)
+                        for (def service : servicesOutput) {
+                            def eachService = service.trim()
+                            def containers = bat(script: "docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% ps -q --services ${eachService}", returnStdout: true).trim().readLines().drop(1)
+                            for (def container : containers) {
+                                def eachContainer = container.trim()
+                                def inspectOutput = bat(script: "docker inspect ${eachContainer}", returnStdout: true)
+                                println(inspectOutput)
+                            }
+                        }
                     } else {
-                        sh 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} up -d'
+                        def servicesOutput = sh(script: 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} ps --services', returnStdout: true).trim().readLines().drop(1)
+                        for (def service : servicesOutput) {
+                            def eachService = service.trim()
+                            def containers = sh(script: "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} ps -q --services ${eachService}", returnStdout: true).trim().readLines().drop(1)
+                            for (def container : containers) {
+                                def eachContainer = container.trim()
+                                def inspectOutput = sh(script: "docker inspect ${eachContainer}", returnStdout: true)
+                                println(inspectOutput)
+                            }
+                        }
                     }
                 }
             }
@@ -167,19 +191,23 @@ pipeline {
             steps {
                 script {
                     if (checkOS() == "Windows") {
+                        def containerId = bat(script: 'docker ps --filter "name=%PYTHON_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
+                        sleep(time: 2, unit: "SECONDS")
                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                            bat 'python Testing\\backend_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%'
+                            bat 'docker exec -i ${containerId} sh -c \"/usr/local/bin/python Testing\\docker_backend_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%\"'
                         }
                     } else {
+                        def containerId = sh(script: 'docker ps --filter "name=${PYTHON_CONTAINER_NAME}" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
+                        sleep(time: 2, unit: "SECONDS")
                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                            sh 'python Testing/backend_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}'
+                            sh 'docker exec -i ${containerId} sh \"/usr/local/bin/python Testing/docker_backend_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}\""'
                         }
                     }
                 }
             }
         }
 
-        // Step 12 - Clean & Remove Docker Images Build & Push //
+        // Step 11 - Clean & Remove Docker Images Build & Push //
         stage ('Clean Docker Environment') {
             steps {
                 if (checkOS() == "Windows") {
@@ -215,12 +243,16 @@ String checkPackages() {
 def setEnvFile() {
     if (checkOs() == 'Windows') {
         bat 'echo IMAGE_TAG=%BUILD_NUMBER% > .env'
+        bat 'echo MYSQL_CONTAINER_NAME=%MYSQL_CONTAINER_NAME% >> .env'
+        bat 'echo PYTHON_CONTAINER_NAME=%PYTHON_CONTAINER_NAME% >> .env'
         bat 'echo PY_TAG=%PY_TAG% >> .env'
         bat 'echo MYSQL_SCHEMA_NAME=%MYSQL_SCHEMA_NAME% >> .env'
         bat 'echo MYSQL_USER_NAME=%DB_USER_NAME% >> .env'
         bat 'echo MYSQL_PASSWORD=%DB_PASSWORD% >> .env'
     } else {
         sh 'echo IMAGE_TAG=${BUILD_NUMBER} > .env'
+        sh 'echo MYSQL_CONTAINER_NAME=${MYSQL_CONTAINER_NAME} >> .env'
+        sh 'echo PYTHON_CONTAINER_NAME=${PYTHON_CONTAINER_NAME} >> .env'
         sh 'echo PY_TAG=${PY_TAG} >> .env'
         sh 'echo MYSQL_DATABASE=${MYSQL_DATABASE} >> .env'
         sh 'echo MYSQL_USER_NAME=${DB_USER_NAME} >> .env'
