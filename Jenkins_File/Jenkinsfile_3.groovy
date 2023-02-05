@@ -155,30 +155,44 @@ pipeline {
             }
         }
 
-        // Step 10 - Test Docker Service Healthy //
+        // Step 10 - Check Docker Service Healthy //
         stage("Check Docker Compose Services Health") {
             steps {
                 script {
                     if (checkOS() == "Windows") {
                         def servicesOutput = bat(script: 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% ps --services', returnStdout: true).trim().readLines().drop(1)
                         for (def service : servicesOutput) {
-                            def eachService = service.trim()
-                            def containers = bat(script: "docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% ps -q --services ${eachService}", returnStdout: true).trim().readLines().drop(1)
+                            def containers = bat(script: "docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% ps -q --services ${service}", returnStdout: true).trim().readLines().drop(1)
                             for (def container : containers) {
-                                def eachContainer = container.trim()
-                                def inspectOutput = bat(script: "docker inspect ${eachContainer}", returnStdout: true)
-                                println(inspectOutput)
+                                def inspectStateStatusOutput = bat(script: "docker inspect ${container} --format '{{.State.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
+                                def inspectHealthStatusOutput = bat(script: "docker inspect ${container} --format '{{.State.Health.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
+                                if (inspectStateStatusOutput != "running" || inspectStateStatusOutput == null) {
+                                    error("Container id: ${container} from Service name: ${service} Has State status: ${inspectStateStatusOutput}")
+                                    return
+                                } else if (inspectHealthStatusOutput != "healthy" || inspectHealthStatusOutput == null) {
+                                    error("Service ${service} is not healthy. Container id: ${container} has health status: ${inspectHealthStatusOutput}")
+                                    return
+                                } else {
+                                    echo "Service name : ${service} is in state : ${inspectStateStatusOutput} , Container id : ${container} has health status : ${inspectHealthStatusOutput}"
+                                }
                             }
                         }
                     } else {
                         def servicesOutput = sh(script: 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} ps --services', returnStdout: true).trim().readLines().drop(1)
                         for (def service : servicesOutput) {
-                            def eachService = service.trim()
-                            def containers = sh(script: "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} ps -q --services ${eachService}", returnStdout: true).trim().readLines().drop(1)
+                            def containers = sh(script: 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} ps -q --services ${service}', returnStdout: true).trim().readLines().drop(1)
                             for (def container : containers) {
-                                def eachContainer = container.trim()
-                                def inspectOutput = sh(script: "docker inspect ${eachContainer}", returnStdout: true)
-                                println(inspectOutput)
+                                def inspectStateStatusOutput = sh(script: "docker inspect ${container} --format '{{.State.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
+                                def inspectHealthStatusOutput = sh(script: "docker inspect ${container} --format '{{.State.Health.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
+                                if (inspectStateStatusOutput != "running" || inspectStateStatusOutput == null) {
+                                    error("Container id: ${container} from Service name: ${service} Has State status: ${inspectStateStatusOutput}")
+                                    return
+                                } else if (inspectHealthStatusOutput != "healthy" || inspectHealthStatusOutput == null) {
+                                    error("Service ${service} is not healthy. Container id: ${container} has health status: ${inspectHealthStatusOutput}")
+                                    return
+                                } else {
+                                    echo "Service name : ${service} is in state : ${inspectStateStatusOutput} , Container id : ${container} has health status : ${inspectHealthStatusOutput}"
+                                }
                             }
                         }
                     }

@@ -18,10 +18,10 @@ COPY ../Testing       /DevOps_Experts_Final_Project/Testing
 COPY ../Web_Interface /DevOps_Experts_Final_Project/Web_Interface
 
 # dos2unix - change file encoding
-RUN dos2unix /DevOps_Experts_Final_Project/Testing/docker_backend_testing.py
+RUN dos2unix /DevOps_Experts_Final_Project/Testing/start_testing.sh
 
 # Add Permission #
-RUN chmod +x /DevOps_Experts_Final_Project/Testing/docker_backend_testing.py
+RUN chmod +x /DevOps_Experts_Final_Project/Testing/start_testing.sh
 
 # Pip Commands #
 RUN python -m pip install --upgrade pip
@@ -29,4 +29,4 @@ RUN pip install --trusted-host pypi.python.org -r /DevOps_Experts_Final_Project/
 
 
 # Run Command #
-CMD ["python", "/DevOps_Experts_Final_Project/Testing/docker_backend_testing.py"]
+CMD ["/bin/sh", "/DevOps_Experts_Final_Project/Testing/start_testing.sh"]
