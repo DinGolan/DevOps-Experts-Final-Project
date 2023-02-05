@@ -54,12 +54,12 @@ pipeline {
             steps {
                 script {
                     if (checkOS() == "Windows") {
-                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                            bat 'start /min python REST_API\\rest_app.py -u %DB_USER_NAME% -p %DB_PASSWORD%'
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            bat 'start /min python REST_API\\rest_app.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD%'
                         }
                     } else {
-                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                            sh 'start /min python REST_API/rest_app.py -u ${DB_USER_NAME} -p ${DB_PASSWORD}'
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            sh 'start /min python REST_API/rest_app.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD}'
                         }
                     }
                 }
@@ -71,12 +71,12 @@ pipeline {
             steps {
                 script {
                     if (checkOS() == "Windows") {
-                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                            bat 'python Testing\\backend_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%'
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            bat 'python Testing\\backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%'
                         }
                     } else {
-                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                            sh 'python Testing/backend_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}'
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            sh 'python Testing/backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}'
                         }
                     }
                 }
@@ -88,12 +88,12 @@ pipeline {
             steps {
                 script {
                     if (checkOS() == "Windows") {
-                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                            bat 'python Clean\\clean_environment.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN%'
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            bat 'python Clean\\clean_environment.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN%'
                         }
                     } else {
-                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                            sh 'python Clean/clean_environment.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN}'
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            sh 'python Clean/clean_environment.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN}'
                         }
                     }
                 }
@@ -104,7 +104,8 @@ pipeline {
         stage("Update `.env` File") {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                    withCredentials([usernamePassword(credentialsId: 'docker_database_credentials', usernameVariable: 'MYSQL_ROOT_USER', passwordVariable: 'MYSQL_ROOT_PASSWORD'),
+                                     usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
                         setEnvFile()
                     }
                 }
@@ -166,10 +167,10 @@ pipeline {
                             for (def container : containers) {
                                 def inspectStateStatusOutput = bat(script: "docker inspect ${container} --format '{{.State.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
                                 def inspectHealthStatusOutput = bat(script: "docker inspect ${container} --format '{{.State.Health.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
-                                if (inspectStateStatusOutput != "running" || inspectStateStatusOutput == null) {
+                                if (inspectStateStatusOutput != "running" || inspectStateStatusOutput == null || inspectStateStatusOutput == "") {
                                     error("Container id: ${container} from Service name: ${service} Has State status: ${inspectStateStatusOutput}")
                                     return
-                                } else if (inspectHealthStatusOutput != "healthy" || inspectHealthStatusOutput == null) {
+                                } else if (inspectHealthStatusOutput != "healthy" || inspectHealthStatusOutput == null || inspectHealthStatusOutput == "") {
                                     error("Service ${service} is not healthy. Container id: ${container} has health status: ${inspectHealthStatusOutput}")
                                     return
                                 } else {
@@ -207,21 +208,33 @@ pipeline {
                     if (checkOS() == "Windows") {
                         def containerId = bat(script: 'docker ps --filter "name=%PYTHON_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
                         sleep(time: 2, unit: "SECONDS")
-                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                            bat 'docker exec -i ${containerId} sh -c \"/usr/local/bin/python Testing\\docker_backend_testing.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%\"'
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            bat 'docker exec -i ${containerId} sh -c \"/usr/local/bin/python Testing\\docker_backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%\"'
                         }
                     } else {
                         def containerId = sh(script: 'docker ps --filter "name=${PYTHON_CONTAINER_NAME}" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
                         sleep(time: 2, unit: "SECONDS")
-                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                            sh 'docker exec -i ${containerId} sh \"/usr/local/bin/python Testing/docker_backend_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}\""'
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            sh 'docker exec -i ${containerId} sh \"/usr/local/bin/python Testing/docker_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}\""'
                         }
                     }
                 }
             }
         }
 
-        // Step 11 - Clean & Remove Docker Images Build & Push //
+        // Step 12 - Docker App - Stop Flask Servers //
+        stage ('Docker App - Stop Flask Servers') {
+            steps {
+                sleep(time: 2, unit: "SECONDS")
+                if (checkOS() == "Windows") {
+                    bat "curl -i http://127.0.0.1:5000/stop_server"
+                } else {
+                    sh "curl -i http://127.0.0.1:5000/stop_server"
+                }
+            }
+        }
+
+        // Step 13 - Clean & Remove Docker Images Build & Push //
         stage ('Clean Docker Environment') {
             steps {
                 if (checkOS() == "Windows") {
@@ -256,21 +269,25 @@ String checkPackages() {
 
 def setEnvFile() {
     if (checkOs() == 'Windows') {
-        bat 'echo IMAGE_TAG=%BUILD_NUMBER% > .env'
-        bat 'echo MYSQL_CONTAINER_NAME=%MYSQL_CONTAINER_NAME% >> .env'
+        bat 'echo IMAGE_TAG=%BUILD_NUMBER%                       > .env'
+        bat 'echo MYSQL_ROOT_USER=%MYSQL_ROOT_USER%             >> .env'
+        bat 'echo MYSQL_ROOT_PASSWORD=%MYSQL_ROOT_PASSWORD%     >> .env'
+        bat 'echo MYSQL_CONTAINER_NAME=%MYSQL_CONTAINER_NAME%   >> .env'
         bat 'echo PYTHON_CONTAINER_NAME=%PYTHON_CONTAINER_NAME% >> .env'
-        bat 'echo PY_TAG=%PY_TAG% >> .env'
-        bat 'echo MYSQL_SCHEMA_NAME=%MYSQL_SCHEMA_NAME% >> .env'
-        bat 'echo MYSQL_USER_NAME=%DB_USER_NAME% >> .env'
-        bat 'echo MYSQL_PASSWORD=%DB_PASSWORD% >> .env'
+        bat 'echo PY_TAG=%PY_TAG%                               >> .env'
+        bat 'echo MYSQL_SCHEMA_NAME=%MYSQL_SCHEMA_NAME%         >> .env'
+        bat 'echo MYSQL_USER_NAME=%MYSQL_USER_NAME%                >> .env'
+        bat 'echo MYSQL_PASSWORD=%MYSQL_PASSWORD%                  >> .env'
     } else {
-        sh 'echo IMAGE_TAG=${BUILD_NUMBER} > .env'
-        sh 'echo MYSQL_CONTAINER_NAME=${MYSQL_CONTAINER_NAME} >> .env'
+        sh 'echo IMAGE_TAG=${BUILD_NUMBER}                       > .env'
+        sh 'echo MYSQL_ROOT_USER=${MYSQL_ROOT_USER}             >> .env'
+        sh 'echo MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}     >> .env'
+        sh 'echo MYSQL_CONTAINER_NAME=${MYSQL_CONTAINER_NAME}   >> .env'
         sh 'echo PYTHON_CONTAINER_NAME=${PYTHON_CONTAINER_NAME} >> .env'
-        sh 'echo PY_TAG=${PY_TAG} >> .env'
-        sh 'echo MYSQL_DATABASE=${MYSQL_DATABASE} >> .env'
-        sh 'echo MYSQL_USER_NAME=${DB_USER_NAME} >> .env'
-        sh 'echo MYSQL_PASSWORD=${DB_PASSWORD} >> .env'
+        sh 'echo PY_TAG=${PY_TAG}                               >> .env'
+        sh 'echo MYSQL_DATABASE=${MYSQL_DATABASE}               >> .env'
+        sh 'echo MYSQL_USER_NAME=${MYSQL_USER_NAME}                >> .env'
+        sh 'echo MYSQL_PASSWORD=${MYSQL_PASSWORD}                  >> .env'
     }
 }
 

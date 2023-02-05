@@ -1,12 +1,16 @@
 # From Image #
-FROM python:3.10.5
+FROM python:3.9.16-alpine3.17
 
-RUN apk add --no-cache  build-base linux-headers dos2unix vim
+RUN apk add --no-cache  \
+    build-base          \
+    linux-headers       \
+    dos2unix            \
+    vim
 
 # Set working directory in container #
 WORKDIR /DevOps_Experts_Final_Project
 
-# Copy `docker_backend_testing.py` to the container #
+# Copies to Container #
 COPY ../Clean         /DevOps_Experts_Final_Project/Clean
 COPY ../Config        /DevOps_Experts_Final_Project/Config
 COPY ../DB            /DevOps_Experts_Final_Project/DB

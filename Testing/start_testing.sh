@@ -15,6 +15,6 @@ check_file_exist () {
   fi
 }
 
-check_file_exist "../REST_API/rest_app.py"
+check_file_exist "/DevOps_Experts_Final_Project/REST_API/rest_app.py"
 
-/bin/sh -c "python ../REST_API/rest_app.py && sleep 3"
+/bin/sh -c "python /DevOps_Experts_Final_Project/REST_API/rest_app.py"

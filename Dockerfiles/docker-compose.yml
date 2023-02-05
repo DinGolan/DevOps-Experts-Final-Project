@@ -6,19 +6,19 @@ services:
     image: "mysql:8.0.32"
     container_name: ${MYSQL_CONTAINER_NAME}
     environment:
+      MYSQL_ROOT_USER: ${MYSQL_ROOT_USER}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_SCHEMA_NAME: ${MYSQL_SCHEMA_NAME}
       MYSQL_USER_NAME: ${MYSQL_USER_NAME}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3306:3306"
-    command:
-      - mysqld
+    command: mysqld
     healthcheck:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
       interval: 2s
       timeout: 10s
       retries: 5
-
   python:
     env_file:
       - ../.env
@@ -26,25 +26,14 @@ services:
     container_name: ${PYTHON_CONTAINER_NAME}
     ports:
       - "5000:5000"
-    hostname: python
+    build:
+      context: ..
+      dockerfile: /Dockerfiles/Dockerfile_Python
     healthcheck:
       test: [ "CMD-SHELL", "ping -c 1 python" ]
       interval: 2s
       timeout: 10s
       retries: 5
-    build:
-      context: ..
-      dockerfile: /Dockerfiles/Dockerfile_Python
-    volumes:
-      - ../Clean:/DevOps_Experts_Final_Project/Clean
-      - ../Config:/DevOps_Experts_Final_Project/Config
-      - ../DB:/DevOps_Experts_Final_Project/DB
-      - ../Driver:/DevOps_Experts_Final_Project/Driver
-      - ../HTML_FILES:/DevOps_Experts_Final_Project/HTML_FILES
-      - ../Packages:/DevOps_Experts_Final_Project/Packages
-      - ../REST_API:/DevOps_Experts_Final_Project/REST_API
-      - ../Testing:/DevOps_Experts_Final_Project/Testing
-      - ../Web_Interface:/DevOps_Experts_Final_Project/Web_Interface
     links:
       - database
     depends_on:
