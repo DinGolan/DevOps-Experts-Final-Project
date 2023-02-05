@@ -677,7 +677,7 @@ def insert_rows_to_config_table(is_job_run, test_name):
 
     else:
         while True:
-            user_name = input("Please enter `user name` to `config` table. To stop enter details please enter `-1` : ")
+            user_name = input("\nPlease enter `user name` to `config` table. To stop enter details please enter `-1` : ")
             if user_name == "-1": break
             user_names.append(user_name)
             print()

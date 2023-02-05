@@ -3,7 +3,7 @@ services:
   database:
     env_file:
       - ../.env
-    image: "mysql:8.0.32"
+    image: "mysql:${IMAGE_TAG}"
     container_name: ${MYSQL_CONTAINER_NAME}
     environment:
       MYSQL_ROOT_USER: ${MYSQL_ROOT_USER}

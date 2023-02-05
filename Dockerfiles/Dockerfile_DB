@@ -1,5 +1,9 @@
+################################################################################
+# Note - This Dockerfile not in used, Because we use with `docker-compose.yml` #
+################################################################################
+
 # From Image #
-FROM mysql:8.0.31
+FROM mysql:${IMAGE_TAG}
 
 # User Name #
 ENV MYSQL_USER_NAME=${MYSQL_USER_NAME}
