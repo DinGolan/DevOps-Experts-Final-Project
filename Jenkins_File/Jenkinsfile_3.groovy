@@ -18,6 +18,7 @@ pipeline {
         PYTHON_CONTAINER_NAME = "python_container"
         DB_TAG                = "db_app_version_"
         PY_TAG                = "py_app_version_"
+        IMAGE_TAG             = "latest"
         MYSQL_SCHEMA_NAME     = "freedb_Din_Golan"
     }
 
@@ -112,23 +113,23 @@ pipeline {
             }
         }
 
-//        // Step 7 - Login to Docker Hub //
-//        stage("Login to Docker Hub") {
-//            steps {
-//                script {
-//                    if (checkOS() == "Windows") {
-//                        withCredentials([usernamePassword(credentialsId: 'docker_hub', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
-//                            bat 'docker login --username "%DOCKER_HUB_PASSWORD%" --password "%DOCKER_HUB_USERNAME%"'
-//                        }
-//                    } else {
-//                        withCredentials([usernamePassword(credentialsId: 'docker_hub', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
-//                            sh 'docker login --username "${DOCKER_HUB_PASSWORD}" --password "${DOCKER_HUB_USERNAME}"'
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
+        // Step 7 - Login to Docker Hub //
+        stage("Login to Docker Hub") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        withCredentials([usernamePassword(credentialsId: 'docker_hub', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
+                            bat 'docker login --username "%DOCKER_HUB_PASSWORD%" --password "%DOCKER_HUB_USERNAME%"'
+                        }
+                    } else {
+                        withCredentials([usernamePassword(credentialsId: 'docker_hub', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
+                            sh 'docker login --username "${DOCKER_HUB_PASSWORD}" --password "${DOCKER_HUB_USERNAME}"'
+                        }
+                    }
+                }
+            }
+        }
+
 //        // Step 8 - Build & Up Docker Compose //
 //        stage("Build & Up Docker Compose") {
 //            steps {
@@ -281,8 +282,9 @@ def checkOS() {
 }
 
 def setEnvFile() {
+    // Note - We can write also the following IMAGE_TAG : IMAGE_TAG=%BUILD_NUMBER% / IMAGE_TAG=${BUILD_NUMBER} //
     if (checkOS() == 'Windows') {
-        bat 'echo IMAGE_TAG=%BUILD_NUMBER%                       > .env'
+        bat 'echo IMAGE_TAG=%IMAGE_TAG%                          > .env'
         bat 'echo MYSQL_ROOT_USER=%MYSQL_ROOT_USER%             >> .env'
         bat 'echo MYSQL_ROOT_PASSWORD=%MYSQL_ROOT_PASSWORD%     >> .env'
         bat 'echo MYSQL_CONTAINER_NAME=%MYSQL_CONTAINER_NAME%   >> .env'
