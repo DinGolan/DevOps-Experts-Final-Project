@@ -117,11 +117,11 @@ pipeline {
 //            steps {
 //                script {
 //                    if (checkOS() == "Windows") {
-//                        withCredentials([usernamePassword(credentialsId: 'docker_hub', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
+//                        withCredentials([usernamePassword(credentialsId: 'docker_hub', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
 //                            bat 'docker login --username "%DOCKER_HUB_PASSWORD%" --password "%DOCKER_HUB_USERNAME%"'
 //                        }
 //                    } else {
-//                        withCredentials([usernamePassword(credentialsId: 'docker_hub', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
+//                        withCredentials([usernamePassword(credentialsId: 'docker_hub', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
 //                            sh 'docker login --username "${DOCKER_HUB_PASSWORD}" --password "${DOCKER_HUB_USERNAME}"'
 //                        }
 //                    }
@@ -267,8 +267,21 @@ String checkPackages() {
     }
 }
 
+def checkOS() {
+    if (isUnix()) {
+        def uname = sh script: 'uname', returnStdout: true
+        if (uname.startsWith("Darwin")) {
+            return "Macos"
+        } else {
+            return "Linux"
+        }
+    } else {
+        return "Windows"
+    }
+}
+
 def setEnvFile() {
-    if (checkOs() == 'Windows') {
+    if (checkOS() == 'Windows') {
         bat 'echo IMAGE_TAG=%BUILD_NUMBER%                       > .env'
         bat 'echo MYSQL_ROOT_USER=%MYSQL_ROOT_USER%             >> .env'
         bat 'echo MYSQL_ROOT_PASSWORD=%MYSQL_ROOT_PASSWORD%     >> .env'
@@ -288,18 +301,5 @@ def setEnvFile() {
         sh 'echo MYSQL_DATABASE=${MYSQL_DATABASE}               >> .env'
         sh 'echo MYSQL_USER_NAME=${MYSQL_USER_NAME}                >> .env'
         sh 'echo MYSQL_PASSWORD=${MYSQL_PASSWORD}                  >> .env'
-    }
-}
-
-def checkOS() {
-    if (isUnix()) {
-        def uname = sh script: 'uname', returnStdout: true
-        if (uname.startsWith("Darwin")) {
-            return "Macos"
-        } else {
-            return "Linux"
-        }
-    } else {
-        return "Windows"
     }
 }
