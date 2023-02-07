@@ -223,28 +223,28 @@ pipeline {
 //            }
 //        }
 //
-//        // Step 12 - Docker App - Stop Flask Servers //
-//        stage ('Docker App - Stop Flask Servers') {
-//            steps {
-//                sleep(time: 2, unit: "SECONDS")
-//                if (checkOS() == "Windows") {
-//                    bat "curl -i http://127.0.0.1:5000/stop_server"
-//                } else {
-//                    sh "curl -i http://127.0.0.1:5000/stop_server"
-//                }
-//            }
-//        }
-//
-//        // Step 13 - Clean & Remove Docker Images Build & Push //
-//        stage ('Clean Docker Environment') {
-//            steps {
-//                if (checkOS() == "Windows") {
-//                    bat 'docker-compose --file Dockerfiles\\%DOCKER_COMPOSE_FILE% down --rmi all --volumes'
-//                } else {
-//                    sh 'docker-compose --file Dockerfiles/${DOCKER_COMPOSE_FILE} down --rmi all --volumes'
-//                }
-//            }
-//        }
+        // Step 12 - Docker App - Stop Flask Servers //
+        stage ('Docker App - Stop Flask Servers') {
+            steps {
+                sleep(time: 2, unit: "SECONDS")
+                if (checkOS() == "Windows") {
+                    bat "curl -i http://127.0.0.1:5000/stop_server"
+                } else {
+                    sh "curl -i http://127.0.0.1:5000/stop_server"
+                }
+            }
+        }
+
+        // Step 13 - Clean & Remove Docker Images Build & Push //
+        stage ('Clean Docker Environment') {
+            steps {
+                if (checkOS() == "Windows") {
+                    bat 'docker-compose --file Dockerfiles\\%DOCKER_COMPOSE_FILE% down --rmi all --volumes'
+                } else {
+                    sh 'docker-compose --file Dockerfiles/${DOCKER_COMPOSE_FILE} down --rmi all --volumes'
+                }
+            }
+        }
     }
 }
 
