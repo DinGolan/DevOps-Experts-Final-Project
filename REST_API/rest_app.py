@@ -5,6 +5,7 @@
 
 # Imports #
 import os
+import re
 import sys
 import signal
 import psutil
@@ -104,10 +105,11 @@ def kill_process():
     """
     # Vars #
     pid          = os.getpid()
-    process      = psutil.Process(pid)
-    process_name = process.name()
+    process_name = psutil.Process(pid)
+    process_name = process_name.name()
 
-    if process_name in ["python.exe", "/usr/bin/python"]:
+    # The issue is here. With name. We not get inside the block of if One second #
+    if re.search(r'{?:python[0-9\.]*}', process_name) or process_name in ["python.exe", "/usr/bin/python", "/usr/local/bin/python"]:
         if platform.system() == "Windows":
             os.kill(pid, signal.CTRL_C_EVENT)
         elif platform.system() == 'Darwin' or platform.system() == 'Linux':
@@ -127,7 +129,7 @@ def stop_rest_api_server():
     """
     if request.method == "GET":
         is_process_killed     = kill_process()
-        response, status_code = (json.dumps({"status": "Server Stopped"}), 200) if is_process_killed is True else (json.dumps({"status": "Server Not Stopped"}), 500)
+        response, status_code = (json.dumps({"status": "Server Stopped"}), 200) if kill_process() is True else (json.dumps({"status": "Server Not Stopped"}), 500)
         return response, status_code
 
 

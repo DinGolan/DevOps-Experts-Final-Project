@@ -129,20 +129,20 @@ pipeline {
 //                }
 //            }
 //        }
-//
-//        // Step 8 - Build & Up Docker Compose //
-//        stage("Build & Up Docker Compose") {
-//            steps {
-//                script {
-//                    if (checkOS() == "Windows") {
-//                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% up -d --build & docker ps -a'
-//                    } else {
-//                        sh 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} up -d --build & docker ps -a'
-//                    }
-//                    sleep(time: 10, unit: "SECONDS")
-//                }
-//            }
-//        }
+
+        // Step 8 - Build & Up Docker Compose //
+        stage("Build & Up Docker Compose") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% up -d --build & docker ps -a'
+                    } else {
+                        sh 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} up -d --build & docker ps -a'
+                    }
+                    sleep(time: 10, unit: "SECONDS")
+                }
+            }
+        }
 
 //        // Step 9 - Push Docker Compose //
 //        stage("Push Docker Compose") {
