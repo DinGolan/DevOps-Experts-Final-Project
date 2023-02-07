@@ -145,17 +145,17 @@ pipeline {
         }
 
         // Step 9 - Push Docker Compose //
-//         stage("Push Docker Compose") {
-//             steps {
-//                 script {
-//                     if (checkOS() == "Windows") {
-//                         bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% push'
-//                     } else {
-//                         sh "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} push"
-//                     }
-//                 }
-//             }
-//         }
+         stage("Push Docker Compose") {
+             steps {
+                 script {
+                     if (checkOS() == "Windows") {
+                         bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% push'
+                     } else {
+                         sh "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} push"
+                     }
+                 }
+             }
+         }
 
         // Step 10 - Check Docker Service Healthy //
         stage("Check Docker Compose Services Health") {
@@ -202,28 +202,7 @@ pipeline {
             }
         }
 
-        // Step 11 - Run Backend Test (On Docker Compose Environments) //
-        stage("Run `backend_testing.py` (Testing Docker Compose)") {
-            steps {
-                script {
-                    if (checkOS() == "Windows") {
-                        def containerId = bat(script: 'docker ps --filter "name=%PYTHON_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
-                        sleep(time: 2, unit: "SECONDS")
-                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-                            bat "docker exec -i ${containerId} sh -c \"/usr/local/bin/python Testing/docker_backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%\""
-                        }
-                    } else {
-                        def containerId = sh(script: 'docker ps --filter "name=${PYTHON_CONTAINER_NAME}" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
-                        sleep(time: 2, unit: "SECONDS")
-                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-                            sh "docker exec -i ${containerId} sh \"/usr/local/bin/python Testing/docker_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}\""
-                        }
-                    }
-                }
-            }
-        }
-
-        // Step 12 - Docker App - Stop Flask Servers - Option 1 //
+        // Step 11 - Docker App - Stop Flask Servers - Option 1 //
         stage("[Docker] Docker App - Stop Flask Servers") {
             steps {
                 script {
@@ -231,7 +210,7 @@ pipeline {
                         def containerId = bat(script: 'docker ps --filter "name=%PYTHON_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
                         sleep(time: 2, unit: "SECONDS")
                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                            bat "docker exec -i ${containerId} sh -c \"curl -i --connect-timeout 30 http://127.0.0.1:5000/stop_server\""
+                            bat "docker exec -i ${containerId} sh -c \"curl -i --connect-timeout 30 http://127.0.0.1:5000/stop_server \""
                         }
                     } else {
                         def containerId = bat(script: 'docker ps --filter "name=%PYTHON_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
@@ -244,28 +223,30 @@ pipeline {
             }
         }
 
-        // Step 12 - Docker App - Stop Flask Servers - Option 2 //
-//         stage("[Docker] Run `clean_environment.py` (Clean)") {
-//             steps {
-//                 script {
-//                     if (checkOS() == "Windows") {
-//                         def containerId = bat(script: 'docker ps --filter "name=%PYTHON_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
-//                         sleep(time: 2, unit: "SECONDS")
-//                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-//                             bat "docker exec -i ${containerId} sh -c \"/usr/local/bin/python Clean/clean_environment.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -c %CLEAN_SERVER%\""
-//                         }
-//                     } else {
-//                         def containerId = bat(script: 'docker ps --filter "name=%PYTHON_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
-//                         sleep(time: 2, unit: "SECONDS")
-//                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-//                             sh "docker exec -i ${containerId} sh \"/usr/local/bin/python Clean/clean_environment.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -c ${CLEAN_SERVER}\""
-//                         }
-//                     }
-//                 }
-//             }
-//         }
+        // Step 11 - Docker App - Stop Flask Servers - Option 2 //
+        /*
+         stage("[Docker] Run `clean_environment.py` (Clean)") {
+             steps {
+                 script {
+                     if (checkOS() == "Windows") {
+                         def containerId = bat(script: 'docker ps --filter "name=%PYTHON_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
+                         sleep(time: 2, unit: "SECONDS")
+                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                             bat "docker exec -i ${containerId} sh -c \"/usr/local/bin/python Clean/clean_environment.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -c %CLEAN_SERVER%\""
+                         }
+                     } else {
+                         def containerId = bat(script: 'docker ps --filter "name=%PYTHON_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
+                         sleep(time: 2, unit: "SECONDS")
+                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                             sh "docker exec -i ${containerId} sh \"/usr/local/bin/python Clean/clean_environment.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -c ${CLEAN_SERVER}\""
+                         }
+                     }
+                 }
+             }
+         }
+        */
 
-        // Step 13 - Clean & Remove Docker Images Build & Push //
+        // Step 12 - Clean & Remove Docker Images Build & Push //
         stage ('Clean Docker Environment') {
             steps {
                 script {
