@@ -130,19 +130,19 @@ pipeline {
 //            }
 //        }
 
-        // Step 8 - Build & Up Docker Compose //
-        stage("Build & Up Docker Compose") {
-            steps {
-                script {
-                    if (checkOS() == "Windows") {
-                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% up -d --build & docker ps -a'
-                    } else {
-                        sh 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} up -d --build & docker ps -a'
-                    }
-                    sleep(time: 10, unit: "SECONDS")
-                }
-            }
-        }
+//        // Step 8 - Build & Up Docker Compose //
+//        stage("Build & Up Docker Compose") {
+//            steps {
+//                script {
+//                    if (checkOS() == "Windows") {
+//                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% up -d --build & docker ps -a'
+//                    } else {
+//                        sh 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} up -d --build & docker ps -a'
+//                    }
+//                    sleep(time: 10, unit: "SECONDS")
+//                }
+//            }
+//        }
 
 //        // Step 9 - Push Docker Compose //
 //        stage("Push Docker Compose") {
@@ -156,7 +156,7 @@ pipeline {
 //                }
 //            }
 //        }
-//
+
         // Step 10 - Check Docker Service Healthy //
         stage("Check Docker Compose Services Health") {
             steps {
@@ -224,14 +224,17 @@ pipeline {
         }
 
         // Step 12 - Docker App - Stop Flask Servers //
-        stage ('Docker App - Stop Flask Servers') {
+        stage("Run `clean_environment.py` (Clean)") {
             steps {
                 script {
-                    sleep(time: 2, unit: "SECONDS")
                     if (checkOS() == "Windows") {
-                        bat "curl -i http://127.0.0.1:5000/stop_server"
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                            bat '/usr/local/bin/python Clean/clean_environment.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -c %CLEAN_SERVER%'
+                        }
                     } else {
-                        sh "curl -i http://127.0.0.1:5000/stop_server"
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                            sh '/usr/local/bin/python Clean/clean_environment.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -c ${CLEAN_SERVER}'
+                        }
                     }
                 }
             }
