@@ -210,13 +210,13 @@ pipeline {
                         def containerId = bat(script: 'docker ps --filter "name=%PYTHON_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
                         sleep(time: 2, unit: "SECONDS")
                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-                            bat 'docker exec -i ${containerId} sh -c \"/usr/local/bin/python Testing\\docker_backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%\"'
+                            bat "docker exec -i ${containerId} sh -c \"/usr/local/bin/python Testing\\docker_backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%\""
                         }
                     } else {
                         def containerId = sh(script: 'docker ps --filter "name=${PYTHON_CONTAINER_NAME}" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
                         sleep(time: 2, unit: "SECONDS")
                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-                            sh 'docker exec -i ${containerId} sh \"/usr/local/bin/python Testing/docker_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}\""'
+                            sh "docker exec -i ${containerId} sh \"/usr/local/bin/python Testing/docker_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}\""
                         }
                     }
                 }
