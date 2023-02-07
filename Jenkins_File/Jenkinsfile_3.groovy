@@ -157,72 +157,72 @@ pipeline {
 //            }
 //        }
 //
-//        // Step 10 - Check Docker Service Healthy //
-//        stage("Check Docker Compose Services Health") {
-//            steps {
-//                script {
-//                    if (checkOS() == "Windows") {
-//                        def servicesOutput = bat(script: 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% ps --services', returnStdout: true).trim().readLines().drop(1)
-//                        for (def service : servicesOutput) {
-//                            def containers = bat(script: "docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% ps -q --services ${service}", returnStdout: true).trim().readLines().drop(1)
-//                            for (def container : containers) {
-//                                def inspectStateStatusOutput = bat(script: "docker inspect ${container} --format '{{.State.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
-//                                def inspectHealthStatusOutput = bat(script: "docker inspect ${container} --format '{{.State.Health.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
-//                                if (inspectStateStatusOutput != "running" || inspectStateStatusOutput == null || inspectStateStatusOutput == "") {
-//                                    error("Container id: ${container} from Service name: ${service} Has State status: ${inspectStateStatusOutput}")
-//                                    return
-//                                } else if (inspectHealthStatusOutput != "healthy" || inspectHealthStatusOutput == null || inspectHealthStatusOutput == "") {
-//                                    error("Service ${service} is not healthy. Container id: ${container} has health status: ${inspectHealthStatusOutput}")
-//                                    return
-//                                } else {
-//                                    echo "Service name : ${service} is in state : ${inspectStateStatusOutput} , Container id : ${container} has health status : ${inspectHealthStatusOutput}"
-//                                }
-//                            }
-//                        }
-//                    } else {
-//                        def servicesOutput = sh(script: 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} ps --services', returnStdout: true).trim().readLines().drop(1)
-//                        for (def service : servicesOutput) {
-//                            def containers = sh(script: 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} ps -q --services ${service}', returnStdout: true).trim().readLines().drop(1)
-//                            for (def container : containers) {
-//                                def inspectStateStatusOutput = sh(script: "docker inspect ${container} --format '{{.State.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
-//                                def inspectHealthStatusOutput = sh(script: "docker inspect ${container} --format '{{.State.Health.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
-//                                if (inspectStateStatusOutput != "running" || inspectStateStatusOutput == null) {
-//                                    error("Container id: ${container} from Service name: ${service} Has State status: ${inspectStateStatusOutput}")
-//                                    return
-//                                } else if (inspectHealthStatusOutput != "healthy" || inspectHealthStatusOutput == null) {
-//                                    error("Service ${service} is not healthy. Container id: ${container} has health status: ${inspectHealthStatusOutput}")
-//                                    return
-//                                } else {
-//                                    echo "Service name : ${service} is in state : ${inspectStateStatusOutput} , Container id : ${container} has health status : ${inspectHealthStatusOutput}"
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//        // Step 11 - Run Backend Test (On Docker Compose Environments) //
-//        stage("Run `backend_testing.py` (Testing Docker Compose)") {
-//            steps {
-//                script {
-//                    if (checkOS() == "Windows") {
-//                        def containerId = bat(script: 'docker ps --filter "name=%PYTHON_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
-//                        sleep(time: 2, unit: "SECONDS")
-//                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-//                            bat 'docker exec -i ${containerId} sh -c \"/usr/local/bin/python Testing\\docker_backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%\"'
-//                        }
-//                    } else {
-//                        def containerId = sh(script: 'docker ps --filter "name=${PYTHON_CONTAINER_NAME}" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
-//                        sleep(time: 2, unit: "SECONDS")
-//                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-//                            sh 'docker exec -i ${containerId} sh \"/usr/local/bin/python Testing/docker_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}\""'
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
+        // Step 10 - Check Docker Service Healthy //
+        stage("Check Docker Compose Services Health") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        def servicesOutput = bat(script: 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% ps --services', returnStdout: true).trim().readLines().drop(1)
+                        for (def service : servicesOutput) {
+                            def containers = bat(script: "docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% ps -q --services ${service}", returnStdout: true).trim().readLines().drop(1)
+                            for (def container : containers) {
+                                def inspectStateStatusOutput = bat(script: "docker inspect ${container} --format '{{.State.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
+                                def inspectHealthStatusOutput = bat(script: "docker inspect ${container} --format '{{.State.Health.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
+                                if (inspectStateStatusOutput != "running" || inspectStateStatusOutput == null || inspectStateStatusOutput == "") {
+                                    error("Container id: ${container} from Service name: ${service} Has State status: ${inspectStateStatusOutput}")
+                                    return
+                                } else if (inspectHealthStatusOutput != "healthy" || inspectHealthStatusOutput == null || inspectHealthStatusOutput == "") {
+                                    error("Service ${service} is not healthy. Container id: ${container} has health status: ${inspectHealthStatusOutput}")
+                                    return
+                                } else {
+                                    echo "Service name : ${service} is in state : ${inspectStateStatusOutput} , Container id : ${container} has health status : ${inspectHealthStatusOutput}"
+                                }
+                            }
+                        }
+                    } else {
+                        def servicesOutput = sh(script: 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} ps --services', returnStdout: true).trim().readLines().drop(1)
+                        for (def service : servicesOutput) {
+                            def containers = sh(script: 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} ps -q --services ${service}', returnStdout: true).trim().readLines().drop(1)
+                            for (def container : containers) {
+                                def inspectStateStatusOutput = sh(script: "docker inspect ${container} --format '{{.State.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
+                                def inspectHealthStatusOutput = sh(script: "docker inspect ${container} --format '{{.State.Health.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
+                                if (inspectStateStatusOutput != "running" || inspectStateStatusOutput == null) {
+                                    error("Container id: ${container} from Service name: ${service} Has State status: ${inspectStateStatusOutput}")
+                                    return
+                                } else if (inspectHealthStatusOutput != "healthy" || inspectHealthStatusOutput == null) {
+                                    error("Service ${service} is not healthy. Container id: ${container} has health status: ${inspectHealthStatusOutput}")
+                                    return
+                                } else {
+                                    echo "Service name : ${service} is in state : ${inspectStateStatusOutput} , Container id : ${container} has health status : ${inspectHealthStatusOutput}"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Step 11 - Run Backend Test (On Docker Compose Environments) //
+        stage("Run `backend_testing.py` (Testing Docker Compose)") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        def containerId = bat(script: 'docker ps --filter "name=%PYTHON_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
+                        sleep(time: 2, unit: "SECONDS")
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            bat 'docker exec -i ${containerId} sh -c \"/usr/local/bin/python Testing\\docker_backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%\"'
+                        }
+                    } else {
+                        def containerId = sh(script: 'docker ps --filter "name=${PYTHON_CONTAINER_NAME}" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
+                        sleep(time: 2, unit: "SECONDS")
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            sh 'docker exec -i ${containerId} sh \"/usr/local/bin/python Testing/docker_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}\""'
+                        }
+                    }
+                }
+            }
+        }
+
         // Step 12 - Docker App - Stop Flask Servers //
         stage ('Docker App - Stop Flask Servers') {
             steps {
