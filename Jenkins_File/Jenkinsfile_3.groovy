@@ -224,7 +224,7 @@ pipeline {
         }
 
         // Step 12 - Docker App - Stop Flask Servers //
-        stage("Run `clean_environment.py` (Clean)") {
+        stage("[Docker] Run `clean_environment.py` (Clean)") {
             steps {
                 script {
                     if (checkOS() == "Windows") {
