@@ -282,7 +282,12 @@ def print_table(table_name):
         else:
             beautiful_table.append_row(row)
 
+    print("#" * 10 if table_name == "config" else "#" * 9)
+    print(f"# {table_name} #")
+    print("#" * 10 if table_name == "config" else "#" * 9)
+    print()
     print(beautiful_table)
+    print()
 
     # Close connection #
     close_connection_of_db(connection, cursor)
