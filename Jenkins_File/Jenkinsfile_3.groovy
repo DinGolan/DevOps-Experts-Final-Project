@@ -145,17 +145,17 @@ pipeline {
         }
 
         // Step 9 - Push Docker Compose //
-        stage("Push Docker Compose") {
-            steps {
-                script {
-                    if (checkOS() == "Windows") {
-                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% push'
-                    } else {
-                        sh "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} push"
-                    }
-                }
-            }
-        }
+//         stage("Push Docker Compose") {
+//             steps {
+//                 script {
+//                     if (checkOS() == "Windows") {
+//                         bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% push'
+//                     } else {
+//                         sh "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} push"
+//                     }
+//                 }
+//             }
+//         }
 
         // Step 10 - Check Docker Service Healthy //
         stage("Check Docker Compose Services Health") {
