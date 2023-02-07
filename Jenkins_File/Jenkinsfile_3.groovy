@@ -113,36 +113,36 @@ pipeline {
 //            }
 //        }
 
-        // Step 7 - Login to Docker Hub //
-        stage("Login to Docker Hub") {
-            steps {
-                script {
-                    if (checkOS() == "Windows") {
-                        withCredentials([usernamePassword(credentialsId: 'docker_hub', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
-                            bat 'docker login --username "%DOCKER_HUB_USERNAME%" --password "%DOCKER_HUB_PASSWORD%"'
-                        }
-                    } else {
-                        withCredentials([usernamePassword(credentialsId: 'docker_hub', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
-                            sh 'docker login --username "${DOCKER_HUB_USERNAME}" --password "${DOCKER_HUB_PASSWORD}"'
-                        }
-                    }
-                }
-            }
-        }
-
-        // Step 8 - Build & Up Docker Compose //
-        stage("Build & Up Docker Compose") {
-            steps {
-                script {
-                    if (checkOS() == "Windows") {
-                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% up -d --build & docker ps -a'
-                    } else {
-                        sh 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} up -d --build & docker ps -a'
-                    }
-                    sleep(time: 10, unit: "SECONDS")
-                }
-            }
-        }
+//        // Step 7 - Login to Docker Hub //
+//        stage("Login to Docker Hub") {
+//            steps {
+//                script {
+//                    if (checkOS() == "Windows") {
+//                        withCredentials([usernamePassword(credentialsId: 'docker_hub', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
+//                            bat 'docker login --username "%DOCKER_HUB_USERNAME%" --password "%DOCKER_HUB_PASSWORD%"'
+//                        }
+//                    } else {
+//                        withCredentials([usernamePassword(credentialsId: 'docker_hub', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
+//                            sh 'docker login --username "${DOCKER_HUB_USERNAME}" --password "${DOCKER_HUB_PASSWORD}"'
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        // Step 8 - Build & Up Docker Compose //
+//        stage("Build & Up Docker Compose") {
+//            steps {
+//                script {
+//                    if (checkOS() == "Windows") {
+//                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% up -d --build & docker ps -a'
+//                    } else {
+//                        sh 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} up -d --build & docker ps -a'
+//                    }
+//                    sleep(time: 10, unit: "SECONDS")
+//                }
+//            }
+//        }
 
 //        // Step 9 - Push Docker Compose //
 //        stage("Push Docker Compose") {
@@ -210,7 +210,7 @@ pipeline {
                         def containerId = bat(script: 'docker ps --filter "name=%PYTHON_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
                         sleep(time: 2, unit: "SECONDS")
                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-                            bat "docker exec -i ${containerId} sh -c \"/usr/local/bin/python Testing\\docker_backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%\""
+                            bat "docker exec -i ${containerId} sh -c \"/usr/local/bin/python Testing/docker_backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%\""
                         }
                     } else {
                         def containerId = sh(script: 'docker ps --filter "name=${PYTHON_CONTAINER_NAME}" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
