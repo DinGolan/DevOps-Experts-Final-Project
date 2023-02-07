@@ -23,95 +23,95 @@ pipeline {
     }
 
     stages {
-        // Step 1 - Clone Git From GitHub //
-        stage("Clone Git") {
-            steps {
-                script {
-                    properties([pipelineTriggers([pollSCM('H/30 * * * *')])])
-                }
-                git  credentialsId: "github_credentials", url: "https://github.com/DinGolan/DevOps-Experts-Final-Project.git", branch: 'main'
-            }
-        }
-
-        // Step 2 - Install Pip Packages //
-        stage("Run `pip install`") {
-            steps {
-                script {
-                    if (checkPackages() == "Already Exists") {
-                        echo '[pymysql, requests, selenium, flask, prettytable, pypika, psutil] - Already Exist ...'
-                    } else {
-                        if (checkOS() == "Windows") {
-                            bat 'python -m pip install --ignore-installed --trusted-host pypi.python.org -r Packages\\requirements.txt'
-                        } else {
-                            sh '/usr/local/bin/python -m pip install --ignore-installed --trusted-host pypi.python.org -r Packages/requirements.txt'
-                        }
-                    }
-                }
-            }
-        }
-
-        // Step 3 - Run REST API //
-        stage("Run `rest_app.py` (Backend)") {
-            steps {
-                script {
-                    if (checkOS() == "Windows") {
-                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-                            bat 'start /min python REST_API\\rest_app.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD%'
-                        }
-                    } else {
-                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-                            sh 'start /min python REST_API/rest_app.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD}'
-                        }
-                    }
-                }
-            }
-        }
-
-        // Step 4 - Run Backend Test //
-        stage("Run `backend_testing.py` (Testing)") {
-            steps {
-                script {
-                    if (checkOS() == "Windows") {
-                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-                            bat 'python Testing\\backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%'
-                        }
-                    } else {
-                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-                            sh 'python Testing/backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}'
-                        }
-                    }
-                }
-            }
-        }
-
-        // Step 5 - Run Clean Environment //
-        stage("Run `clean_environment.py` (Clean)") {
-            steps {
-                script {
-                    if (checkOS() == "Windows") {
-                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-                            bat 'python Clean\\clean_environment.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -c %CLEAN_SERVER%'
-                        }
-                    } else {
-                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-                            sh 'python Clean/clean_environment.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -c ${CLEAN_SERVER}'
-                        }
-                    }
-                }
-            }
-        }
-
-        // Step 6 - Update `.env` File //
-        stage("Update `.env` File") {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'docker_database_credentials', usernameVariable: 'MYSQL_ROOT_USER', passwordVariable: 'MYSQL_ROOT_PASSWORD'),
-                                     usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-                        setEnvFile()
-                    }
-                }
-            }
-        }
+//        // Step 1 - Clone Git From GitHub //
+//        stage("Clone Git") {
+//            steps {
+//                script {
+//                    properties([pipelineTriggers([pollSCM('H/30 * * * *')])])
+//                }
+//                git  credentialsId: "github_credentials", url: "https://github.com/DinGolan/DevOps-Experts-Final-Project.git", branch: 'main'
+//            }
+//        }
+//
+//        // Step 2 - Install Pip Packages //
+//        stage("Run `pip install`") {
+//            steps {
+//                script {
+//                    if (checkPackages() == "Already Exists") {
+//                        echo '[pymysql, requests, selenium, flask, prettytable, pypika, psutil] - Already Exist ...'
+//                    } else {
+//                        if (checkOS() == "Windows") {
+//                            bat 'python -m pip install --ignore-installed --trusted-host pypi.python.org -r Packages\\requirements.txt'
+//                        } else {
+//                            sh '/usr/local/bin/python -m pip install --ignore-installed --trusted-host pypi.python.org -r Packages/requirements.txt'
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        // Step 3 - Run REST API //
+//        stage("Run `rest_app.py` (Backend)") {
+//            steps {
+//                script {
+//                    if (checkOS() == "Windows") {
+//                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+//                            bat 'start /min python REST_API\\rest_app.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD%'
+//                        }
+//                    } else {
+//                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+//                            sh 'start /min python REST_API/rest_app.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD}'
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        // Step 4 - Run Backend Test //
+//        stage("Run `backend_testing.py` (Testing)") {
+//            steps {
+//                script {
+//                    if (checkOS() == "Windows") {
+//                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+//                            bat 'python Testing\\backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%'
+//                        }
+//                    } else {
+//                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+//                            sh 'python Testing/backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}'
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        // Step 5 - Run Clean Environment //
+//        stage("Run `clean_environment.py` (Clean)") {
+//            steps {
+//                script {
+//                    if (checkOS() == "Windows") {
+//                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+//                            bat 'python Clean\\clean_environment.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -c %CLEAN_SERVER%'
+//                        }
+//                    } else {
+//                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+//                            sh 'python Clean/clean_environment.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -c ${CLEAN_SERVER}'
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        // Step 6 - Update `.env` File //
+//        stage("Update `.env` File") {
+//            steps {
+//                script {
+//                    withCredentials([usernamePassword(credentialsId: 'docker_database_credentials', usernameVariable: 'MYSQL_ROOT_USER', passwordVariable: 'MYSQL_ROOT_PASSWORD'),
+//                                     usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+//                        setEnvFile()
+//                    }
+//                }
+//            }
+//        }
 
         // Step 7 - Login to Docker Hub //
         stage("Login to Docker Hub") {
