@@ -28,7 +28,7 @@ pipeline {
                         if (checkOS() == "Windows") {
                             bat 'pip install --ignore-installed pymysql requests selenium flask prettytable pypika psutil'
                         } else {
-                            sh 'pip install --ignore-installed pymysql requests selenium flask prettytable pypika psutil'
+                            sh "pip install --ignore-installed pymysql requests selenium flask prettytable pypika psutil"
                         }
                     }
                 }
@@ -45,7 +45,7 @@ pipeline {
                         }
                     } else {
                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                            sh 'start /min python REST_API/rest_app.py -u ${DB_USER_NAME} -p ${DB_PASSWORD}'
+                            sh "start /min python REST_API/rest_app.py -u ${DB_USER_NAME} -p ${DB_PASSWORD}"
                         }
                     }
                 }
@@ -62,7 +62,7 @@ pipeline {
                         }
                     } else {
                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                            sh 'start /min python Web_Interface/web_app.py -u ${DB_USER_NAME} -p ${DB_PASSWORD}'
+                            sh "start /min python Web_Interface/web_app.py -u ${DB_USER_NAME} -p ${DB_PASSWORD}"
                         }
                     }
                 }
@@ -79,7 +79,7 @@ pipeline {
                         }
                     } else {
                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                            sh 'python Testing/backend_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}'
+                            sh "python Testing/backend_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}"
                         }
                     }
                 }
@@ -96,7 +96,7 @@ pipeline {
                         }
                     } else {
                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                            sh 'python Testing/frontend_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN}'
+                            sh "python Testing/frontend_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN}"
                         }
                     }
                 }
@@ -113,7 +113,7 @@ pipeline {
                         }
                     } else {
                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                            sh 'python Testing/combined_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE} -t ${TEST_SIDE}'
+                            sh "python Testing/combined_testing.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE} -t ${TEST_SIDE}"
                         }
                     }
                 }
@@ -130,7 +130,7 @@ pipeline {
                         }
                     } else {
                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                            sh 'python Clean/clean_environment.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN}'
+                            sh "python Clean/clean_environment.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN}"
                         }
                     }
                 }

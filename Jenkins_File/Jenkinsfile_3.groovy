@@ -23,95 +23,95 @@ pipeline {
     }
 
     stages {
-//        // Step 1 - Clone Git From GitHub //
-//        stage("Clone Git") {
-//            steps {
-//                script {
-//                    properties([pipelineTriggers([pollSCM('H/30 * * * *')])])
-//                }
-//                git  credentialsId: "github_credentials", url: "https://github.com/DinGolan/DevOps-Experts-Final-Project.git", branch: 'main'
-//            }
-//        }
-//
-//        // Step 2 - Install Pip Packages //
-//        stage("Run `pip install`") {
-//            steps {
-//                script {
-//                    if (checkPackages() == "Already Exists") {
-//                        echo '[pymysql, requests, selenium, flask, prettytable, pypika, psutil] - Already Exist ...'
-//                    } else {
-//                        if (checkOS() == "Windows") {
-//                            bat 'python -m pip install --ignore-installed --trusted-host pypi.python.org -r Packages\\requirements.txt'
-//                        } else {
-//                            sh '/usr/local/bin/python -m pip install --ignore-installed --trusted-host pypi.python.org -r Packages/requirements.txt'
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//        // Step 3 - Run REST API //
-//        stage("Run `rest_app.py` (Backend)") {
-//            steps {
-//                script {
-//                    if (checkOS() == "Windows") {
-//                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-//                            bat 'start /min python REST_API\\rest_app.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD%'
-//                        }
-//                    } else {
-//                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-//                            sh 'start /min python REST_API/rest_app.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD}'
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//        // Step 4 - Run Backend Test //
-//        stage("Run `backend_testing.py` (Testing)") {
-//            steps {
-//                script {
-//                    if (checkOS() == "Windows") {
-//                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-//                            bat 'python Testing\\backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%'
-//                        }
-//                    } else {
-//                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-//                            sh 'python Testing/backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}'
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//        // Step 5 - Run Clean Environment //
-//        stage("Run `clean_environment.py` (Clean)") {
-//            steps {
-//                script {
-//                    if (checkOS() == "Windows") {
-//                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-//                            bat 'python Clean\\clean_environment.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -c %CLEAN_SERVER%'
-//                        }
-//                    } else {
-//                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-//                            sh 'python Clean/clean_environment.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -c ${CLEAN_SERVER}'
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//        // Step 6 - Update `.env` File //
-//        stage("Update `.env` File") {
-//            steps {
-//                script {
-//                    withCredentials([usernamePassword(credentialsId: 'docker_database_credentials', usernameVariable: 'MYSQL_ROOT_USER', passwordVariable: 'MYSQL_ROOT_PASSWORD'),
-//                                     usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-//                        setEnvFile()
-//                    }
-//                }
-//            }
-//        }
+        // Step 1 - Clone Git From GitHub //
+        stage("Clone Git") {
+            steps {
+                script {
+                    properties([pipelineTriggers([pollSCM('H/30 * * * *')])])
+                }
+                git  credentialsId: "github_credentials", url: "https://github.com/DinGolan/DevOps-Experts-Final-Project.git", branch: 'main'
+            }
+        }
+
+        // Step 2 - Install Pip Packages //
+        stage("Run `pip install`") {
+            steps {
+                script {
+                    if (checkPackages() == "Already Exists") {
+                        echo '[pymysql, requests, selenium, flask, prettytable, pypika, psutil] - Already Exist ...'
+                    } else {
+                        if (checkOS() == "Windows") {
+                            bat 'python -m pip install --ignore-installed --trusted-host pypi.python.org -r Packages\\requirements.txt'
+                        } else {
+                            sh "/usr/local/bin/python -m pip install --ignore-installed --trusted-host pypi.python.org -r Packages/requirements.txt"
+                        }
+                    }
+                }
+            }
+        }
+
+        // Step 3 - Run REST API //
+        stage("Run `rest_app.py` (Backend)") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            bat 'start /min python REST_API\\rest_app.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD%'
+                        }
+                    } else {
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            sh "start /min python REST_API/rest_app.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD}"
+                        }
+                    }
+                }
+            }
+        }
+
+        // Step 4 - Run Backend Test //
+        stage("Run `backend_testing.py` (Testing)") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            bat 'python Testing\\backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%'
+                        }
+                    } else {
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            sh "python Testing/backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}"
+                        }
+                    }
+                }
+            }
+        }
+
+        // Step 5 - Run Clean Environment //
+        stage("Run `clean_environment.py` (Clean)") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            bat 'python Clean\\clean_environment.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -c %CLEAN_SERVER%'
+                        }
+                    } else {
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            sh "python Clean/clean_environment.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -c ${CLEAN_SERVER}"
+                        }
+                    }
+                }
+            }
+        }
+
+        // Step 6 - Update `.env` File //
+        stage("Update `.env` File") {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'docker_database_credentials', usernameVariable: 'MYSQL_ROOT_USER', passwordVariable: 'MYSQL_ROOT_PASSWORD'),
+                                     usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                        setEnvFile()
+                    }
+                }
+            }
+        }
 
         // Step 7 - Login to Docker Hub //
         stage("Login to Docker Hub") {
@@ -123,7 +123,7 @@ pipeline {
                         }
                     } else {
                         withCredentials([usernamePassword(credentialsId: 'docker_hub', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
-                            sh 'docker login --username "${DOCKER_HUB_USERNAME}" --password "${DOCKER_HUB_PASSWORD}"'
+                            sh "docker login --username ${DOCKER_HUB_USERNAME} --password ${DOCKER_HUB_PASSWORD}"
                         }
                     }
                 }
@@ -137,25 +137,25 @@ pipeline {
                     if (checkOS() == "Windows") {
                         bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% up -d --build & docker ps -a'
                     } else {
-                        sh 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} up -d --build & docker ps -a'
+                        sh "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} up -d --build & docker ps -a"
                     }
                     sleep(time: 10, unit: "SECONDS")
                 }
             }
         }
 
-//        // Step 9 - Push Docker Compose //
-//        stage("Push Docker Compose") {
-//            steps {
-//                script {
-//                    if (checkOS() == "Windows") {
-//                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% push'
-//                    } else {
-//                        sh 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} push'
-//                    }
-//                }
-//            }
-//        }
+        // Step 9 - Push Docker Compose //
+        stage("Push Docker Compose") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE% push'
+                    } else {
+                        sh "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} push"
+                    }
+                }
+            }
+        }
 
         // Step 10 - Check Docker Service Healthy //
         stage("Check Docker Compose Services Health") {
@@ -180,9 +180,9 @@ pipeline {
                             }
                         }
                     } else {
-                        def servicesOutput = sh(script: 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} ps --services', returnStdout: true).trim().readLines().drop(1)
+                        def servicesOutput = sh(script: "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} ps --services", returnStdout: true).trim().readLines().drop(1)
                         for (def service : servicesOutput) {
-                            def containers = sh(script: 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} ps -q --services ${service}', returnStdout: true).trim().readLines().drop(1)
+                            def containers = sh(script: "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE} ps -q --services ${service}", returnStdout: true).trim().readLines().drop(1)
                             for (def container : containers) {
                                 def inspectStateStatusOutput = sh(script: "docker inspect ${container} --format '{{.State.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
                                 def inspectHealthStatusOutput = sh(script: "docker inspect ${container} --format '{{.State.Health.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
@@ -251,7 +251,7 @@ pipeline {
                     if (checkOS() == "Windows") {
                         bat 'docker-compose --file Dockerfiles\\%DOCKER_COMPOSE_FILE% down --rmi all --volumes'
                     } else {
-                        sh 'docker-compose --file Dockerfiles/${DOCKER_COMPOSE_FILE} down --rmi all --volumes'
+                        sh "docker-compose --file Dockerfiles/${DOCKER_COMPOSE_FILE} down --rmi all --volumes"
                     }
                 }
             }
@@ -268,7 +268,7 @@ String checkPackages() {
     if (checkOS() == "Windows") {
         installed_packages = bat(script: 'pip freeze', returnStdout: true).trim().readLines().drop(1).join(" ")
     } else {
-        installed_packages = sh(script: 'pip freeze', returnStdout: true).trim().readLines().drop(1).join(" ")
+        installed_packages = sh(script: "pip freeze", returnStdout: true).trim().readLines().drop(1).join(" ")
     }
     echo "installed_packages :\n${installed_packages}"
 
@@ -302,17 +302,17 @@ def setEnvFile() {
         bat 'echo PYTHON_CONTAINER_NAME=%PYTHON_CONTAINER_NAME% >> .env'
         bat 'echo PY_TAG=%PY_TAG%                               >> .env'
         bat 'echo MYSQL_SCHEMA_NAME=%MYSQL_SCHEMA_NAME%         >> .env'
-        bat 'echo MYSQL_USER_NAME=%MYSQL_USER_NAME%                >> .env'
-        bat 'echo MYSQL_PASSWORD=%MYSQL_PASSWORD%                  >> .env'
+        bat 'echo MYSQL_USER_NAME=%MYSQL_USER_NAME%             >> .env'
+        bat 'echo MYSQL_PASSWORD=%MYSQL_PASSWORD%               >> .env'
     } else {
-        sh 'echo IMAGE_TAG=${BUILD_NUMBER}                       > .env'
-        sh 'echo MYSQL_ROOT_USER=${MYSQL_ROOT_USER}             >> .env'
-        sh 'echo MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}     >> .env'
-        sh 'echo MYSQL_CONTAINER_NAME=${MYSQL_CONTAINER_NAME}   >> .env'
-        sh 'echo PYTHON_CONTAINER_NAME=${PYTHON_CONTAINER_NAME} >> .env'
-        sh 'echo PY_TAG=${PY_TAG}                               >> .env'
-        sh 'echo MYSQL_DATABASE=${MYSQL_DATABASE}               >> .env'
-        sh 'echo MYSQL_USER_NAME=${MYSQL_USER_NAME}                >> .env'
-        sh 'echo MYSQL_PASSWORD=${MYSQL_PASSWORD}                  >> .env'
+        sh "echo IMAGE_TAG=${BUILD_NUMBER}                       > .env"
+        sh "echo MYSQL_ROOT_USER=${MYSQL_ROOT_USER}             >> .env"
+        sh "echo MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}     >> .env"
+        sh "echo MYSQL_CONTAINER_NAME=${MYSQL_CONTAINER_NAME}   >> .env"
+        sh "echo PYTHON_CONTAINER_NAME=${PYTHON_CONTAINER_NAME} >> .env"
+        sh "echo PY_TAG=${PY_TAG}                               >> .env"
+        sh "echo MYSQL_DATABASE=${MYSQL_DATABASE}               >> .env"
+        sh "echo MYSQL_USER_NAME=${MYSQL_USER_NAME}             >> .env"
+        sh "echo MYSQL_PASSWORD=${MYSQL_PASSWORD}               >> .env"
     }
 }
