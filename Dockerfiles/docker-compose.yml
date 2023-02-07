@@ -20,7 +20,6 @@ services:
       timeout: 10s
       retries: 5
   python:
-    hostname: python
     env_file:
       - ../.env
     image: "dingolan/devops_experts_final_project:${PY_TAG}${IMAGE_TAG}"
