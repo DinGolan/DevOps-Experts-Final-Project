@@ -5,6 +5,7 @@ RUN apk add --no-cache  \
     build-base          \
     linux-headers       \
     dos2unix            \
+    curl                \
     vim
 
 # Set working directory in container #
