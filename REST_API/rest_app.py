@@ -106,7 +106,7 @@ def kill_process():
     # Vars #
     pid          = os.getpid()
     process_name = psutil.Process(pid).name()
-    print(f"The process name is : {process_name}")
+    print(f"The process name is : {process_name} ...")
 
     # The issue is here. With name. We not get inside the block of if One second #
     if re.search(r'{?:python[0-9\.]*}', process_name) or process_name in ["python.exe", "/usr/bin/python", "/usr/local/bin/python"]:
