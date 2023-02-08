@@ -13,7 +13,7 @@ pipeline {
     // Environments //
     environment {
         DOCKER_REPOSITORY                     = "dingolan/devops_experts_final_project"
-        DOCKER_COMPOSE_FILE                   = "docker-compose.yml"
+        DOCKER_COMPOSE_FILE                   = "docker-compose-2.yml"
         MYSQL_SCHEMA_NAME                     = "freedb_Din_Golan"
         MYSQL_CONTAINER_NAME                  = "mysql_container"
         REST_CONTAINER_NAME                   = "rest_api_container"

@@ -1,0 +1,42 @@
+version: "3.9"
+services:
+  database:
+    env_file:
+      - ../.env
+    image: "mysql:${MYSQL_TAG}"
+    container_name: ${MYSQL_CONTAINER_NAME}
+    environment:
+      MYSQL_ROOT_USER: ${MYSQL_ROOT_USER}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_SCHEMA_NAME: ${MYSQL_SCHEMA_NAME}
+      MYSQL_USER_NAME: ${MYSQL_USER_NAME}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    command: mysqld
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      interval: 2s
+      timeout: 10s
+      retries: 5
+  rest_api:
+    env_file:
+      - ../.env
+    image: "dingolan/devops_experts_final_project:${REST_TAG}${IMAGE_TAG}"
+    container_name: ${REST_CONTAINER_NAME}
+    ports:
+      - "5000:5000"
+    build:
+      context: ..
+      dockerfile: /Dockerfiles/Dockerfile_Shell
+    hostname: ${REST_HOST_NAME}
+    healthcheck:
+      test: [ "CMD-SHELL", "ping -c 1 rest_api_hostname" ]
+      interval: 2s
+      timeout: 10s
+      retries: 5
+    links:
+      - database
+    depends_on:
+      database:
+        condition: service_healthy
