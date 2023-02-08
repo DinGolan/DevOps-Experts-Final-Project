@@ -3,7 +3,7 @@ services:
   database:
     env_file:
       - ../.env
-    image: "mysql:${IMAGE_TAG}"
+    image: "mysql:${MYSQL_TAG}"
     container_name: ${MYSQL_CONTAINER_NAME}
     environment:
       MYSQL_ROOT_USER: ${MYSQL_ROOT_USER}
@@ -19,18 +19,19 @@ services:
       interval: 2s
       timeout: 10s
       retries: 5
-  python:
+  rest_api:
     env_file:
       - ../.env
-    image: "dingolan/devops_experts_final_project:${PY_TAG}${IMAGE_TAG}"
-    container_name: ${PYTHON_CONTAINER_NAME}
+    image: "dingolan/devops_experts_final_project:${REST_TAG}${IMAGE_TAG}"
+    container_name: ${REST_CONTAINER_NAME}
     ports:
       - "5000:5000"
     build:
       context: ..
-      dockerfile: /Dockerfiles/Dockerfile_Python
+      dockerfile: /Dockerfiles/Dockerfile_Shell
+    hostname: ${REST_HOST_NAME}
     healthcheck:
-      test: [ "CMD-SHELL", "ping -c 1 python" ]
+      test: [ "CMD-SHELL", "ping -c 1 rest_api_hostname" ]
       interval: 2s
       timeout: 10s
       retries: 5
@@ -38,4 +39,28 @@ services:
       - database
     depends_on:
       database:
+        condition: service_healthy
+  docker_backend_testing:
+    env_file:
+      - ../.env
+    image: "dingolan/devops_experts_final_project:${PY_TAG}${IMAGE_TAG}"
+    container_name: ${DOCKER_BACKEND_TESTING_CONTAINER_NAME}
+    ports:
+      - "5000:5000"
+    build:
+      context: ..
+      dockerfile: /Dockerfiles/Dockerfile_Python
+    hostname: ${DOCKER_BACKEND_TESTING_HOST_NAME}
+    healthcheck:
+      test: [ "CMD-SHELL", "ping -c 1 docker_backend_testing_hostname" ]
+      interval: 2s
+      timeout: 10s
+      retries: 5
+    links:
+      - database
+      - rest_api
+    depends_on:
+      database:
+        condition: service_healthy
+      rest_api:
         condition: service_healthy
