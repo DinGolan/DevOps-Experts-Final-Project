@@ -21,6 +21,7 @@ COPY ../Packages      /DevOps_Experts_Final_Project/Packages
 COPY ../REST_API      /DevOps_Experts_Final_Project/REST_API
 COPY ../Testing       /DevOps_Experts_Final_Project/Testing
 COPY ../Web_Interface /DevOps_Experts_Final_Project/Web_Interface
+COPY ../.env          /DevOps_Experts_Final_Project/.env
 
 # dos2unix - change file encoding
 RUN dos2unix /DevOps_Experts_Final_Project/Testing/start_testing.sh

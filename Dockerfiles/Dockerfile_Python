@@ -20,11 +20,15 @@ COPY ../Packages      /DevOps_Experts_Final_Project/Packages
 COPY ../REST_API      /DevOps_Experts_Final_Project/REST_API
 COPY ../Testing       /DevOps_Experts_Final_Project/Testing
 COPY ../Web_Interface /DevOps_Experts_Final_Project/Web_Interface
+COPY ../.env          /DevOps_Experts_Final_Project/.env
 
 # Pip Commands #
 RUN python -m pip install --upgrade pip
 RUN pip install --trusted-host pypi.python.org -r /DevOps_Experts_Final_Project/Packages/requirements.txt
 
+# Environment Variables #
+ENV MYSQL_USER_NAME=freedb_Din_Golan
+ENV MYSQL_PASSWORD=keeBetw3%kG4k3R
 
 # Run Command #
 CMD ["python", "/DevOps_Experts_Final_Project/Testing/docker_backend_testing.py", "-u", "${MYSQL_USER_NAME}", "-p", "${MYSQL_PASSWORD}", "-i", "True", "-r", "GET"]
