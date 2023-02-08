@@ -22,7 +22,7 @@ services:
   rest_api:
     env_file:
       - ../.env
-    image: "dingolan/devops_experts_final_project:${REST_TAG}${IMAGE_TAG}"
+    image: "dingolan/devops_experts_final_project:${REST_TAG}${IMAGE_TAG_1}"
     container_name: ${REST_CONTAINER_NAME}
     ports:
       - "5000:5000"

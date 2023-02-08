@@ -20,7 +20,8 @@ pipeline {
         DOCKER_BACKEND_TESTING_CONTAINER_NAME = "docker_backend_testing_container"
         REST_HOST_NAME                        = "rest_api"
         DOCKER_BACKEND_TESTING_HOST_NAME      = "docker_backend_testing"
-        IMAGE_TAG                             = "latest"
+        IMAGE_TAG_1                           = "latest_1"
+        IMAGE_TAG_2                           = "latest_2"
         MYSQL_TAG                             = "8.0.32"
         REST_TAG                              = "rest_api_version_"
         PY_TAG                                = "python_app_version_"
@@ -149,6 +150,7 @@ pipeline {
         }
 
         // Step 9 - Push Docker Compose //
+        /*
          stage("Push Docker Compose") {
              steps {
                  script {
@@ -160,6 +162,7 @@ pipeline {
                  }
              }
          }
+         */
 
         // Step 10 - Check Docker Service Healthy //
         stage("Check Docker Compose Services Health") {
@@ -214,13 +217,13 @@ pipeline {
                         def containerId = bat(script: 'docker ps --filter "name=%REST_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
                         sleep(time: 2, unit: "SECONDS")
                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                            bat "docker exec -i ${containerId} sh -c \"curl -i --connect-timeout 30 http://127.0.0.1:5000/stop_server \""
+                            bat "docker exec -i ${containerId} sh -c \"curl -i -m 60 http://127.0.0.1:5000/stop_server \""
                         }
                     } else {
                         def containerId = sh(script: 'docker ps --filter "name=${REST_CONTAINER_NAME}" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
                         sleep(time: 2, unit: "SECONDS")
                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                            sh "docker exec -i ${containerId} sh \"curl -i --connect-timeout 30 http://127.0.0.1:5000/stop_server\""
+                            sh "docker exec -i ${containerId} sh \"curl -i -m 60 http://127.0.0.1:5000/stop_server\""
                         }
                     }
                 }
@@ -312,7 +315,8 @@ def setEnvFile() {
         bat 'echo DOCKER_BACKEND_TESTING_CONTAINER_NAME=%DOCKER_BACKEND_TESTING_CONTAINER_NAME% >> .env'
         bat 'echo REST_HOST_NAME=%REST_HOST_NAME%                                               >> .env'
         bat 'echo DOCKER_BACKEND_TESTING_HOST_NAME=%DOCKER_BACKEND_TESTING_HOST_NAME%           >> .env'
-        bat 'echo IMAGE_TAG=%IMAGE_TAG%                                                         >> .env'
+        bat 'echo IMAGE_TAG_1=%IMAGE_TAG_1%                                                     >> .env'
+        bat 'echo IMAGE_TAG_2=%IMAGE_TAG_2%                                                     >> .env'
         bat 'echo MYSQL_TAG=%MYSQL_TAG%                                                         >> .env'
         bat 'echo REST_TAG=%REST_TAG%                                                           >> .env'
         bat 'echo PY_TAG=%PY_TAG%                                                               >> .env'
@@ -327,7 +331,8 @@ def setEnvFile() {
         sh 'echo DOCKER_BACKEND_TESTING_CONTAINER_NAME=${DOCKER_BACKEND_TESTING_CONTAINER_NAME} >> .env'
         sh 'echo REST_HOST_NAME=${REST_HOST_NAME}                                               >> .env'
         sh 'echo DOCKER_BACKEND_TESTING_HOST_NAME=${DOCKER_BACKEND_TESTING_HOST_NAME}           >> .env'
-        sh 'echo IMAGE_TAG=${IMAGE_TAG}                                                         >> .env'
+        sh 'echo IMAGE_TAG_1=${IMAGE_TAG_1}                                                     >> .env'
+        sh 'echo IMAGE_TAG_2=${IMAGE_TAG_2}                                                     >> .env'
         sh 'echo MYSQL_TAG=${MYSQL_TAG}                                                         >> .env'
         sh 'echo REST_TAG=${REST_TAG}                                                           >> .env'
         sh 'echo PY_TAG=${PY_TAG}                                                               >> .env'
