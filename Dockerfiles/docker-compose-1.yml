@@ -1,15 +1,16 @@
-version: "3.9"
+version: "3.8"
 services:
   database:
     env_file:
       - ../.env
     image: "mysql:${MYSQL_TAG}"
     container_name: ${MYSQL_CONTAINER_NAME}
+    hostname: ${MYSQL_HOST_NAME}
     environment:
       MYSQL_ROOT_USER: ${MYSQL_ROOT_USER}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_SCHEMA_NAME: ${MYSQL_SCHEMA_NAME}
-      MYSQL_USER_NAME: ${MYSQL_USER_NAME}
+      MYSQL_DATABASE: ${MYSQL_SCHEMA_NAME}
+      MYSQL_USER: ${MYSQL_USER_NAME}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3306:3306"

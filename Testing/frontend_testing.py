@@ -118,7 +118,7 @@ def frontend_testing_function():
 
     # For User Details #
     if is_job_run:
-        url, browser = get_details_from_external_user_for_frontend("Frontend", user_id_frontend_test=get_user_id_frontend_test())
+        url, browser = get_details_from_external_user_for_frontend(test_name="Frontend", isDocker=False, user_id_frontend_test=get_user_id_frontend_test())
 
         print("\n#############################################")
         print("# Jenkins - Parameters For Frontend Testing #")
@@ -130,7 +130,7 @@ def frontend_testing_function():
     else:
 
         while True:
-            url, browser = get_details_from_external_user_for_frontend("Frontend")
+            url, browser = get_details_from_external_user_for_frontend(test_name="Frontend", isDocker=False)
             open_chrome_web_browser(url, browser)
 
             # Check if the `User` want to exit from program #

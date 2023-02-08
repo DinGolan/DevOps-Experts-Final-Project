@@ -86,8 +86,9 @@ def combined_testing_function():
             print("\n#############################################")
             print("# Jenkins - Parameters For Combined Testing #")
             print("#############################################")
-            print("[POST]             : " + str({'new_user_name': user_name_combined_test}))
-            print("[GET, PUT, DELETE] : " + str({'user_id': user_id_combined_test, 'url': url}) + "\n")
+            if   request_type == "POST":                   print("[POST]             : "   + str({'new_user_name': user_name_combined_test}) + "\n")
+            elif request_type in ["GET", "PUT", "DELETE"]: print("[GET, PUT, DELETE] : "   + str({'user_id': user_id_combined_test, 'url': url}) + "\n")
+            else:                                          print("[GET_ALL, PRINT_ALL] : " + str({'url': url}) + "\n")
 
             if   request_type == "POST"   : send_post_request(user_name_combined_test)
             elif request_type == "GET"    : send_get_request(url, user_id_combined_test)
@@ -99,7 +100,7 @@ def combined_testing_function():
                 print_table(get_db_config_table_name())
 
         elif test_side == "Frontend":
-            url, browser = get_details_from_external_user_for_frontend("Frontend", user_id_frontend_test=get_user_id_combined_frontend_test())
+            url, browser = get_details_from_external_user_for_frontend(test_name="Frontend", isDocker=False, user_id_frontend_test=get_user_id_combined_frontend_test())
 
             print("\n#############################################")
             print("# Jenkins - Parameters For Combined Testing #")
@@ -122,26 +123,26 @@ def combined_testing_function():
 
                 # Send POST Request #
                 if request_type == "POST":
-                    user_name_combined_test = get_details_from_external_user_for_backend("POST", "Combined")
+                    user_name_combined_test = get_details_from_external_user_for_backend(request_type="POST", test_name="Combined")
                     send_post_request(user_name_combined_test)
 
                 # Send GET Request #
                 elif request_type == "GET":
-                    url, user_id_combined_test = get_details_from_external_user_for_backend("GET", "Combined")
+                    url, user_id_combined_test = get_details_from_external_user_for_backend(request_type="GET", test_name="Combined")
                     send_get_request(url, user_id_combined_test)
 
                 elif request_type == "GET_ALL":
-                    url = get_details_from_external_user_for_backend("GET_ALL", "Combined")
+                    url = get_details_from_external_user_for_backend(request_type="GET_ALL", test_name="Combined")
                     send_get_all_request(url)
 
                 # Send PUT Request #
                 elif request_type == "PUT":
-                    url, user_id_combined_test = get_details_from_external_user_for_backend("PUT", "Combined")
+                    url, user_id_combined_test = get_details_from_external_user_for_backend(request_type="PUT", test_name="Combined")
                     send_put_request(is_job_run, url, user_id_combined_test, "Combined")
 
                 # Send DELETE Request #
                 elif request_type == "DELETE":
-                    url, user_id_combined_test = get_details_from_external_user_for_backend("DELETE", "Combined")
+                    url, user_id_combined_test = get_details_from_external_user_for_backend(request_type="DELETE", test_name="Combined")
                     send_delete_request(url, user_id_combined_test)
 
                 # Print Tables #
@@ -162,7 +163,7 @@ def combined_testing_function():
 
             # Check Web Interface #
             elif test_side == "Frontend":
-                url, browser = get_details_from_external_user_for_frontend("Frontend")
+                url, browser = get_details_from_external_user_for_frontend(test_name="Frontend", isDocker=False)
                 open_chrome_web_browser(url, browser)
 
             # Exit from `test side` menu #

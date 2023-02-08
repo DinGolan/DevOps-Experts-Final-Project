@@ -291,8 +291,9 @@ def backend_testing_function():
         print("\n############################################")
         print("# Jenkins - Parameters For Backend Testing #")
         print("############################################")
-        print("[POST]             : " + str({'new_user_name': user_name_backend_test}))
-        print("[GET, PUT, DELETE] : " + str({'user_id': user_id_backend_test, 'url': url}) + "\n")
+        if   request_type == "POST":                   print("[POST]             : "   + str({'new_user_name': user_name_backend_test})     + "\n")
+        elif request_type in ["GET", "PUT", "DELETE"]: print("[GET, PUT, DELETE] : "   + str({'user_id': user_id_backend_test, 'url': url}) + "\n")
+        else:                                          print("[GET_ALL, PRINT_ALL] : " + str({'url': url}) + "\n")
 
         if   request_type == "POST"       : send_post_request(user_name_backend_test)
         elif request_type == "GET"        : send_get_request(url, user_id_backend_test)
@@ -312,27 +313,27 @@ def backend_testing_function():
 
             # Send POST Request #
             if request_type == "POST":
-                user_name_backend_test = get_details_from_external_user_for_backend("POST", "Backend")
+                user_name_backend_test = get_details_from_external_user_for_backend(request_type="POST", test_name="Backend")
                 send_post_request(user_name_backend_test)
 
             # Send GET Request #
             elif request_type == "GET":
-                url, user_id_backend_test = get_details_from_external_user_for_backend("GET", "Backend")
+                url, user_id_backend_test = get_details_from_external_user_for_backend(request_type="GET", test_name="Backend")
                 send_get_request(url, user_id_backend_test)
 
             # Send GET_ALL Request #
             elif request_type == "GET_ALL":
-                url = get_details_from_external_user_for_backend("GET_ALL", "Backend")
+                url = get_details_from_external_user_for_backend(request_type="GET_ALL", test_name="Backend")
                 send_get_all_request(url)
 
             # Send PUT Request #
             elif request_type == "PUT":
-                url, user_id_backend_test = get_details_from_external_user_for_backend("PUT", "Backend")
+                url, user_id_backend_test = get_details_from_external_user_for_backend(request_type="PUT", test_name="Backend")
                 send_put_request(is_job_run, url, user_id_backend_test, "Backend")
 
             # Send DELETE Request #
             elif request_type == "DELETE":
-                url, user_id_backend_test = get_details_from_external_user_for_backend("DELETE", "Backend")
+                url, user_id_backend_test = get_details_from_external_user_for_backend(request_type="DELETE", test_name="Backend")
                 send_delete_request(url, user_id_backend_test)
 
             # Print Tables #

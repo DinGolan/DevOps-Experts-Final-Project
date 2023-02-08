@@ -27,8 +27,8 @@ RUN python -m pip install --upgrade pip
 RUN pip install --trusted-host pypi.python.org -r /DevOps_Experts_Final_Project/Packages/requirements.txt
 
 # Environment Variables #
-ENV MYSQL_USER_NAME=freedb_Din_Golan
-ENV MYSQL_PASSWORD=keeBetw3%kG4k3R
+ENV MYSQL_USER_NAME=${MYSQL_USER_NAME}
+ENV MYSQL_PASSWORD=${MYSQL_PASSWORD}
 
 # Run Command #
 CMD ["python", "/DevOps_Experts_Final_Project/Testing/docker_backend_testing.py", "-u", "${MYSQL_USER_NAME}", "-p", "${MYSQL_PASSWORD}", "-i", "True", "-r", "GET"]

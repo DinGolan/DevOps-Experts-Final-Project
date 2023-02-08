@@ -37,10 +37,11 @@ def rest_api_requests(user_id):
     :return: Json format.
     """
     if request.method == "POST":
-        request_data  = request.json                        # Getting the JSON data payload from request #
-        user_name     = request_data.get('user_name')       # Treating request_data as a dictionary to get a specific value from key #
+        request_data  = request.json
+        user_name     = request_data.get('user_name')
+        isDocker      = request_data.get('isDocker')
         creation_date = get_user_creation_date()
-        insert_result = insert_new_user_to_users_table(user_id, user_name, creation_date) and insert_new_user_to_config_table(user_id, user_name)
+        insert_result = insert_new_user_to_users_table(user_id, user_name, creation_date, isDocker) and insert_new_user_to_config_table(user_id, user_name, isDocker)
 
         if insert_result is False:
             return {"status": "error", "reason": "ID Already Exists"}, 500
@@ -48,7 +49,9 @@ def rest_api_requests(user_id):
         return {"status": "OK", "user_added": user_name}, 200
 
     elif request.method == "GET":
-        user_name = get_user_name_of_specific_user_id_from_users_table(user_id)
+        request_data  = request.json
+        isDocker      = request_data.get('isDocker')
+        user_name     = get_user_name_of_specific_user_id_from_users_table(user_id, isDocker)
 
         if user_name is None:
             return {"status": "error", "reason": f"No such ID - {user_id}"}, 500
@@ -56,9 +59,10 @@ def rest_api_requests(user_id):
         return {"status": "OK", "user_name": user_name}, 200
 
     elif request.method == "PUT":
-        request_data  = request.json                                # Getting the JSON data payload from request #
-        new_user_name = request_data.get('new_user_name')           # Treating request_data as a dictionary to get a specific value from key #
-        update_result = update_user_in_table(user_id, new_user_name, get_db_users_table_name()) and update_user_in_table(user_id, new_user_name, get_db_config_table_name())
+        request_data  = request.json
+        new_user_name = request_data.get('new_user_name')
+        isDocker      = request_data.get('isDocker')
+        update_result = update_user_in_table(user_id, new_user_name, get_db_users_table_name(), isDocker) and update_user_in_table(user_id, new_user_name, get_db_config_table_name(), isDocker)
 
         if update_result is False:
             return {"status": "error", "reason": f"No such ID - {user_id}"}, 500
@@ -66,7 +70,9 @@ def rest_api_requests(user_id):
         return {"status": "OK", "user_updated": new_user_name}, 200
 
     elif request.method == "DELETE":
-        delete_result = delete_user_from_table(user_id, get_db_users_table_name()) and delete_user_from_table(user_id, get_db_config_table_name())
+        request_data  = request.json
+        isDocker      = request_data.get('isDocker')
+        delete_result = delete_user_from_table(user_id, get_db_users_table_name(), isDocker) and delete_user_from_table(user_id, get_db_config_table_name(), isDocker)
 
         if delete_result is False:
             return {"status": "error", "reason": f"No such ID - {user_id}"}, 500
@@ -83,7 +89,9 @@ def get_all_users_request():
     :return: Json format.
     """
     if request.method == "GET":
-        all_users_as_json = get_all_users_as_json()
+        request_data      = request.json
+        isDocker          = request_data.get('isDocker')
+        all_users_as_json = get_all_users_as_json(isDocker)
 
         if all_users_as_json is not None:
             all_users_as_json = json.loads(all_users_as_json)
@@ -109,7 +117,7 @@ def kill_process():
     print(f"The process name is : {process_name} ...")
 
     # The issue is here. With name. We not get inside the block of if One second #
-    if re.search(r'(?:python[0-9\.]*[ex]*)', process_name) or process_name in ["python.exe", "/usr/bin/python", "/usr/local/bin/python"]:
+    if re.search(r'python[0-9.]*[ex]*', process_name) or process_name in ["python.exe", "/usr/bin/python", "/usr/local/bin/python"]:
         if platform.system() == "Windows":
             os.kill(pid, signal.CTRL_C_EVENT)
         elif platform.system() == 'Darwin' or platform.system() == 'Linux':

@@ -50,6 +50,10 @@ def get_db_host():
     return json_data["db_connector.py"]["HOST"]
 
 
+def get_db_host_container():
+    return json_data["db_connector.py"]["HOST_CONTAINER"]
+
+
 def get_db_port():
     return json_data["db_connector.py"]["PORT"]
 
@@ -58,12 +62,20 @@ def get_db_user_name():
     return json_data["db_connector.py"]["USER_NAME"]
 
 
+def get_db_user_name_container():
+    return json_data["db_connector.py"]["USER_NAME_CONTAINER"]
+
+
 def get_db_password():
     return json_data["db_connector.py"]["PASSWORD"]
 
 
 def get_db_schema_name():
     return json_data["db_connector.py"]["SCHEMA_NAME"]
+
+
+def get_db_schema_name_container():
+    return json_data["db_connector.py"]["SCHEMA_NAME_CONTAINER"]
 
 
 def get_db_users_table_name():

@@ -14,10 +14,11 @@ pipeline {
     environment {
         DOCKER_REPOSITORY                     = "dingolan/devops_experts_final_project"
         DOCKER_COMPOSE_FILE                   = "docker-compose-2.yml"
-        MYSQL_SCHEMA_NAME                     = "freedb_Din_Golan"
+        MYSQL_SCHEMA_NAME                     = "freedb_Din_Golan_Container"
         MYSQL_CONTAINER_NAME                  = "mysql_container"
         REST_CONTAINER_NAME                   = "rest_api_container"
         DOCKER_BACKEND_TESTING_CONTAINER_NAME = "docker_backend_testing_container"
+        MYSQL_HOST_NAME                       = "database"
         REST_HOST_NAME                        = "rest_api"
         DOCKER_BACKEND_TESTING_HOST_NAME      = "docker_backend_testing"
         IMAGE_TAG_1                           = "latest_1"
@@ -311,6 +312,7 @@ def setEnvFile() {
         bat 'echo MYSQL_CONTAINER_NAME=%MYSQL_CONTAINER_NAME%                                   >> .env'
         bat 'echo REST_CONTAINER_NAME=%REST_CONTAINER_NAME%                                     >> .env'
         bat 'echo DOCKER_BACKEND_TESTING_CONTAINER_NAME=%DOCKER_BACKEND_TESTING_CONTAINER_NAME% >> .env'
+        bat 'echo MYSQL_HOST_NAME=%MYSQL_HOST_NAME%                                             >> .env'
         bat 'echo REST_HOST_NAME=%REST_HOST_NAME%                                               >> .env'
         bat 'echo DOCKER_BACKEND_TESTING_HOST_NAME=%DOCKER_BACKEND_TESTING_HOST_NAME%           >> .env'
         bat 'echo IMAGE_TAG_1=%IMAGE_TAG_1%                                                     >> .env'
@@ -327,6 +329,7 @@ def setEnvFile() {
         sh 'echo MYSQL_CONTAINER_NAME=${MYSQL_CONTAINER_NAME}                                   >> .env'
         sh 'echo REST_CONTAINER_NAME=${REST_CONTAINER_NAME}                                     >> .env'
         sh 'echo DOCKER_BACKEND_TESTING_CONTAINER_NAME=${DOCKER_BACKEND_TESTING_CONTAINER_NAME} >> .env'
+        sh 'echo MYSQL_HOST_NAME=${MYSQL_HOST_NAME}                                             >> .env'
         sh 'echo REST_HOST_NAME=${REST_HOST_NAME}                                               >> .env'
         sh 'echo DOCKER_BACKEND_TESTING_HOST_NAME=${DOCKER_BACKEND_TESTING_HOST_NAME}           >> .env'
         sh 'echo IMAGE_TAG_1=${IMAGE_TAG_1}                                                     >> .env'
