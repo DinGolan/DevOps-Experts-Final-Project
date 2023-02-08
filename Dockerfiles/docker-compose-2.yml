@@ -46,7 +46,7 @@ services:
     image: "dingolan/devops_experts_final_project:${PY_TAG}${IMAGE_TAG_2}"
     container_name: ${DOCKER_BACKEND_TESTING_CONTAINER_NAME}
     ports:
-      - "5000:5000"
+      - "5000"
     build:
       context: ..
       dockerfile: /Dockerfiles/Dockerfile_Python
