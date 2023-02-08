@@ -52,7 +52,7 @@ services:
       dockerfile: /Dockerfiles/Dockerfile_Python
     hostname: ${DOCKER_BACKEND_TESTING_HOST_NAME}
     healthcheck:
-      test: [ "CMD-SHELL", "ping -c 1 docker_backend_testing_hostname" ]
+      test: [ "CMD-SHELL", "ping -c 1 docker_backend_testing" ]
       interval: 2s
       timeout: 10s
       retries: 5

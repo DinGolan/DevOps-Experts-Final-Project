@@ -31,7 +31,7 @@ services:
       dockerfile: /Dockerfiles/Dockerfile_Shell
     hostname: ${REST_HOST_NAME}
     healthcheck:
-      test: [ "CMD-SHELL", "ping -c 1 rest_api_hostname" ]
+      test: [ "CMD-SHELL", "ping -c 1 rest_api" ]
       interval: 2s
       timeout: 10s
       retries: 5
