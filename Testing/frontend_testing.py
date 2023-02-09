@@ -90,8 +90,8 @@ def frontend_testing_function():
     ###########################
     # Drop Tables (If Exists) #
     ###########################
-    drop_table(get_db_config_table_name(), isDocker=False)
-    drop_table(get_db_users_table_name() , isDocker=False)
+    drop_table(get_db_config_table_name(), isDocker="False")
+    drop_table(get_db_users_table_name() , isDocker="False")
 
     ###########
     # Jenkins #
@@ -102,23 +102,23 @@ def frontend_testing_function():
     # Config Details #
     ##################
     # Create config table inside MySQL DB #
-    create_config_table(isDocker=False)
+    create_config_table(isDocker="False")
 
     # Insert rows to config table inside MySQL DB #
-    insert_rows_to_config_table(is_job_run, "Frontend", isDocker=False)
+    insert_rows_to_config_table(is_job_run, "Frontend", isDocker="False")
 
     ################
     # User Details #
     ################
     # Create users table inside MySQL DB #
-    create_users_table(isDocker=False)
+    create_users_table(isDocker="False")
 
     # Insert rows to users table inside MySQL DB #
-    insert_rows_to_users_table(isDocker=False)
+    insert_rows_to_users_table(isDocker="False")
 
     # For User Details #
     if is_job_run == "True":
-        url, browser = get_details_from_external_user_for_frontend(test_name="Frontend", isDocker=False, user_id_frontend_test=get_user_id_frontend_test())
+        url, browser = get_details_from_external_user_for_frontend(test_name="Frontend", isDocker="False", user_id_frontend_test=get_user_id_frontend_test())
 
         print("\n#############################################")
         print("# Jenkins - Parameters For Frontend Testing #")
@@ -130,7 +130,7 @@ def frontend_testing_function():
     else:
 
         while True:
-            url, browser = get_details_from_external_user_for_frontend(test_name="Frontend", isDocker=False)
+            url, browser = get_details_from_external_user_for_frontend(test_name="Frontend", isDocker="False")
             open_chrome_web_browser(url, browser)
 
             # Check if the `User` want to exit from program #

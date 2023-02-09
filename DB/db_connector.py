@@ -52,20 +52,20 @@ def create_connection_to_db(isDocker):
     :explanations:
     - Create connection to DB.
 
-    :param: isDocker (bool).
+    :param: isDocker (str).
 
     :return: connection: (pymysql), cursor: (pymysql).
     """
     # Vars #
-    db_host     = get_db_host()        if isDocker is False else get_db_host_container()
-    schema_name = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
+    db_host     = get_db_host()        if isDocker is "False" else get_db_host_container()
+    schema_name = get_db_schema_name() if isDocker is "False" else get_db_schema_name_container()
 
     if wait_for_db(host=db_host, port=get_db_port()) == "Finish to Wait":
 
         try:
             user_name = get_from_jenkins_arguments().user_name
             if user_name is None:
-                user_name = get_db_user_name() if isDocker is False else get_db_user_name_container()
+                user_name = get_db_user_name() if isDocker is "False" else get_db_user_name_container()
 
             password = get_from_jenkins_arguments().password
             if password is None:
@@ -110,14 +110,14 @@ def get_details_from_external_user_for_backend(request_type, test_name, isDocker
 
     :param: request_type (str).
     :param: test_name (str).
-    :param: isDocker (bool).
+    :param: isDocker (str).
 
     :return: [POST] user_name_backend_test (str).
              [GET, PUT, DELETE] url (str), user_id_backend_test (str).
              [GET_ALL] url (str).
     """
     # Vars #
-    schema_name = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
+    schema_name = get_db_schema_name() if isDocker is "False" else get_db_schema_name_container()
 
     while True:
         if   request_type == "POST":
@@ -152,12 +152,12 @@ def get_details_from_external_user_for_frontend(test_name, isDocker, user_id_fro
     - Get from external user some details.
 
     :param: test_name (str).
-    :param: isDocker (bool).
+    :param: isDocker (str).
     :param: user_id_frontend_test (str).
 
     :return: url (str), browser(str).
     """
-    schema_name = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
+    schema_name = get_db_schema_name() if isDocker is "False" else get_db_schema_name_container()
 
     while True:
 
@@ -188,7 +188,7 @@ def update_user_in_table(user_id, new_user_name, table_name, isDocker):
     :param: user_id: (str).
     :param: new_user_name: (str).
     :param: table_name: (str).
-    :param: isDocker (bool).
+    :param: isDocker (str).
 
     :return: True: Succeed.
              False: Not Succeed.
@@ -199,7 +199,7 @@ def update_user_in_table(user_id, new_user_name, table_name, isDocker):
 
     try:
         # Update row in the table #
-        schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
+        schema_name        = get_db_schema_name() if isDocker is "False" else get_db_schema_name_container()
         statementToExecute = f"UPDATE `{schema_name}`.`{table_name}` " \
                              f"SET user_name = '{new_user_name}' "     \
                              f"WHERE user_id = '{user_id}'"
@@ -222,7 +222,7 @@ def count_rows_from_table(table_name, isDocker):
     :explanations:
     - Count number of rows from users table.
 
-    :param: isDocker (bool).
+    :param: isDocker (str).
 
     :return: cursor.rowcount (int).
     """
@@ -233,7 +233,7 @@ def count_rows_from_table(table_name, isDocker):
     column_table = "*"
 
     try:
-        schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
+        schema_name        = get_db_schema_name() if isDocker is "False" else get_db_schema_name_container()
         statementToExecute = f"SELECT {column_table} " \
                              f"FROM `{schema_name}`.`{table_name}`;"
         cursor.execute(statementToExecute)
@@ -255,7 +255,7 @@ def run_sql_query(sql_query, isDocker):
     - Run MySQL Query.
 
     :param: sql_query (str).
-    :param: isDocker (bool).
+    :param: isDocker (str).
 
     :return: query_result (list).
     """
@@ -282,14 +282,14 @@ def print_table(table_name, isDocker):
     - Print the content of table.
 
     :param: table_name (str).
-    :param: isDocker (bool).
+    :param: isDocker (str).
 
     :return: None.
     """
     # Establishing a connection to DB #
     connection, cursor = create_connection_to_db(isDocker)
 
-    schema_name = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
+    schema_name = get_db_schema_name() if isDocker is "False" else get_db_schema_name_container()
     sql_query   = f"SELECT * " \
                   f"FROM `{schema_name}`.`{table_name}`;"
     cursor.execute(sql_query)
@@ -321,7 +321,7 @@ def delete_user_from_table(user_id, table_name, isDocker):
 
     :param: user_id: (str).
     :param: table_name (str).
-    :param: isDocker (bool).
+    :param: isDocker (str).
 
     :return: True: Succeed.
              False: Not Succeed.
@@ -331,7 +331,7 @@ def delete_user_from_table(user_id, table_name, isDocker):
 
     try:
         # Delete row from table #
-        schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
+        schema_name        = get_db_schema_name() if isDocker is "False" else get_db_schema_name_container()
         statementToExecute = f"DELETE FROM `{schema_name}`.`{table_name}` " \
                              f"WHERE user_id = '{user_id}'"
         cursor.execute(statementToExecute)
@@ -354,7 +354,7 @@ def drop_table(table_name, isDocker):
     - Drop table from MySQL DB.
 
     :param: table_name (str).
-    :param: isDocker (bool).
+    :param: isDocker (str).
 
     :return: None.
     """
@@ -362,7 +362,7 @@ def drop_table(table_name, isDocker):
     connection, cursor = create_connection_to_db(isDocker)
 
     try:
-        schema_name = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
+        schema_name = get_db_schema_name() if isDocker is "False" else get_db_schema_name_container()
         print(f"\nDROP TABLE : `{schema_name}`.`{table_name}`" + "\n")
         sql_query = f"DROP TABLE IF EXISTS `{schema_name}`.`{table_name}`;"
         cursor.execute(sql_query)
@@ -388,7 +388,7 @@ def create_users_table(isDocker):
     * user_name - varchar[50], not null.
     * creation_date – varchar[50] which will store user creation date (in any format).
 
-    :param: isDocker (bool).
+    :param: isDocker (str).
 
     :return: True: Succeed.
              False: Not Succeed.
@@ -398,7 +398,7 @@ def create_users_table(isDocker):
 
     try:
         # Create Table #
-        schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
+        schema_name        = get_db_schema_name() if isDocker is "False" else get_db_schema_name_container()
         statementToExecute = f"CREATE TABLE IF NOT EXISTS `{schema_name}`.`{get_db_users_table_name()}` " + \
                              f"(`user_id` INT NOT NULL, `user_name` VARCHAR(50) NOT NULL, `creation_date` DATETIME NOT NULL, PRIMARY KEY (`user_id`));"
         cursor.execute(statementToExecute)
@@ -421,7 +421,7 @@ def insert_rows_to_users_table(isDocker):
     :explanations:
     - Insert new rows to users table.
 
-    :param: isDocker (bool).
+    :param: isDocker (str).
 
     :return: None.
     """
@@ -436,7 +436,7 @@ def insert_rows_to_users_table(isDocker):
     # Column to search #
     column_table = "*"
 
-    schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
+    schema_name        = get_db_schema_name() if isDocker is "False" else get_db_schema_name_container()
     statementToExecute = f"SELECT {column_table} " \
                          f"FROM `{schema_name}`.`{get_db_config_table_name()}`;"
     cursor.execute(statementToExecute)
@@ -475,7 +475,7 @@ def insert_new_user_to_users_table(user_id, user_name, creation_date, isDocker):
     :param: user_id: (str).
     :param: user_name: (str).
     :param: creation_date (str).
-    :param: isDocker (bool).
+    :param: isDocker (str).
 
     :return: True: Succeed.
              False: Not Succeed.
@@ -485,7 +485,7 @@ def insert_new_user_to_users_table(user_id, user_name, creation_date, isDocker):
 
     try:
         # Inserting data into table #
-        schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
+        schema_name        = get_db_schema_name() if isDocker is "False" else get_db_schema_name_container()
         statementToExecute = f"INSERT into `{schema_name}`.`{get_db_users_table_name()}` " \
                              f"(user_id, user_name, creation_date) "                       \
                              f"VALUES ('{user_id}', '{user_name}', '{creation_date}')"
@@ -509,7 +509,7 @@ def get_user_name_of_specific_user_id_from_users_table(user_id, isDocker):
     - Get `user_name` from DB by searching `user_id` in users table.
 
     :param: user_id: (str).
-    :param: isDocker (bool).
+    :param: isDocker (str).
 
     :return: user_name: (str).
              None: Not Succeed.
@@ -521,7 +521,7 @@ def get_user_name_of_specific_user_id_from_users_table(user_id, isDocker):
     column_table = "user_name"
 
     try:
-        schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
+        schema_name        = get_db_schema_name() if isDocker is "False" else get_db_schema_name_container()
         statementToExecute = f"SELECT {column_table} "                              \
                              f"FROM `{schema_name}`.`{get_db_users_table_name()}` " \
                              f"WHERE user_id = '{user_id}';"
@@ -556,7 +556,7 @@ def get_user_ids_of_specific_user_name_from_users_table(user_name, isDocker):
     column_table = "user_id"
 
     try:
-        schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
+        schema_name        = get_db_schema_name() if isDocker is "False" else get_db_schema_name_container()
         statementToExecute = f"SELECT {column_table} "                              \
                              f"FROM `{schema_name}`.`{get_db_users_table_name()}` " \
                              f"WHERE user_name = '{user_name}';"
@@ -593,11 +593,11 @@ def get_new_user_id_from_users_table(isDocker):
     :explanations:
     - Return new `user_id` for new `user_name`.
 
-    :param: isDocker (bool).
+    :param: isDocker (str).
 
     :return: new_user_id (int).
     """
-    schema_name  = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
+    schema_name  = get_db_schema_name() if isDocker is "False" else get_db_schema_name_container()
     sql_query    = f"SELECT user_id " \
                    f"FROM `{schema_name}`.`{get_db_users_table_name()}`;"
     query_result = run_sql_query(sql_query, isDocker)
@@ -622,14 +622,14 @@ def get_all_users_as_json(isDocker):
     :explanations:
     - Get all users from `users` table, and return them in Json format.
 
-    :param: isDocker (bool).
+    :param: isDocker (str).
 
     :return: users_as_json : (Json).
              None          : If we can't iterate over the table.
     """
     # Vars #
     all_users_as_json = []
-    schema_name = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
+    schema_name = get_db_schema_name() if isDocker is "False" else get_db_schema_name_container()
 
     # Establishing a connection to DB #
     connection, cursor = create_connection_to_db(isDocker)
@@ -675,7 +675,7 @@ def create_config_table(isDocker):
       * user id.
       * user name to be inserted.
 
-    :param: isDocker (bool).
+    :param: isDocker (str).
 
     :return: True: Succeed.
              False: Not Succeed.
@@ -686,7 +686,7 @@ def create_config_table(isDocker):
 
     try:
         # Create Table #
-        schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
+        schema_name        = get_db_schema_name() if isDocker is "False" else get_db_schema_name_container()
         statementToExecute = f"CREATE TABLE IF NOT EXISTS `{schema_name}`.`{get_db_config_table_name()}` " \
                              f"(`url` VARCHAR(50) NOT NULL, `browser` VARCHAR(50) NOT NULL, `user_id` INT NOT NULL, `user_name` VARCHAR(50) NOT NULL, PRIMARY KEY (`user_id`));"
         cursor.execute(statementToExecute)
@@ -711,7 +711,7 @@ def insert_rows_to_config_table(is_job_run, test_name, isDocker):
 
     :param: is_job_run: (Boolean).
     :param: test_name: (str).
-    :param: isDocker (bool).
+    :param: isDocker (str).
 
     :return: None.
     """
@@ -740,7 +740,7 @@ def insert_rows_to_config_table(is_job_run, test_name, isDocker):
     connection, cursor = create_connection_to_db(isDocker)
 
     user_id     = number_of_rows + 1
-    schema_name = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
+    schema_name = get_db_schema_name() if isDocker is "False" else get_db_schema_name_container()
     while idx < len(user_names):
         url = f"http://{get_rest_host()}:{get_rest_port()}/{get_db_users_table_name()}/{user_id}"
         try:
@@ -773,7 +773,7 @@ def insert_new_user_to_config_table(user_id, user_name, isDocker):
 
     :param: user_id: (str).
     :param: user_name: (str).
-    :param: isDocker (bool).
+    :param: isDocker (str).
 
     :return: True: Succeed.
              False: Not Succeed.
@@ -785,7 +785,7 @@ def insert_new_user_to_config_table(user_id, user_name, isDocker):
         # Inserting data into table #
         url                = f"http://{get_rest_host()}:{get_rest_port()}/{get_db_users_table_name()}/{user_id}"
         browser            = "Chrome"
-        schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
+        schema_name        = get_db_schema_name() if isDocker is "False" else get_db_schema_name_container()
         statementToExecute = f"INSERT into `{schema_name}`.`{get_db_config_table_name()}` " \
                              f"(url, browser, user_id, user_name) "                         \
                              f"VALUES ('{url}', '{browser}', '{user_id}', '{user_name}')"
@@ -808,7 +808,7 @@ def get_all_users_ids_from_config_table(isDocker):
     :explanations:
     - Return all users id's.
 
-    :param: isDocker (bool).
+    :param: isDocker (str).
 
     :return: user_ids (list).
     """
@@ -818,7 +818,7 @@ def get_all_users_ids_from_config_table(isDocker):
     # Column to search #
     column_table = "user_id"
 
-    schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
+    schema_name        = get_db_schema_name() if isDocker is "False" else get_db_schema_name_container()
     statementToExecute = f"SELECT {column_table} " \
                          f"FROM `{schema_name}`.`{get_db_config_table_name()}`;"
     cursor.execute(statementToExecute)
@@ -836,7 +836,7 @@ def get_all_users_ids_and_users_names_from_config_table(isDocker):
     :explanations:
     - Return all users details (user_id, user_name).
 
-    :param: isDocker (bool).
+    :param: isDocker (str).
 
     :return: users_details (list).
     """
@@ -844,7 +844,7 @@ def get_all_users_ids_and_users_names_from_config_table(isDocker):
     # Establishing a connection to DB #
     connection, cursor = create_connection_to_db(isDocker)
 
-    schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
+    schema_name        = get_db_schema_name() if isDocker is "False" else get_db_schema_name_container()
     statementToExecute = f"SELECT user_id, user_name " \
                          f"FROM `{schema_name}`.`{get_db_config_table_name()}`;"
     cursor.execute(statementToExecute)
