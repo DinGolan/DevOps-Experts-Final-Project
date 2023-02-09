@@ -42,16 +42,20 @@ def get_rest_host():
     return json_data["rest_app.py"]["HOST_REST"]
 
 
+def get_rest_host_container():
+    return json_data["rest_app.py"]["HOST_REST_CONTAINER"]
+
+
 def get_rest_port():
     return json_data["rest_app.py"]["PORT_REST"]
 
 
 def get_db_host():
-    return json_data["db_connector.py"]["HOST"]
+    return json_data["db_connector.py"]["HOST_DB"]
 
 
 def get_db_host_container():
-    return json_data["db_connector.py"]["HOST_CONTAINER"]
+    return json_data["db_connector.py"]["HOST_DB_CONTAINER"]
 
 
 def get_db_port():
@@ -146,5 +150,6 @@ def get_from_jenkins_arguments():
     parser.add_argument('-r', '--request_type', required=False, choices=["POST", "GET", "GET_ALL", "PUT", "DELETE", "PRINT_TABLE"], help="Request type for REST API Server ...")
     parser.add_argument('-t', '--test_side'   , required=False, choices=["Backend", "Frontend"]                                   , help="Test side for `combined_testing.py` ...")
     parser.add_argument('-c', '--clean_server', required=False, choices=["REST_API", "WEB_APP"]                                   , help="Clean environment ...")
+    parser.add_argument('-d', '--is_docker'   , required=False, choices=["True", "False"]                                         , help="Flag that tells me if we use with Docker or not ...")
     jenkins_arguments = parser.parse_args()
     return jenkins_arguments

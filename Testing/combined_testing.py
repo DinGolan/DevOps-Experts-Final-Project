@@ -68,7 +68,7 @@ def combined_testing_function():
     # Insert rows to users table inside MySQL DB #
     insert_rows_to_users_table(isDocker=False)
 
-    if is_job_run:
+    if is_job_run == "True":
 
         # Get `test_side` from Jenkins #
         test_side    = get_from_jenkins_arguments().test_side

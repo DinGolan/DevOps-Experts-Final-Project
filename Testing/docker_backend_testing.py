@@ -135,12 +135,13 @@ def check_requests_result_for_get_all(request_title, requests_result, json_resul
         raise Exception(f"\n[{request_title}] Test Failed : {message}" + "\n")
 
 
-def send_post_request(user_name):
+def send_post_request(user_name, rest_host):
     """
     :explanations:
     - Send POST request.
 
-    :param: user_name: (str).
+    :param: user_name (str).
+    :param: rest_host (str).
 
     :return: None
     """
@@ -148,7 +149,7 @@ def send_post_request(user_name):
     print("#  POST  #")
     print("##########\n")
     new_user_id     = get_new_user_id_from_users_table(isDocker=True)
-    url             = f"http://{get_rest_host()}:{get_rest_port()}/{get_db_users_table_name()}/{new_user_id}"
+    url             = f"http://{rest_host}:{get_rest_port()}/{get_db_users_table_name()}/{new_user_id}"
     requests_result = requests.post(url=url, json={"user_name": user_name, "isDocker": True})
     json_result     = requests_result.json()
     check_requests_result("POST", new_user_id, requests_result, json_result, "user_added")
@@ -254,10 +255,11 @@ def docker_backend_testing_function():
     drop_table(get_db_config_table_name(), isDocker=True)
     drop_table(get_db_users_table_name() , isDocker=True)
 
-    ###########
-    # Jenkins #
-    ###########
+    ####################
+    # Jenkins / Docker #
+    ####################
     is_job_run = get_from_jenkins_arguments().is_job_run
+    rest_host  = get_rest_host() if (get_from_jenkins_arguments().is_docker is None or get_from_jenkins_arguments().is_docker == "False") else get_rest_host_container()
 
     ##################
     # Config Details #
@@ -278,7 +280,7 @@ def docker_backend_testing_function():
     insert_rows_to_users_table(isDocker=True)
 
 
-    if is_job_run:
+    if is_job_run == "True":
 
         # Get `request_type` from Jenkins #
         request_type = get_from_jenkins_arguments().request_type
@@ -286,7 +288,7 @@ def docker_backend_testing_function():
         # Jenkins - Parameters For Docker Backend Testing #
         user_name_docker_backend_test = get_user_name_backend_test()
         user_id_docker_backend_test   = get_user_id_backend_test()
-        url                           = f"http://{get_rest_host()}:{get_rest_port()}/{get_db_users_table_name()}/{user_id_docker_backend_test}"
+        url                           = f"http://{rest_host}:{get_rest_port()}/{get_db_users_table_name()}/{user_id_docker_backend_test}"
 
         print("\n###################################################")
         print("# Jenkins - Parameters For Docker Backend Testing #")
@@ -295,7 +297,7 @@ def docker_backend_testing_function():
         elif request_type in ["GET", "PUT", "DELETE"]: print("[GET, PUT, DELETE] : "   + str({'user_id': user_id_docker_backend_test, 'url': url}) + "\n")
         else:                                          print("[GET_ALL, PRINT_ALL] : " + str({'url': url}) + "\n")
 
-        if   request_type == "POST"       : send_post_request(user_name_docker_backend_test)
+        if   request_type == "POST"       : send_post_request(user_name_docker_backend_test, rest_host)
         elif request_type == "GET"        : send_get_request(url, user_id_docker_backend_test)
         elif request_type == "GET_ALL"    : send_get_all_request(url)
         elif request_type == "PUT"        : send_put_request(is_job_run, url, user_id_docker_backend_test, "Backend")
@@ -314,7 +316,7 @@ def docker_backend_testing_function():
             # Send POST Request #
             if request_type == "POST":
                 user_name_docker_backend_test = get_details_from_external_user_for_backend(request_type="POST", test_name="Backend", isDocker=True)
-                send_post_request(user_name_docker_backend_test)
+                send_post_request(user_name_docker_backend_test, rest_host)
 
             # Send GET Request #
             elif request_type == "GET":

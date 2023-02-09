@@ -117,7 +117,7 @@ def frontend_testing_function():
     insert_rows_to_users_table(isDocker=False)
 
     # For User Details #
-    if is_job_run:
+    if is_job_run == "True":
         url, browser = get_details_from_external_user_for_frontend(test_name="Frontend", isDocker=False, user_id_frontend_test=get_user_id_frontend_test())
 
         print("\n#############################################")

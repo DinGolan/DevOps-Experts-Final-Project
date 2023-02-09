@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # VARS #
+IS_DOCKER="True"
 IS_JOB_RUN="True"
 REQUEST_TYPE="GET"
 MYSQL_PASSWORD="keeBetw3%kG4k3R"
@@ -46,4 +47,4 @@ wait_for_db "database" "3306"
 
 check_file_exist "/DevOps_Experts_Final_Project/Testing/docker_backend_testing.py"
 
-/bin/sh -c "sleep 3 && python /DevOps_Experts_Final_Project/Testing/docker_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}"
+/bin/sh -c "sleep 3 && python /DevOps_Experts_Final_Project/Testing/docker_backend_testing.py -u $MYSQL_USER_NAME -p $MYSQL_PASSWORD -i $IS_JOB_RUN -r $REQUEST_TYPE -d $IS_DOCKER"

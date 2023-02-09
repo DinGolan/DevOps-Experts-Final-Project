@@ -209,7 +209,7 @@ pipeline {
         }
 
         // Step 11 - Run Backend Test (On Docker Compose Environments) //
-        stage("Run `backend_testing.py` (Testing Docker Compose)") {
+        stage("Run `docker_backend_testing.py` (Testing Docker Compose)") {
             steps {
                 script {
                     if (checkOS() == "Windows") {

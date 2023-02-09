@@ -278,7 +278,7 @@ def backend_testing_function():
     insert_rows_to_users_table(isDocker=False)
 
 
-    if is_job_run:
+    if is_job_run == "True":
 
         # Get `request_type` from Jenkins #
         request_type = get_from_jenkins_arguments().request_type
