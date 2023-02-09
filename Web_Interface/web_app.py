@@ -78,6 +78,7 @@ def stop_web_app_server():
         is_process_killed = kill_process()
         response          = make_response(jsonify(json.dumps({"status": "Server Stopped"}))) if is_process_killed is True else make_response(jsonify(json.dumps({"status": "Server Not Stopped"})))
         status_code       = 200 if is_process_killed is True else 500
+        response.headers['Content-Type'] = 'application/json'
         return response, status_code
 
 
