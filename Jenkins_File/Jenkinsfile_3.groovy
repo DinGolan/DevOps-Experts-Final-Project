@@ -111,8 +111,8 @@ pipeline {
         stage("Update `.env` File") {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'docker_database_credentials', usernameVariable: 'MYSQL_ROOT_USER', passwordVariable: 'MYSQL_ROOT_PASSWORD'),
-                                     usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                    withCredentials([usernamePassword(credentialsId: 'container_root_database_credentials', usernameVariable: 'MYSQL_ROOT_USER', passwordVariable: 'MYSQL_ROOT_PASSWORD'),
+                                     usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
                         setEnvFile()
                     }
                 }
@@ -215,13 +215,13 @@ pipeline {
                     if (checkOS() == "Windows") {
                         def containerId = bat(script: 'docker ps --filter "name=%REST_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
                         sleep(time: 2, unit: "SECONDS")
-                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                        withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
                             bat "docker exec -i ${containerId} sh -c \"/usr/local/bin/python Testing/docker_backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%\""
                         }
                     } else {
                         def containerId = sh(script: 'docker ps --filter "name=${REST_CONTAINER_NAME}" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
                         sleep(time: 2, unit: "SECONDS")
-                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                        withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
                             sh "docker exec -i ${containerId} sh \"/usr/local/bin/python Testing/docker_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}\""
                         }
                     }
@@ -236,13 +236,13 @@ pipeline {
                     if (checkOS() == "Windows") {
                         def containerId = bat(script: 'docker ps --filter "name=%REST_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
                         sleep(time: 2, unit: "SECONDS")
-                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                        withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
                             bat "docker exec -i ${containerId} sh -c \"curl -i -m 60 http://127.0.0.1:5000/stop_server\""
                         }
                     } else {
                         def containerId = sh(script: 'docker ps --filter "name=${REST_CONTAINER_NAME}" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
                         sleep(time: 2, unit: "SECONDS")
-                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                        withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
                             sh "docker exec -i ${containerId} sh \"curl -i -m 60 http://127.0.0.1:5000/stop_server\""
                         }
                     }
@@ -258,13 +258,13 @@ pipeline {
                     if (checkOS() == "Windows") {
                         def containerId = bat(script: 'docker ps --filter "name=%REST_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
                         sleep(time: 2, unit: "SECONDS")
-                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                        withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
                             bat "docker exec -i ${containerId} sh -c \"/usr/local/bin/python Clean/clean_environment.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -c %CLEAN_SERVER%\""
                         }
                     } else {
                         def containerId = sh(script: 'docker ps --filter "name=${REST_CONTAINER_NAME}" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
                         sleep(time: 2, unit: "SECONDS")
-                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                        withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
                             sh "docker exec -i ${containerId} sh \"/usr/local/bin/python Clean/clean_environment.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -c ${CLEAN_SERVER}\""
                         }
                     }

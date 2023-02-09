@@ -23,11 +23,11 @@ COPY ../Testing       /DevOps_Experts_Final_Project/Testing
 COPY ../Web_Interface /DevOps_Experts_Final_Project/Web_Interface
 COPY ../.env          /DevOps_Experts_Final_Project/.env
 
-# dos2unix - change file encoding
-RUN dos2unix /DevOps_Experts_Final_Project/Testing/start_testing.sh
+# dos2unix - change file encoding #
+RUN dos2unix /DevOps_Experts_Final_Project/Testing/start_rest_api.sh
 
-# Add Permission #
-RUN chmod +x /DevOps_Experts_Final_Project/Testing/start_testing.sh
+# change start_rest_api.sh file permissions #
+RUN chmod +x /DevOps_Experts_Final_Project/Testing/start_rest_api.sh
 
 # Pip Commands #
 RUN python -m pip install --upgrade pip

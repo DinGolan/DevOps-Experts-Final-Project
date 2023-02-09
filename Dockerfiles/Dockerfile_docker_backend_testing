@@ -22,13 +22,15 @@ COPY ../Testing       /DevOps_Experts_Final_Project/Testing
 COPY ../Web_Interface /DevOps_Experts_Final_Project/Web_Interface
 COPY ../.env          /DevOps_Experts_Final_Project/.env
 
+# dos2unix - change file encoding #
+RUN dos2unix /DevOps_Experts_Final_Project/Testing/start_docker_backend_testing.sh
+
+# change start_docker_backend_testing.sh file permissions #
+RUN chmod +x /DevOps_Experts_Final_Project/Testing/start_docker_backend_testing.sh
+
 # Pip Commands #
 RUN python -m pip install --upgrade pip
 RUN pip install --trusted-host pypi.python.org -r /DevOps_Experts_Final_Project/Packages/requirements.txt
 
-# Environment Variables #
-ENV MYSQL_USER_NAME=${MYSQL_USER_NAME}
-ENV MYSQL_PASSWORD=${MYSQL_PASSWORD}
-
 # Run Command #
-CMD ["python", "/DevOps_Experts_Final_Project/Testing/docker_backend_testing.py", "-u", "${MYSQL_USER_NAME}", "-p", "${MYSQL_PASSWORD}", "-i", "True", "-r", "GET"]
+CMD ["/bin/sh", "/DevOps_Experts_Final_Project/Testing/start_docker_backend_testing.sh"]
