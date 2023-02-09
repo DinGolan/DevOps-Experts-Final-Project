@@ -18,7 +18,7 @@ sys.path.append(package_path)
 
 
 # From #
-from flask           import Flask, make_response, request, send_file
+from flask import Flask, make_response, request, send_file, jsonify
 from DB.db_connector import *
 
 
@@ -44,9 +44,11 @@ def rest_api_requests(user_id):
         insert_result = insert_new_user_to_users_table(user_id, user_name, creation_date, isDocker) and insert_new_user_to_config_table(user_id, user_name, isDocker)
 
         if insert_result is False:
-            return {"status": "error", "reason": "ID Already Exists"}, 500
+            response = make_response(jsonify({"status": "error", "reason": "ID Already Exists"}))
+            return response, 500
 
-        return {"status": "OK", "user_added": user_name}, 200
+        response = make_response(jsonify({"status": "OK", "user_added": user_name}))
+        return response, 200
 
     elif request.method == "GET":
         request_data = request.json
@@ -54,9 +56,11 @@ def rest_api_requests(user_id):
         user_name    = get_user_name_of_specific_user_id_from_users_table(user_id, isDocker)
 
         if user_name is None:
-            return {"status": "error", "reason": f"No such ID - {user_id}"}, 500
+            response = response = make_response(jsonify({"status": "error", "reason": f"No such ID - {user_id}"}))
+            return response, 500
 
-        return {"status": "OK", "user_name": user_name}, 200
+        response = make_response(jsonify({"status": "OK", "user_name": user_name}))
+        return response, 200
 
     elif request.method == "PUT":
         request_data  = request.json
@@ -65,9 +69,11 @@ def rest_api_requests(user_id):
         update_result = update_user_in_table(user_id, new_user_name, get_db_users_table_name(), isDocker) and update_user_in_table(user_id, new_user_name, get_db_config_table_name(), isDocker)
 
         if update_result is False:
-            return {"status": "error", "reason": f"No such ID - {user_id}"}, 500
+            response = make_response(jsonify({"status": "error", "reason": f"No such ID - {user_id}"}))
+            return response, 500
 
-        return {"status": "OK", "user_updated": new_user_name}, 200
+        response = make_response(jsonify({"status": "OK", "user_updated": new_user_name}))
+        return response, 200
 
     elif request.method == "DELETE":
         request_data  = request.json
@@ -75,9 +81,11 @@ def rest_api_requests(user_id):
         delete_result = delete_user_from_table(user_id, get_db_users_table_name(), isDocker) and delete_user_from_table(user_id, get_db_config_table_name(), isDocker)
 
         if delete_result is False:
-            return {"status": "error", "reason": f"No such ID - {user_id}"}, 500
+            response = make_response(jsonify({"status": "error", "reason": f"No such ID - {user_id}"}))
+            return response, 500
 
-        return {"status": "OK", "user_deleted": user_id}, 200
+        response = make_response(jsonify({"status": "OK", "user_deleted": user_id}))
+        return response, 200
 
 
 @rest_app.route("/users/get_all_users", methods=['GET'])
@@ -95,9 +103,9 @@ def get_all_users_request():
 
         if all_users_as_json is not None:
             all_users_as_json = json.loads(all_users_as_json)
-            response          = make_response(all_users_as_json)
+            response          = make_response(jsonify(all_users_as_json))
         else:
-            response = make_response({"status": "error", "reason": "no such Table or users don't exits in DB"})
+            response = make_response(jsonify({"status": "error", "reason": "no such Table or users don't exits in DB"}))
 
         response.headers['Content-Type'] = 'application/json'
         return (response, 200) if all_users_as_json is not None else (response, 500)
@@ -136,8 +144,9 @@ def stop_rest_api_server():
     :return: response (Json), status_code (str)
     """
     if request.method == "GET":
-        is_process_killed     = kill_process()
-        response, status_code = (json.dumps({"status": "Server Stopped"}), 200) if is_process_killed is True else (json.dumps({"status": "Server Not Stopped"}), 500)
+        is_process_killed = kill_process()
+        response          = make_response(jsonify(json.dumps({"status": "Server Stopped"}))) if is_process_killed is True else make_response(jsonify(json.dumps({"status": "Server Not Stopped"})))
+        status_code       = 200 if is_process_killed is True else 500
         return response, status_code
 
 

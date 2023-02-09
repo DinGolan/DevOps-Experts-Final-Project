@@ -17,7 +17,7 @@ sys.path.append(package_path)
 
 
 # From #
-from flask             import Flask, request, send_file
+from flask             import Flask, request, send_file, make_response, jsonify
 from DB.db_connector   import *
 
 
@@ -75,8 +75,9 @@ def stop_web_app_server():
     :return: response (Json), status_code (str)
     """
     if request.method == "GET":
-        is_process_killed     = kill_process()
-        response, status_code = (json.dumps({"status": "Server Stopped"}), 200) if is_process_killed is True else (json.dumps({"status": "Server Not Stopped"}), 500)
+        is_process_killed = kill_process()
+        response          = make_response(jsonify(json.dumps({"status": "Server Stopped"}))) if is_process_killed is True else make_response(jsonify(json.dumps({"status": "Server Not Stopped"})))
+        status_code       = 200 if is_process_killed is True else 500
         return response, status_code
 
 
