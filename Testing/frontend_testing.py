@@ -90,8 +90,8 @@ def frontend_testing_function():
     ###########################
     # Drop Tables (If Exists) #
     ###########################
-    drop_table(get_db_config_table_name())
-    drop_table(get_db_users_table_name())
+    drop_table(get_db_config_table_name(), isDocker=False)
+    drop_table(get_db_users_table_name() , isDocker=False)
 
     ###########
     # Jenkins #
@@ -102,19 +102,19 @@ def frontend_testing_function():
     # Config Details #
     ##################
     # Create config table inside MySQL DB #
-    create_config_table()
+    create_config_table(isDocker=False)
 
     # Insert rows to config table inside MySQL DB #
-    insert_rows_to_config_table(is_job_run, "Frontend")
+    insert_rows_to_config_table(is_job_run, "Frontend", isDocker=False)
 
     ################
     # User Details #
     ################
     # Create users table inside MySQL DB #
-    create_users_table()
+    create_users_table(isDocker=False)
 
     # Insert rows to users table inside MySQL DB #
-    insert_rows_to_users_table()
+    insert_rows_to_users_table(isDocker=False)
 
     # For User Details #
     if is_job_run:

@@ -81,7 +81,7 @@ def check_requests_result(request_title, user_id, requests_result, json_result, 
             message = f"We get status code different then 200 , status_code = {status_code} ..."
             raise Exception(f"\n[{request_title}] Test Failed : " + str(generate_response_dict(requests_result, json_result, json_key, message)) + "\n")
 
-        db_user_ids = get_user_ids_of_specific_user_name_from_users_table(jason_user_name)
+        db_user_ids = get_user_ids_of_specific_user_name_from_users_table(jason_user_name, isDocker=True)
 
         if request_title in ["POST", "GET", "PUT"]:
             if user_id not in db_user_ids:
@@ -147,7 +147,7 @@ def send_post_request(user_name):
     print("\n##########")
     print("#  POST  #")
     print("##########\n")
-    new_user_id     = get_new_user_id_from_users_table()
+    new_user_id     = get_new_user_id_from_users_table(isDocker=True)
     url             = f"http://{get_rest_host()}:{get_rest_port()}/{get_db_users_table_name()}/{new_user_id}"
     requests_result = requests.post(url=url, json={"user_name": user_name, "isDocker": True})
     json_result     = requests_result.json()

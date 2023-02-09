@@ -35,7 +35,7 @@ def get_user_name(user_id):
 
     :return: HTML Format.
     """
-    user_name = get_user_name_of_specific_user_id_from_users_table(user_id)
+    user_name = get_user_name_of_specific_user_id_from_users_table(user_id, isDocker=False)
 
     if user_name is not None:
         return "<h1 id='user'>" + "`user name` is : " + user_name + "</h1>", 200
@@ -96,4 +96,4 @@ def page_not_found(exception):
 
 
 # Run Flask Application #
-web_app.run(host=get_web_host(), debug=True, port=get_web_port())
+web_app.run(host=get_web_host_bind(), debug=True, port=get_web_port())

@@ -81,7 +81,7 @@ def check_requests_result(request_title, user_id, requests_result, json_result, 
             message = f"We get status code different then 200 , status_code = {status_code} ..."
             raise Exception(f"\n[{request_title}] Test Failed : " + str(generate_response_dict(requests_result, json_result, json_key, message)) + "\n")
 
-        db_user_ids = get_user_ids_of_specific_user_name_from_users_table(jason_user_name)
+        db_user_ids = get_user_ids_of_specific_user_name_from_users_table(jason_user_name, isDocker=False)
 
         if request_title in ["POST", "GET", "PUT"]:
             if user_id not in db_user_ids:
@@ -147,7 +147,7 @@ def send_post_request(user_name):
     print("\n##########")
     print("#  POST  #")
     print("##########\n")
-    new_user_id     = get_new_user_id_from_users_table()
+    new_user_id     = get_new_user_id_from_users_table(isDocker=False)
     url             = f"http://{get_rest_host()}:{get_rest_port()}/{get_db_users_table_name()}/{new_user_id}"
     requests_result = requests.post(url=url, json={"user_name": user_name})
     json_result     = requests_result.json()
@@ -251,8 +251,8 @@ def backend_testing_function():
     ###########################
     # Drop Tables (If Exists) #
     ###########################
-    drop_table(get_db_config_table_name())
-    drop_table(get_db_users_table_name())
+    drop_table(get_db_config_table_name(), isDocker=False)
+    drop_table(get_db_users_table_name() , isDocker=False)
 
     ###########
     # Jenkins #
@@ -263,19 +263,19 @@ def backend_testing_function():
     # Config Details #
     ##################
     # Create config table inside MySQL DB #
-    create_config_table()
+    create_config_table(isDocker=False)
 
     # Insert rows to config table inside MySQL DB #
-    insert_rows_to_config_table(is_job_run, "Backend")
+    insert_rows_to_config_table(is_job_run, "Backend", isDocker=False)
 
     ################
     # User Details #
     ################
     # Create users table inside MySQL DB #
-    create_users_table()
+    create_users_table(isDocker=False)
 
     # Insert rows to users table inside MySQL DB #
-    insert_rows_to_users_table()
+    insert_rows_to_users_table(isDocker=False)
 
 
     if is_job_run:
@@ -301,8 +301,8 @@ def backend_testing_function():
         elif request_type == "PUT"        : send_put_request(is_job_run, url, user_id_backend_test, "Backend")
         elif request_type == "DELETE"     : send_delete_request(url, user_id_backend_test)
         elif request_type == "PRINT_TABLE":
-            print_table(get_db_users_table_name())
-            print_table(get_db_config_table_name())
+            print_table(get_db_users_table_name() , isDocker=False)
+            print_table(get_db_config_table_name(), isDocker=False)
 
     else:
 
@@ -313,27 +313,27 @@ def backend_testing_function():
 
             # Send POST Request #
             if request_type == "POST":
-                user_name_backend_test = get_details_from_external_user_for_backend(request_type="POST", test_name="Backend")
+                user_name_backend_test = get_details_from_external_user_for_backend(request_type="POST", test_name="Backend", isDocker=False)
                 send_post_request(user_name_backend_test)
 
             # Send GET Request #
             elif request_type == "GET":
-                url, user_id_backend_test = get_details_from_external_user_for_backend(request_type="GET", test_name="Backend")
+                url, user_id_backend_test = get_details_from_external_user_for_backend(request_type="GET", test_name="Backend", isDocker=False)
                 send_get_request(url, user_id_backend_test)
 
             # Send GET_ALL Request #
             elif request_type == "GET_ALL":
-                url = get_details_from_external_user_for_backend(request_type="GET_ALL", test_name="Backend")
+                url = get_details_from_external_user_for_backend(request_type="GET_ALL", test_name="Backend", isDocker=False)
                 send_get_all_request(url)
 
             # Send PUT Request #
             elif request_type == "PUT":
-                url, user_id_backend_test = get_details_from_external_user_for_backend(request_type="PUT", test_name="Backend")
+                url, user_id_backend_test = get_details_from_external_user_for_backend(request_type="PUT", test_name="Backend", isDocker=False)
                 send_put_request(is_job_run, url, user_id_backend_test, "Backend")
 
             # Send DELETE Request #
             elif request_type == "DELETE":
-                url, user_id_backend_test = get_details_from_external_user_for_backend(request_type="DELETE", test_name="Backend")
+                url, user_id_backend_test = get_details_from_external_user_for_backend(request_type="DELETE", test_name="Backend", isDocker=False)
                 send_delete_request(url, user_id_backend_test)
 
             # Print Tables #
@@ -341,12 +341,12 @@ def backend_testing_function():
                 print("\n###############")
                 print("# USERS TABLE #")
                 print("###############\n")
-                print_table(get_db_users_table_name())
+                print_table(get_db_users_table_name(), isDocker=False)
 
                 print("\n################")
                 print("# CONFIG TABLE #")
                 print("################\n")
-                print_table(get_db_config_table_name())
+                print_table(get_db_config_table_name(), isDocker=False)
 
             # Exit from `request type` menu #
             else:

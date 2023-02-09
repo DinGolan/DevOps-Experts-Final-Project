@@ -35,4 +35,4 @@ RUN pip install --trusted-host pypi.python.org -r /DevOps_Experts_Final_Project/
 
 
 # Run Command #
-CMD ["/bin/sh", "/DevOps_Experts_Final_Project/Testing/start_testing.sh"]
+CMD ["/bin/sh", "/DevOps_Experts_Final_Project/Testing/start_rest_api.sh"]

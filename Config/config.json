@@ -11,7 +11,7 @@
   },
   "db_connector.py": {
     "HOST"                  : "sql.freedb.tech",
-    "HOST_CONTAINER"        : "127.0.0.1",
+    "HOST_CONTAINER"        : "database",
     "PORT"                  : 3306,
     "USER_NAME"             : "freedb_Din_Golan",
     "USER_NAME_CONTAINER"   : "freedb_Din_Golan_Container",
