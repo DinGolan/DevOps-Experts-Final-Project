@@ -57,15 +57,15 @@ def create_connection_to_db(isDocker):
     :return: connection: (pymysql), cursor: (pymysql).
     """
     # Vars #
-    db_host     = get_db_host()        if isDocker is None else get_db_host_container()
-    schema_name = get_db_schema_name() if isDocker is None else get_db_schema_name_container()
+    db_host     = get_db_host()        if isDocker is False else get_db_host_container()
+    schema_name = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
 
     if wait_for_db(host=db_host, port=get_db_port()) == "Finish to Wait":
 
         try:
             user_name = get_from_jenkins_arguments().user_name
             if user_name is None:
-                user_name = get_db_user_name() if isDocker is None else get_db_user_name_container()
+                user_name = get_db_user_name() if isDocker is False else get_db_user_name_container()
 
             password = get_from_jenkins_arguments().password
             if password is None:
@@ -117,7 +117,7 @@ def get_details_from_external_user_for_backend(request_type, test_name, isDocker
              [GET_ALL] url (str).
     """
     # Vars #
-    schema_name = get_db_schema_name() if isDocker is None else get_db_schema_name_container()
+    schema_name = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
 
     while True:
         if   request_type == "POST":
@@ -157,7 +157,7 @@ def get_details_from_external_user_for_frontend(test_name, isDocker, user_id_fro
 
     :return: url (str), browser(str).
     """
-    schema_name = get_db_schema_name() if isDocker is None else get_db_schema_name_container()
+    schema_name = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
 
     while True:
 
@@ -199,7 +199,7 @@ def update_user_in_table(user_id, new_user_name, table_name, isDocker):
 
     try:
         # Update row in the table #
-        schema_name        = get_db_schema_name() if isDocker is None else get_db_schema_name_container()
+        schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
         statementToExecute = f"UPDATE `{schema_name}`.`{table_name}` " \
                              f"SET user_name = '{new_user_name}' "     \
                              f"WHERE user_id = '{user_id}'"
@@ -233,7 +233,7 @@ def count_rows_from_table(table_name, isDocker):
     column_table = "*"
 
     try:
-        schema_name        = get_db_schema_name() if isDocker is None else get_db_schema_name_container()
+        schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
         statementToExecute = f"SELECT {column_table} " \
                              f"FROM `{schema_name}`.`{table_name}`;"
         cursor.execute(statementToExecute)
@@ -289,7 +289,7 @@ def print_table(table_name, isDocker):
     # Establishing a connection to DB #
     connection, cursor = create_connection_to_db(isDocker)
 
-    schema_name = get_db_schema_name() if isDocker is None else get_db_schema_name_container()
+    schema_name = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
     sql_query   = f"SELECT * " \
                   f"FROM `{schema_name}`.`{table_name}`;"
     cursor.execute(sql_query)
@@ -331,7 +331,7 @@ def delete_user_from_table(user_id, table_name, isDocker):
 
     try:
         # Delete row from table #
-        schema_name        = get_db_schema_name() if isDocker is None else get_db_schema_name_container()
+        schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
         statementToExecute = f"DELETE FROM `{schema_name}`.`{table_name}` " \
                              f"WHERE user_id = '{user_id}'"
         cursor.execute(statementToExecute)
@@ -362,7 +362,7 @@ def drop_table(table_name, isDocker):
     connection, cursor = create_connection_to_db(isDocker)
 
     try:
-        schema_name = get_db_schema_name() if isDocker is None else get_db_schema_name_container()
+        schema_name = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
         print(f"\nDROP TABLE : `{schema_name}`.`{table_name}`" + "\n")
         sql_query = f"DROP TABLE IF EXISTS `{schema_name}`.`{table_name}`;"
         cursor.execute(sql_query)
@@ -398,7 +398,7 @@ def create_users_table(isDocker):
 
     try:
         # Create Table #
-        schema_name        = get_db_schema_name() if isDocker is None else get_db_schema_name_container()
+        schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
         statementToExecute = f"CREATE TABLE IF NOT EXISTS `{schema_name}`.`{get_db_users_table_name()}` " + \
                              f"(`user_id` INT NOT NULL, `user_name` VARCHAR(50) NOT NULL, `creation_date` DATETIME NOT NULL, PRIMARY KEY (`user_id`));"
         cursor.execute(statementToExecute)
@@ -436,7 +436,7 @@ def insert_rows_to_users_table(isDocker):
     # Column to search #
     column_table = "*"
 
-    schema_name        = get_db_schema_name() if isDocker is None else get_db_schema_name_container()
+    schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
     statementToExecute = f"SELECT {column_table} " \
                          f"FROM `{schema_name}`.`{get_db_config_table_name()}`;"
     cursor.execute(statementToExecute)
@@ -485,7 +485,7 @@ def insert_new_user_to_users_table(user_id, user_name, creation_date, isDocker):
 
     try:
         # Inserting data into table #
-        schema_name        = get_db_schema_name() if isDocker is None else get_db_schema_name_container()
+        schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
         statementToExecute = f"INSERT into `{schema_name}`.`{get_db_users_table_name()}` " \
                              f"(user_id, user_name, creation_date) "                       \
                              f"VALUES ('{user_id}', '{user_name}', '{creation_date}')"
@@ -521,7 +521,7 @@ def get_user_name_of_specific_user_id_from_users_table(user_id, isDocker):
     column_table = "user_name"
 
     try:
-        schema_name        = get_db_schema_name() if isDocker is None else get_db_schema_name_container()
+        schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
         statementToExecute = f"SELECT {column_table} "                                       \
                              f"FROM `{schema_name}`.`{get_db_users_table_name()}` " \
                              f"WHERE user_id = '{user_id}';"
@@ -556,7 +556,7 @@ def get_user_ids_of_specific_user_name_from_users_table(user_name, isDocker):
     column_table = "user_id"
 
     try:
-        schema_name        = get_db_schema_name() if isDocker is None else get_db_schema_name_container()
+        schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
         statementToExecute = f"SELECT {column_table} "                                       \
                              f"FROM `{schema_name}`.`{get_db_users_table_name()}` " \
                              f"WHERE user_name = '{user_name}';"
@@ -597,7 +597,7 @@ def get_new_user_id_from_users_table(isDocker):
 
     :return: new_user_id (int).
     """
-    schema_name  = get_db_schema_name() if isDocker is None else get_db_schema_name_container()
+    schema_name  = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
     sql_query    = f"SELECT user_id " \
                    f"FROM `{schema_name}`.`{get_db_users_table_name()}`;"
     query_result = run_sql_query(sql_query, isDocker)
@@ -629,7 +629,7 @@ def get_all_users_as_json(isDocker):
     """
     # Vars #
     all_users_as_json = []
-    schema_name = get_db_schema_name() if isDocker is None else get_db_schema_name_container()
+    schema_name = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
 
     # Establishing a connection to DB #
     connection, cursor = create_connection_to_db(isDocker)
@@ -686,7 +686,7 @@ def create_config_table(isDocker):
 
     try:
         # Create Table #
-        schema_name        = get_db_schema_name() if isDocker is None else get_db_schema_name_container()
+        schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
         statementToExecute = f"CREATE TABLE IF NOT EXISTS `{schema_name}`.`{get_db_config_table_name()}` " \
                              f"(`url` VARCHAR(50) NOT NULL, `browser` VARCHAR(50) NOT NULL, `user_id` INT NOT NULL, `user_name` VARCHAR(50) NOT NULL, PRIMARY KEY (`user_id`));"
         cursor.execute(statementToExecute)
@@ -740,7 +740,7 @@ def insert_rows_to_config_table(is_job_run, test_name, isDocker):
     connection, cursor = create_connection_to_db(isDocker)
 
     user_id     = number_of_rows + 1
-    schema_name = get_db_schema_name() if isDocker is None else get_db_schema_name_container()
+    schema_name = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
     while idx < len(user_names):
         url = f"http://{get_rest_host()}:{get_rest_port()}/{get_db_users_table_name()}/{user_id}"
         try:
@@ -785,7 +785,7 @@ def insert_new_user_to_config_table(user_id, user_name, isDocker):
         # Inserting data into table #
         url                = f"http://{get_rest_host()}:{get_rest_port()}/{get_db_users_table_name()}/{user_id}"
         browser            = "Chrome"
-        schema_name        = get_db_schema_name() if isDocker is None else get_db_schema_name_container()
+        schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
         statementToExecute = f"INSERT into `{schema_name}`.`{get_db_config_table_name()}` " \
                              f"(url, browser, user_id, user_name) "                         \
                              f"VALUES ('{url}', '{browser}', '{user_id}', '{user_name}')"
@@ -818,7 +818,7 @@ def get_all_users_ids_from_config_table(isDocker):
     # Column to search #
     column_table = "user_id"
 
-    schema_name        = get_db_schema_name() if isDocker is None else get_db_schema_name_container()
+    schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
     statementToExecute = f"SELECT {column_table} " \
                          f"FROM `{schema_name}`.`{get_db_config_table_name()}`;"
     cursor.execute(statementToExecute)
@@ -844,7 +844,7 @@ def get_all_users_ids_and_users_names_from_config_table(isDocker):
     # Establishing a connection to DB #
     connection, cursor = create_connection_to_db(isDocker)
 
-    schema_name        = get_db_schema_name() if isDocker is None else get_db_schema_name_container()
+    schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
     statementToExecute = f"SELECT user_id, user_name " \
                          f"FROM `{schema_name}`.`{get_db_config_table_name()}`;"
     cursor.execute(statementToExecute)
