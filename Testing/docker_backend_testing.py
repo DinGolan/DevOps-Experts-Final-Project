@@ -258,8 +258,9 @@ def docker_backend_testing_function():
     ####################
     # Jenkins / Docker #
     ####################
-    is_job_run = get_from_jenkins_arguments().is_job_run
-    rest_host  = get_rest_host() if (get_from_jenkins_arguments().is_docker is None or get_from_jenkins_arguments().is_docker == "False") else get_rest_host_container()
+    is_job_run            = get_from_jenkins_arguments().is_job_run
+    is_rest_api_container = get_from_jenkins_arguments().is_rest_api_container
+    rest_host             = get_rest_host() if (is_rest_api_container is None or is_rest_api_container == "False") else get_rest_host_container()
 
     ##################
     # Config Details #
