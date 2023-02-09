@@ -151,7 +151,6 @@ pipeline {
         }
 
         // Step 9 - Push Docker Compose //
-        /*
         stage("Push Docker Compose") {
             steps {
                 script {
@@ -163,7 +162,6 @@ pipeline {
                 }
             }
         }
-        */
 
         // Step 10 - Check Docker Service Healthy //
         stage("Check Docker Compose Services Health") {
