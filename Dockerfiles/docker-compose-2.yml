@@ -14,12 +14,12 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3306:3306"
-    command: mysqld
     healthcheck:
-      test: [ "CMD", "mysqladmin", "-u$MYSQL_USER", "-p$MYSQL_PASSWORD", "ping", "-h", "localhost" ]
-      interval: 3s
-      timeout: 45s
-      retries: 10
+        test: [ "CMD", "mysqladmin", "-u$MYSQL_USER", "-p$MYSQL_PASSWORD", "ping", "-h", "localhost" ]
+        interval: 3s
+        timeout: 45s
+        retries: 10
+    command: mysqld
   rest_api:
     depends_on:
       database:
@@ -61,5 +61,4 @@ services:
       timeout: 10s
       retries: 5
     links:
-      - database
       - rest_api
