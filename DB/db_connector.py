@@ -522,7 +522,7 @@ def get_user_name_of_specific_user_id_from_users_table(user_id, isDocker):
 
     try:
         schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
-        statementToExecute = f"SELECT {column_table} "                                       \
+        statementToExecute = f"SELECT {column_table} "                              \
                              f"FROM `{schema_name}`.`{get_db_users_table_name()}` " \
                              f"WHERE user_id = '{user_id}';"
         cursor.execute(statementToExecute)
@@ -557,7 +557,7 @@ def get_user_ids_of_specific_user_name_from_users_table(user_name, isDocker):
 
     try:
         schema_name        = get_db_schema_name() if isDocker is False else get_db_schema_name_container()
-        statementToExecute = f"SELECT {column_table} "                                       \
+        statementToExecute = f"SELECT {column_table} "                              \
                              f"FROM `{schema_name}`.`{get_db_users_table_name()}` " \
                              f"WHERE user_name = '{user_name}';"
         cursor.execute(statementToExecute)

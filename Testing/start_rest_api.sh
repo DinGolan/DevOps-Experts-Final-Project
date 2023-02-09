@@ -1,11 +1,11 @@
 #!/bin/bash
 
 wait_for_db() {
-  echo
+  echo ""
   echo "###############"
   echo "# Wait for DB #"
   echo "###############"
-  echo
+  echo ""
 
   host="$1"
   port="$2"
@@ -20,11 +20,11 @@ wait_for_db() {
 }
 
 check_file_exist () {
-  echo
+  echo ""
   echo "##################################"
   echo "# Check if relevant files exists #"
   echo "##################################"
-  echo
+  echo ""
 
   if [ ! -f "$1" ];
   then

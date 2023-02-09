@@ -49,9 +49,9 @@ def rest_api_requests(user_id):
         return {"status": "OK", "user_added": user_name}, 200
 
     elif request.method == "GET":
-        request_data  = request.json
-        isDocker      = request_data.get('isDocker')
-        user_name     = get_user_name_of_specific_user_id_from_users_table(user_id, isDocker)
+        request_data = request.json
+        isDocker     = request_data.get('isDocker')
+        user_name    = get_user_name_of_specific_user_id_from_users_table(user_id, isDocker)
 
         if user_name is None:
             return {"status": "error", "reason": f"No such ID - {user_id}"}, 500
