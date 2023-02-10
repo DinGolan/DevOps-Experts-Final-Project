@@ -26,6 +26,57 @@ from flask import Flask, make_response, request, send_file, jsonify
 rest_app = Flask(__name__, template_folder=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "HTML_Files"))
 
 
+def is_table_exist_in_db_for_rest_api(table_name, isDocker, db_host):
+    """
+    :explanations:
+    - Check if table exist already in DB (For REST API).
+
+    :param: table_name (str).
+    :param: isDocker (str).
+    :param: db_host (str).
+
+    :return: True - Table exist.
+            False - Table not exist.
+    """
+    # Vars #
+    is_table_exist     = False
+    db_tables_list     = []
+    connection, cursor = None, None
+
+    try:
+        user_name = get_from_jenkins_arguments().user_name
+        if user_name is None:
+            user_name = get_db_user_name() if isDocker == "False" else get_db_user_name_container()
+
+        password = get_from_jenkins_arguments().password
+        if password is None:
+            password = get_db_password()
+
+        schema_name = get_db_schema_name() if isDocker == "False" else get_db_schema_name_container()
+        connection  = pymysql.connect(host=db_host, port=get_db_port(), user=user_name, passwd=password, db=schema_name)
+        connection.autocommit(True)
+
+        cursor    = connection.cursor()
+        sql_query = "SHOW TABLES"
+        cursor.execute(sql_query)
+
+        if cursor.rowcount != 0:
+            for table in [tables[0] for tables in cursor.fetchall()]:
+                db_tables_list.append(table)
+
+            if table_name in db_tables_list:
+                is_table_exist = True
+
+    except pymysql.Error:
+        is_table_exist = False
+
+    finally:
+        if connection is not None and cursor is not None:
+            close_connection_of_db(connection, cursor)
+
+    return is_table_exist
+
+
 @rest_app.route("/users/<user_id>", methods=['GET', 'POST', 'PUT', 'DELETE'])
 def rest_api_requests(user_id):
     """
@@ -62,8 +113,8 @@ def rest_api_requests(user_id):
             request_data = request.json
             isDocker     = "True" if request_data.get('isDocker') is not None else "False"
         else:
-            if   is_table_exist_in_db(get_db_users_table_name(), isDocker="True" , db_host = "127.0.0.1")   is True: isDocker, db_host = "True", "127.0.0.1"
-            elif is_table_exist_in_db(get_db_users_table_name(), isDocker="False", db_host = get_db_host()) is True: isDocker, db_host = "True", get_db_host()
+            if   is_table_exist_in_db_for_rest_api(get_db_users_table_name(), isDocker="True" , db_host = "127.0.0.1")   is True: isDocker, db_host = "True" , "127.0.0.1"
+            elif is_table_exist_in_db_for_rest_api(get_db_users_table_name(), isDocker="False", db_host = get_db_host()) is True: isDocker, db_host = "False", get_db_host()
             else:
                 response = make_response(jsonify({"status": "error", "reason": "Tables not exist in DB ---> No such ID - " + user_id}))
                 status_code = 500
@@ -130,8 +181,8 @@ def get_all_users_request():
             request_data      = request.json
             isDocker          = "True" if request_data.get('isDocker') is not None else "False"
         else:
-            if   is_table_exist_in_db(get_db_users_table_name(), isDocker="True" , db_host = "127.0.0.1")   is True: isDocker, db_host = "True", "127.0.0.1"
-            elif is_table_exist_in_db(get_db_users_table_name(), isDocker="False", db_host = get_db_host()) is True: isDocker, db_host = "True", get_db_host()
+            if   is_table_exist_in_db_for_rest_api(get_db_users_table_name(), isDocker="True" , db_host = "127.0.0.1")   is True: isDocker, db_host = "True" , "127.0.0.1"
+            elif is_table_exist_in_db_for_rest_api(get_db_users_table_name(), isDocker="False", db_host = get_db_host()) is True: isDocker, db_host = "False", get_db_host()
             else:
                 response = make_response(jsonify({"status": "error", "reason": "Tables not exist in DB"}))
                 status_code = 500
