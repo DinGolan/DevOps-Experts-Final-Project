@@ -54,12 +54,16 @@ def rest_api_requests(user_id):
         return response, status_code
 
     elif request.method == "GET":
-        try:
+        if request.is_json:
             request_data = request.json
-            isDocker = "True" if request_data.get('isDocker') is not None else "False"
-        except json.decoder.JSONDecodeError:
-            # TODO - Ask Amir about this section (How do I know which DB I can take) #
-            isDocker = "False"
+            isDocker     = "True" if request_data.get('isDocker') is not None else "False"
+        else:
+            if   is_table_exist_in_db(get_db_users_table_name(), isDocker="True"):  isDocker = "True"
+            elif is_table_exist_in_db(get_db_users_table_name(), isDocker="False"): isDocker = "False"
+            else:
+                response = make_response(jsonify({"status": "error", "reason": "Tables not exist in DB ---> No such ID - " + user_id}))
+                status_code = 500
+                return response, status_code
 
         user_name    = get_user_name_of_specific_user_id_from_users_table(user_id, isDocker)
 
