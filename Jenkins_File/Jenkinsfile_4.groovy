@@ -56,20 +56,7 @@ pipeline {
             }
         }
 
-        // Step 3.1 - DB Tables Will be Created //
-        stage('Remote DB - Create DB Tables') {
-            steps {
-                script {
-                    if (checkOS() == "Windows") {
-                        bat 'python DB\\db_pre_definitions.py'
-                    } else {
-                        sh 'python DB/db_pre_definitions.py'
-                    }
-                }
-            }
-        }
-
-        // Step 3.2 - Run REST API //
+        // Step 3 - Run REST API //
         stage("Run `rest_app.py` (Backend)") {
             steps {
                 script {
