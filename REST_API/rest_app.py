@@ -122,9 +122,22 @@ def get_all_users_request():
     :return: Json format.
     """
     if request.method == "GET":
-        request_data      = request.json
-        isDocker          = "True" if request_data.get('isDocker') is not None else "False"
-        all_users_as_json = get_all_users_as_json(isDocker)
+
+        # Vars #
+        db_host = None
+
+        if request.is_json:
+            request_data      = request.json
+            isDocker          = "True" if request_data.get('isDocker') is not None else "False"
+        else:
+            if   is_table_exist_in_db(get_db_users_table_name(), isDocker="True" , db_host = "127.0.0.1")   is True: isDocker, db_host = "True", "127.0.0.1"
+            elif is_table_exist_in_db(get_db_users_table_name(), isDocker="False", db_host = get_db_host()) is True: isDocker, db_host = "True", get_db_host()
+            else:
+                response = make_response(jsonify({"status": "error", "reason": "Tables not exist in DB"}))
+                status_code = 500
+                return response, status_code
+
+        all_users_as_json = get_all_users_as_json(isDocker, db_host)
 
         if all_users_as_json is not None:
             all_users_as_json = json.loads(all_users_as_json)

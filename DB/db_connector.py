@@ -197,6 +197,7 @@ def get_details_from_external_user_for_frontend(test_name, isDocker, user_id_fro
 
     :return: url (str), browser(str).
     """
+    # Vars #
     schema_name = get_db_schema_name() if isDocker == "False" else get_db_schema_name_container()
 
     while True:
@@ -556,10 +557,7 @@ def get_user_name_of_specific_user_id_from_users_table(user_id, isDocker, db_hos
              None: Not Succeed.
     """
     # Establishing a connection to DB #
-    if db_host is None:
-        connection, cursor = create_connection_to_db(isDocker)
-    else:
-        connection, cursor = create_connection_to_db(isDocker, db_host)
+    connection, cursor = create_connection_to_db(isDocker, db_host)
 
     # Column to search #
     column_table = "user_name"
@@ -661,22 +659,23 @@ def get_new_user_id_from_users_table(isDocker):
     return new_user_id
 
 
-def get_all_users_as_json(isDocker):
+def get_all_users_as_json(isDocker, db_host):
     """
     :explanations:
     - Get all users from `users` table, and return them in Json format.
 
     :param: isDocker (str).
+    :param: db_host (str).
 
     :return: users_as_json : (Json).
              None          : If we can't iterate over the table.
     """
     # Vars #
     all_users_as_json = []
-    schema_name = get_db_schema_name() if isDocker == "False" else get_db_schema_name_container()
+    schema_name       = get_db_schema_name() if isDocker == "False" else get_db_schema_name_container()
 
     # Establishing a connection to DB #
-    connection, cursor = create_connection_to_db(isDocker)
+    connection, cursor = create_connection_to_db(isDocker, db_host)
 
     # PyPika SELECT #
     pypika_query = Query.from_(Schema(schema_name).users).select('*')
