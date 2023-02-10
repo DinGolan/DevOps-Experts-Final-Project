@@ -272,16 +272,16 @@ pipeline {
             }
         }
         */
+    }
 
-        // Step 13 - Clean & Remove Docker Images Build & Push //
-        post {
-            always {
-                script {
-                    if (checkOS() == "Windows") {
-                        bat 'docker-compose --file Dockerfiles\\%DOCKER_COMPOSE_FILE% down --rmi all --volumes'
-                    } else {
-                        sh "docker-compose --file Dockerfiles/${DOCKER_COMPOSE_FILE} down --rmi all --volumes"
-                    }
+    // Step 13 - Clean & Remove Docker Images Build & Push //
+    post {
+        always {
+            script {
+                if (checkOS() == "Windows") {
+                    bat 'docker-compose --file Dockerfiles\\%DOCKER_COMPOSE_FILE% down --rmi all --volumes'
+                } else {
+                    sh "docker-compose --file Dockerfiles/${DOCKER_COMPOSE_FILE} down --rmi all --volumes"
                 }
             }
         }
