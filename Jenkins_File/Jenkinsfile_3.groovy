@@ -230,28 +230,6 @@ pipeline {
         }
 
         // Step 12 - Docker App - Stop Flask Servers - Option 1 //
-        stage("[Docker] Docker App - Stop Flask Servers") {
-            steps {
-                script {
-                    if (checkOS() == "Windows") {
-                        def containerId = bat(script: 'docker ps --filter "name=%REST_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
-                        sleep(time: 2, unit: "SECONDS")
-                        withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                            bat "docker exec -i ${containerId} sh -c \"curl -i --connect-timeout 100 -m 150 http://127.0.0.1:5000/stop_server\""
-                        }
-                    } else {
-                        def containerId = sh(script: 'docker ps --filter "name=${REST_CONTAINER_NAME}" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
-                        sleep(time: 2, unit: "SECONDS")
-                        withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                            sh "docker exec -i ${containerId} sh \"curl -i --connect-timeout 100 -m 150 http://127.0.0.1:5000/stop_server\""
-                        }
-                    }
-                }
-            }
-        }
-
-        // Step 12 - Docker App - Stop Flask Servers - Option 2 //
-        /*
         stage("[Docker] Run `clean_environment.py` (Clean)") {
             steps {
                 script {
@@ -266,6 +244,28 @@ pipeline {
                         sleep(time: 2, unit: "SECONDS")
                         withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
                             sh "docker exec -i ${containerId} sh \"/usr/local/bin/python Clean/clean_environment.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -c ${CLEAN_SERVER}\""
+                        }
+                    }
+                }
+            }
+        }
+
+        // Step 12 - Docker App - Stop Flask Servers - Option 2 //
+        /*
+        stage("[Docker] Docker App - Stop Flask Servers") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        def containerId = bat(script: 'docker ps --filter "name=%REST_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
+                        sleep(time: 2, unit: "SECONDS")
+                        withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                            bat "docker exec -i ${containerId} sh -c \"curl -i --connect-timeout 30 http://127.0.0.1:5000/stop_server\""
+                        }
+                    } else {
+                        def containerId = sh(script: 'docker ps --filter "name=${REST_CONTAINER_NAME}" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
+                        sleep(time: 2, unit: "SECONDS")
+                        withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                            sh "docker exec -i ${containerId} sh \"curl -i --connect-timeout 30 http://127.0.0.1:5000/stop_server\""
                         }
                     }
                 }
