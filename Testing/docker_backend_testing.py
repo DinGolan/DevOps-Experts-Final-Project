@@ -152,7 +152,7 @@ def send_post_request(user_name, rest_host):
     data            = {"user_name": user_name, "isDocker": "True"}
     new_user_id     = get_new_user_id_from_users_table(isDocker="True")
     url             = f"http://{rest_host}:{get_rest_port()}/{get_db_users_table_name()}/{new_user_id}"
-    requests_result = requests.post(url=url, headers=headers, data=str(data))
+    requests_result = requests.post(url=url, headers=headers, json=data)
     json_result     = requests_result.json()
     check_requests_result("POST", new_user_id, requests_result, json_result, "user_added")
 
@@ -172,7 +172,7 @@ def send_get_request(url, user_id):
     print("#########\n")
     headers                      = {'Content-Type': 'application/json'}
     data                         = {"user_id": user_id, "isDocker": "True"}
-    requests_result, status_code = requests.get(url=url, headers=headers, data=str(data))
+    requests_result, status_code = requests.get(url=url, headers=headers, json=data)
     json_result                  = requests_result.json()
     check_requests_result("GET", user_id, requests_result, json_result, "user_name")
 
@@ -191,7 +191,7 @@ def send_get_all_request(url):
     print("#############\n")
     headers         = {'Content-Type': 'application/json'}
     data            = {"isDocker": "True"}
-    requests_result = requests.get(url=url, headers=headers, data=str(data))
+    requests_result = requests.get(url=url, headers=headers, json=data)
     json_result     = requests_result.json()
     check_requests_result_for_get_all("GET_ALL", requests_result, json_result, "users_table")
 
@@ -223,7 +223,7 @@ def send_put_request(is_job_run, url, user_id, test_name):
 
     headers         = {'Content-Type': 'application/json'}
     data            = {"user_id": user_id, "new_user_name": new_user_name, "isDocker": "True"}
-    requests_result = requests.put(url=url, headers=headers, data=str(data))
+    requests_result = requests.put(url=url, headers=headers, json=data)
     json_result     = requests_result.json()
     check_requests_result("PUT", user_id, requests_result, json_result, "user_updated")
 
@@ -243,7 +243,7 @@ def send_delete_request(url, user_id):
     print("############\n")
     headers         = {'Content-Type': 'application/json'}
     data            = {"user_id": user_id, "isDocker": "True"}
-    requests_result = requests.delete(url=url, headers=headers, data=str(data))
+    requests_result = requests.delete(url=url, headers=headers, json=data)
     json_result     = requests_result.json()
     check_requests_result("DELETE", user_id, requests_result, json_result, "user_deleted")
 
