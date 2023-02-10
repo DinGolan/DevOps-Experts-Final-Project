@@ -64,6 +64,7 @@ def clean_rest_api_environment():
         requests_result = requests.get(url, headers=headers, proxies=proxies)
 
         if requests_result.ok:
+            requests_result.raise_for_status()
             json_result = ast.literal_eval(requests_result.json())
             message     = "REST API server stopped successfully ..." if json_result.get("status") == "Server Stopped" else "REST API server didn't stopped ..."
         else:
@@ -71,13 +72,19 @@ def clean_rest_api_environment():
 
         print("\n[Clear Environment] : " + str({'message': message, 'url': url, 'status code': requests_result.status_code}) + "\n")
 
-    except (Exception, ConnectionError, TimeoutError) as exception_error:
+    except requests.exceptions.RequestException as exception_error:
+        print(f"\n[Clear Environment] : REST API server stopped successfully, but an error occurred while making the request. Exception is - {exception_error}\n")
+
+    except ValueError as exception_error:
+        print(f"\n[Clear Environment] : REST API server stopped successfully, but an error occurred while parsing the response. Exception is - {exception_error}\n")
+
+    except (ConnectionError, TimeoutError) as exception_error:
         if "ConnectionResetError" in str(exception_error):
             message     = "REST API server stopped successfully ..."
             status_code = 200
             print("\n[Clear Environment] : " + str({'message': message, 'url': url, 'status code': status_code}) + "\n")
         else:
-            print(f"\n[Clear Environment] : REST API server didn't stopped. Exception is - {exception_error}\n")
+            print(f"\n[Clear Environment] : An error occurred. Exception is - {exception_error}\n")
 
 
 def clean_web_app_environment():
@@ -101,6 +108,7 @@ def clean_web_app_environment():
         requests_result = requests.get(url, headers=headers, proxies=proxies)
 
         if requests_result.ok:
+            requests_result.raise_for_status()
             json_result = ast.literal_eval(requests_result.json())
             message     = "WEB APP server stopped successfully ..." if json_result.get("status") == "Server Stopped" else "WEB APP server didn't stopped ..."
         else:
@@ -108,13 +116,19 @@ def clean_web_app_environment():
 
         print("\n[Clear Environment] : " + str({'message': message, 'url': url, 'status code': requests_result.status_code}) + "\n")
 
-    except (Exception, ConnectionError, TimeoutError) as exception_error:
+    except requests.exceptions.RequestException as exception_error:
+        print(f"\n[Clear Environment] : WEB APP server stopped successfully, but an error occurred while making the request. Exception is - {exception_error}\n")
+
+    except ValueError as exception_error:
+        print(f"\n[Clear Environment] : WEB APP server stopped successfully, but an error occurred while parsing the response. Exception is - {exception_error}\n")
+
+    except (ConnectionError, TimeoutError) as exception_error:
         if "ConnectionResetError" in str(exception_error):
-            message     = "REST API server stopped successfully ..."
+            message     = "WEB APP server stopped successfully ..."
             status_code = 200
             print("\n[Clear Environment] : " + str({'message': message, 'url': url, 'status code': status_code}) + "\n")
         else:
-            print(f"\n[Clear Environment] : WEB APP server didn't stopped. Exception is - {exception_error}")
+            print(f"\n[Clear Environment] : An error occurred. Exception is - {exception_error}")
 
 
 def main():
