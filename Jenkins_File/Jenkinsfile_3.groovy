@@ -274,8 +274,8 @@ pipeline {
         */
 
         // Step 13 - Clean & Remove Docker Images Build & Push //
-        stage ('Clean Docker Environment') {
-            steps {
+        post {
+            always {
                 script {
                     if (checkOS() == "Windows") {
                         bat 'docker-compose --file Dockerfiles\\%DOCKER_COMPOSE_FILE% down --rmi all --volumes'
