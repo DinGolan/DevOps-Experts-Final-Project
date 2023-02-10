@@ -39,5 +39,6 @@ check_file_exist () {
 wait_for_db "database" "3306"
 
 check_file_exist "/DevOps_Experts_Final_Project/REST_API/rest_app.py"
+check_file_exist "/DevOps_Experts_Final_Project/DB/db_pre_definitions.py"
 
-/bin/sh -c "python /DevOps_Experts_Final_Project/REST_API/rest_app.py"
+/bin/sh -c "python /DevOps_Experts_Final_Project/DB/db_pre_definitions.py && sleep 5 && python /DevOps_Experts_Final_Project/REST_API/rest_app.py"

@@ -54,8 +54,13 @@ def rest_api_requests(user_id):
         return response, status_code
 
     elif request.method == "GET":
-        request_data = request.json
-        isDocker     = "True" if request_data.get('isDocker') is not None else "False"
+        try:
+            request_data = request.json
+            isDocker = "True" if request_data.get('isDocker') is not None else "False"
+        except json.decoder.JSONDecodeError:
+            # TODO - Ask Amir about this section (How do I know which DB I can take) #
+            isDocker = "False"
+
         user_name    = get_user_name_of_specific_user_id_from_users_table(user_id, isDocker)
 
         if user_name is None:

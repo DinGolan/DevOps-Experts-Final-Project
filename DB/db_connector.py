@@ -103,6 +103,42 @@ def close_connection_of_db(connection, cursor):
 #########################
 # Generals - DB Section #
 #########################
+def is_table_exist_in_db(table_name, isDocker):
+    """
+    :explanations:
+    - Check if table exist already in DB.
+
+    :param: table_name (str).
+    :param: isDocker (str).
+
+    :return: True - Table exist.
+            False - Table not exist.
+    """
+    # Vars #
+    is_table_exist = False
+    db_tables_list = []
+
+    # Establishing a connection to DB #
+    connection, cursor = create_connection_to_db(isDocker)
+    sql_query          = "SHOW TABLES"
+    cursor.execute(sql_query)
+
+    if cursor.rowcount != 0:
+        for table in [tables[0] for tables in cursor.fetchall()]:
+            db_tables_list.append(table)
+
+        if table_name not in db_tables_list:
+            print(f"\nInfo : `{table_name}` table - Not Exist in DB ...\n")
+        else:
+            print(f"\nInfo : `{table_name}` table - Already Exist DB ...\n")
+            is_table_exist = True
+
+    # Close connection #
+    close_connection_of_db(connection, cursor)
+
+    return is_table_exist
+
+
 def get_details_from_external_user_for_backend(request_type, test_name, isDocker):
     """
     :explanations:
@@ -721,7 +757,7 @@ def insert_rows_to_config_table(is_job_run, test_name, isDocker):
     browser    = "Chrome"
 
     # Get Names of Users #
-    if is_job_run:
+    if is_job_run == "True":
         if   test_name == "Backend" : user_names = get_users_names_in_static_way()[:10]
         elif test_name == "Frontend": user_names = get_users_names_in_static_way()[10:20]
         elif test_name == "Combined": user_names = get_users_names_in_static_way()[20:40]

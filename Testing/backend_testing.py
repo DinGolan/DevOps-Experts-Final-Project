@@ -188,7 +188,8 @@ def send_get_all_request(url):
     print("\n#############")
     print("#  GET ALL  #")
     print("#############\n")
-    requests_result = requests.get(url=url)
+    headers         = {'Content-Type': 'application/json'}
+    requests_result = requests.get(url=url, headers=headers)
     json_result     = requests_result.json()
     check_requests_result_for_get_all("GET_ALL", requests_result, json_result, "users_table")
 
@@ -212,13 +213,15 @@ def send_put_request(is_job_run, url, user_id, test_name):
     # Vars #
     new_user_name = None
 
-    if is_job_run:
+    if is_job_run == "True":
         if   test_name == "Backend" : new_user_name = get_new_user_name_backend_test()
         elif test_name == "Combined": new_user_name = get_new_user_name_combined_backend_test()
     else:
         new_user_name = input("Please type new user name : ")
 
-    requests_result = requests.put(url=url, json={"user_id": user_id, "new_user_name": new_user_name})
+    headers         = {'Content-Type': 'application/json'}
+    data            = {"user_id": user_id, "new_user_name": new_user_name}
+    requests_result = requests.put(url=url, headers=headers, json=data)
     json_result     = requests_result.json()
     check_requests_result("PUT", user_id, requests_result, json_result, "user_updated")
 
@@ -236,7 +239,9 @@ def send_delete_request(url, user_id):
     print("\n############")
     print("#  DELETE  #")
     print("############\n")
-    requests_result = requests.delete(url=url, json={"user_id": user_id})
+    headers         = {'Content-Type': 'application/json'}
+    data            = {"user_id": user_id}
+    requests_result = requests.delete(url=url, headers=headers, json=data)
     json_result     = requests_result.json()
     check_requests_result("DELETE", user_id, requests_result, json_result, "user_deleted")
 
@@ -252,11 +257,15 @@ def backend_testing_function():
     print("| Backend Test |")
     print("----------------\n")
 
+    # Vars #
+    is_config_table_exist = is_table_exist_in_db(get_db_config_table_name(), isDocker="False")
+    is_users_table_exist  = is_table_exist_in_db(get_db_users_table_name() , isDocker="False")
+
     ###########################
     # Drop Tables (If Exists) #
     ###########################
-    drop_table(get_db_config_table_name(), isDocker="False")
-    drop_table(get_db_users_table_name() , isDocker="False")
+    if is_config_table_exist is True: drop_table(get_db_config_table_name(), isDocker="False")
+    if is_users_table_exist  is True: drop_table(get_db_users_table_name() , isDocker="False")
 
     ###########
     # Jenkins #

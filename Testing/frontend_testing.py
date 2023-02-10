@@ -87,11 +87,15 @@ def frontend_testing_function():
     print("| Frontend Test |")
     print("-----------------\n")
 
+    # Vars #
+    is_config_table_exist = is_table_exist_in_db(get_db_config_table_name(), isDocker="False")
+    is_users_table_exist  = is_table_exist_in_db(get_db_users_table_name() , isDocker="False")
+
     ###########################
     # Drop Tables (If Exists) #
     ###########################
-    drop_table(get_db_config_table_name(), isDocker="False")
-    drop_table(get_db_users_table_name() , isDocker="False")
+    if is_config_table_exist is True: drop_table(get_db_config_table_name(), isDocker="False")
+    if is_users_table_exist  is True: drop_table(get_db_users_table_name() , isDocker="False")
 
     ###########
     # Jenkins #

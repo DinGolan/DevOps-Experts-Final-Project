@@ -128,7 +128,7 @@ def main():
     is_job_run        = jenkins_arguments.is_job_run
     clean_server      = jenkins_arguments.clean_server
 
-    if is_job_run:
+    if is_job_run == "True":
         # Jenkins File - 1 #
         if clean_server is None:
             clean_rest_api_environment()
