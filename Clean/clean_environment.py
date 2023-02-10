@@ -7,6 +7,8 @@
 import os
 import ast
 import sys
+import time
+
 import requests
 
 
@@ -62,6 +64,7 @@ def clean_rest_api_environment():
                             'method'         : "GET"
                         }
         requests_result = requests.get(url, headers=headers, proxies=proxies)
+        time.sleep(5)
 
         if requests_result.ok:
             json_result = ast.literal_eval(requests_result.json())
@@ -99,6 +102,7 @@ def clean_web_app_environment():
                             'method'         : "GET"
                         }
         requests_result = requests.get(url, headers=headers, proxies=proxies)
+        time.sleep(5)
 
         if requests_result.ok:
             json_result = ast.literal_eval(requests_result.json())
