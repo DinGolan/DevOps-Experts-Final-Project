@@ -5,6 +5,7 @@
 
 # Imports #
 import os
+import ast
 import sys
 import requests
 
@@ -63,7 +64,7 @@ def clean_rest_api_environment():
         requests_result = requests.get(url, headers=headers, proxies=proxies)
 
         if requests_result.ok:
-            json_result = requests_result.json()
+            json_result = ast.literal_eval(requests_result.json())
             message     = "REST API server stopped successfully ..." if json_result.get("status") == "Server Stopped" else "REST API server didn't stopped ..."
         else:
             message     = "REST API server didn't stopped ..."
@@ -100,7 +101,7 @@ def clean_web_app_environment():
         requests_result = requests.get(url, headers=headers, proxies=proxies)
 
         if requests_result.ok:
-            json_result = requests_result.json()
+            json_result = ast.literal_eval(requests_result.json())
             message     = "WEB APP server stopped successfully ..." if json_result.get("status") == "Server Stopped" else "WEB APP server didn't stopped ..."
         else:
             message     = "WEB APP server didn't stopped ..."
