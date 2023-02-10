@@ -151,7 +151,7 @@ def send_post_request(user_name):
     data            = {"user_name": user_name}
     new_user_id     = get_new_user_id_from_users_table(isDocker="False")
     url             = f"http://{get_rest_host()}:{get_rest_port()}/{get_db_users_table_name()}/{new_user_id}"
-    requests_result = requests.post(url=url, headers=headers, json=data)
+    requests_result = requests.post(url=url, headers=headers, data=str(data))
     json_result     = requests_result.json()
     check_requests_result("POST", new_user_id, requests_result, json_result, "user_added")
 
@@ -171,7 +171,7 @@ def send_get_request(url, user_id):
     print("#########\n")
     headers                      = {'Content-Type': 'application/json'}
     data                         = {"user_id": user_id}
-    requests_result              = requests.get(url=url, headers=headers, json=data)
+    requests_result              = requests.get(url=url, headers=headers, data=str(data))
     json_result                  = requests_result.json()
     check_requests_result("GET", user_id, requests_result, json_result, "user_name")
 
@@ -221,7 +221,7 @@ def send_put_request(is_job_run, url, user_id, test_name):
 
     headers         = {'Content-Type': 'application/json'}
     data            = {"user_id": user_id, "new_user_name": new_user_name}
-    requests_result = requests.put(url=url, headers=headers, json=data)
+    requests_result = requests.put(url=url, headers=headers, data=str(data))
     json_result     = requests_result.json()
     check_requests_result("PUT", user_id, requests_result, json_result, "user_updated")
 
@@ -241,7 +241,7 @@ def send_delete_request(url, user_id):
     print("############\n")
     headers         = {'Content-Type': 'application/json'}
     data            = {"user_id": user_id}
-    requests_result = requests.delete(url=url, headers=headers, json=data)
+    requests_result = requests.delete(url=url, headers=headers, data=str(data))
     json_result     = requests_result.json()
     check_requests_result("DELETE", user_id, requests_result, json_result, "user_deleted")
 
