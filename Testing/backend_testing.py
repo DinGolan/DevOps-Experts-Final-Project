@@ -169,10 +169,10 @@ def send_get_request(url, user_id):
     print("\n#########")
     print("#  GET  #")
     print("#########\n")
-    headers                      = {'Content-Type': 'application/json'}
-    data                         = {"user_id": user_id}
-    requests_result              = requests.get(url=url, headers=headers, json=data)
-    json_result                  = requests_result.json()
+    headers         = {'Content-Type': 'application/json'}
+    data            = {"user_id": user_id}
+    requests_result = requests.get(url=url, headers=headers, json=data)
+    json_result     = requests_result.json()
     check_requests_result("GET", user_id, requests_result, json_result, "user_name")
 
 
