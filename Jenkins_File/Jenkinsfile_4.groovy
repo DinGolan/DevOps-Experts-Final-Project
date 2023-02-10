@@ -216,13 +216,13 @@ pipeline {
                         def containerId = bat(script: 'docker ps --filter "name=%REST_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
                         sleep(time: 2, unit: "SECONDS")
                         withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                            bat "docker exec -i ${containerId} sh -c \"curl -i --connect-timeout 30 -m 100 http://127.0.0.1:5000/stop_server \""
+                            bat "docker exec -i ${containerId} sh -c \"curl -i --connect-timeout 100 -m 150 http://127.0.0.1:5000/stop_server \""
                         }
                     } else {
                         def containerId = sh(script: 'docker ps --filter "name=${REST_CONTAINER_NAME}" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
                         sleep(time: 2, unit: "SECONDS")
                         withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-                            sh "docker exec -i ${containerId} sh \"curl -i --connect-timeout 30 -m 100 http://127.0.0.1:5000/stop_server\""
+                            sh "docker exec -i ${containerId} sh \"curl -i --connect-timeout 100 -m 150 http://127.0.0.1:5000/stop_server\""
                         }
                     }
                 }
