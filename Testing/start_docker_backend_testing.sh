@@ -47,4 +47,4 @@ wait_for_db "database" "3306"
 
 check_file_exist "/DevOps_Experts_Final_Project/Testing/docker_backend_testing.py"
 
-/bin/sh -c "sleep 3 && python /DevOps_Experts_Final_Project/Testing/docker_backend_testing.py -u $MYSQL_USER_NAME -p $MYSQL_PASSWORD -i $IS_JOB_RUN -r $REQUEST_TYPE -d $IS_REST_API_CONTAINER"
+/bin/sh -c "sleep 20 && python /DevOps_Experts_Final_Project/Testing/docker_backend_testing.py -u $MYSQL_USER_NAME -p $MYSQL_PASSWORD -i $IS_JOB_RUN -r $REQUEST_TYPE -d $IS_REST_API_CONTAINER"

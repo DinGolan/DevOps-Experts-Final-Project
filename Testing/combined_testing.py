@@ -90,7 +90,7 @@ def combined_testing_function():
             print("\n#############################################")
             print("# Jenkins - Parameters For Combined Testing #")
             print("#############################################")
-            if   request_type == "POST":                   print("[POST]             : "   + str({'new_user_name': user_name_combined_test}) + "\n")
+            if   request_type == "POST":                   print("[POST]             : "   + str({'new_user_name': user_name_combined_test, 'url': url}) + "\n")
             elif request_type in ["GET", "PUT", "DELETE"]: print("[GET, PUT, DELETE] : "   + str({'user_id': user_id_combined_test, 'url': url}) + "\n")
             else:                                          print("[GET_ALL, PRINT_ALL] : " + str({'url': url}) + "\n")
 

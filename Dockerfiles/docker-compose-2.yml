@@ -5,7 +5,6 @@ services:
       - ../.env
     image: "mysql:${MYSQL_TAG}"
     container_name: ${MYSQL_CONTAINER_NAME}
-    hostname: ${MYSQL_HOST_NAME}
     environment:
       MYSQL_ROOT_USER: ${MYSQL_ROOT_USER}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -14,6 +13,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3306:3306"
+    hostname: ${MYSQL_HOST_NAME}
     healthcheck:
         test: [ "CMD", "mysqladmin", "-u$MYSQL_USER", "-p$MYSQL_PASSWORD", "ping", "-h", "localhost" ]
         interval: 3s

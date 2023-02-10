@@ -18,8 +18,8 @@ sys.path.append(package_path)
 
 
 # From #
-from flask import Flask, make_response, request, send_file, jsonify
 from DB.db_connector import *
+from flask import Flask, make_response, request, send_file, jsonify
 
 
 # Create Flask Instance #
@@ -54,18 +54,22 @@ def rest_api_requests(user_id):
         return response, status_code
 
     elif request.method == "GET":
+
+        # Vars #
+        db_host = None
+
         if request.is_json:
             request_data = request.json
             isDocker     = "True" if request_data.get('isDocker') is not None else "False"
         else:
-            if   is_table_exist_in_db(get_db_users_table_name(), isDocker="True"):  isDocker = "True"
-            elif is_table_exist_in_db(get_db_users_table_name(), isDocker="False"): isDocker = "False"
+            if   is_table_exist_in_db(get_db_users_table_name(), isDocker="True" , db_host = "127.0.0.1")   is True: isDocker, db_host = "True", "127.0.0.1"
+            elif is_table_exist_in_db(get_db_users_table_name(), isDocker="False", db_host = get_db_host()) is True: isDocker, db_host = "True", get_db_host()
             else:
                 response = make_response(jsonify({"status": "error", "reason": "Tables not exist in DB ---> No such ID - " + user_id}))
                 status_code = 500
                 return response, status_code
 
-        user_name    = get_user_name_of_specific_user_id_from_users_table(user_id, isDocker)
+        user_name = get_user_name_of_specific_user_id_from_users_table(user_id, isDocker, db_host)
 
         if user_name is None:
             response    = make_response(jsonify({"status": "error", "reason": "No such ID - " + user_id}))
