@@ -7,8 +7,6 @@
 import os
 import ast
 import sys
-import time
-
 import requests
 
 
