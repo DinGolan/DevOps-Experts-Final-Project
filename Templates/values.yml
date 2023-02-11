@@ -1,0 +1,22 @@
+replicaCount: 5
+
+pythonFlaskApp:
+  name: python_rest_application
+  image:
+    repository: dingolan/devops_experts_final_project
+    tag: python_app_version_latest_3
+    pullPolicy: Always
+  ports:
+    restPort: 5000
+
+mysql:
+  name: mysql
+  image:
+    repository: mysql:8.0.32
+    tag: 8.0.32
+    pullPolicy: Always
+  ports:
+    dbPort: 3306
+
+service:
+  type: LoadBalancer
