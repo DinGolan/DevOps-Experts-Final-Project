@@ -182,7 +182,9 @@ def get_details_from_external_user_for_backend(request_type, test_name, isDocker
 
         # GET_ALL #
         else:
-            url = f"http://{get_rest_host()}:{get_rest_port()}/{get_db_users_table_name()}/get_all_users"
+            is_rest_api_container = get_from_jenkins_arguments().is_rest_api_container
+            rest_host             = get_rest_host() if (is_rest_api_container is None or is_rest_api_container == "False") else get_rest_host_container()
+            url                   = f"http://{rest_host}:{get_rest_port()}/{get_db_users_table_name()}/get_all_users"
             return url
 
 
@@ -782,10 +784,13 @@ def insert_rows_to_config_table(is_job_run, test_name, isDocker):
     # Establishing a connection to DB #
     connection, cursor = create_connection_to_db(isDocker)
 
-    user_id     = number_of_rows + 1
-    schema_name = get_db_schema_name() if isDocker == "False" else get_db_schema_name_container()
+    user_id               = number_of_rows + 1
+    schema_name           = get_db_schema_name() if isDocker == "False" else get_db_schema_name_container()
+    is_rest_api_container = get_from_jenkins_arguments().is_rest_api_container
+    rest_host             = get_rest_host() if (is_rest_api_container is None or is_rest_api_container == "False") else get_rest_host_container()
+
     while idx < len(user_names):
-        url = f"http://{get_rest_host()}:{get_rest_port()}/{get_db_users_table_name()}/{user_id}"
+        url       = f"http://{rest_host}:{get_rest_port()}/{get_db_users_table_name()}/{user_id}"
         try:
             # Inserting data into table #
             statementToExecute = f"INSERT into `{schema_name}`.`{get_db_config_table_name()}` " \
@@ -826,10 +831,12 @@ def insert_new_user_to_config_table(user_id, user_name, isDocker):
 
     try:
         # Inserting data into table #
-        url                = f"http://{get_rest_host()}:{get_rest_port()}/{get_db_users_table_name()}/{user_id}"
-        browser            = "Chrome"
-        schema_name        = get_db_schema_name() if isDocker == "False" else get_db_schema_name_container()
-        statementToExecute = f"INSERT into `{schema_name}`.`{get_db_config_table_name()}` " \
+        is_rest_api_container = get_from_jenkins_arguments().is_rest_api_container
+        rest_host             = get_rest_host() if (is_rest_api_container is None or is_rest_api_container == "False") else get_rest_host_container()
+        url                   = f"http://{rest_host}:{get_rest_port()}/{get_db_users_table_name()}/{user_id}"
+        browser               = "Chrome"
+        schema_name           = get_db_schema_name() if isDocker == "False" else get_db_schema_name_container()
+        statementToExecute    = f"INSERT into `{schema_name}`.`{get_db_config_table_name()}` " \
                              f"(url, browser, user_id, user_name) "                         \
                              f"VALUES ('{url}', '{browser}', '{user_id}', '{user_name}')"
         cursor.execute(statementToExecute)

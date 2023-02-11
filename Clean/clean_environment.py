@@ -43,14 +43,17 @@ def servers_menu():
     return server_type
 
 
-def clean_rest_api_environment():
+def clean_rest_api_environment(is_rest_api_container):
     """
     :explanations:
     - Clean REST API environment.
 
+    :param: is_rest_api_container (str).
+
     :return: None
     """
-    url = f"http://{get_rest_host()}:{get_rest_port()}/{STOP_SERVER}"
+    rest_host = get_rest_host() if (is_rest_api_container is None or is_rest_api_container == "False") else get_rest_host_container()
+    url       = f"http://{rest_host}:{get_rest_port()}/{STOP_SERVER}"
 
     try:
         proxies         = {"http": url, "https": url}
@@ -139,23 +142,24 @@ def main():
     ###########
     # Jenkins #
     ###########
-    jenkins_arguments = get_from_jenkins_arguments()
-    is_job_run        = jenkins_arguments.is_job_run
-    clean_server      = jenkins_arguments.clean_server
+    jenkins_arguments     = get_from_jenkins_arguments()
+    is_job_run            = jenkins_arguments.is_job_run
+    is_rest_api_container = jenkins_arguments.is_rest_api_container
+    clean_server          = jenkins_arguments.clean_server
 
     if is_job_run == "True":
         # Jenkins File - 1 #
         if clean_server is None:
-            clean_rest_api_environment()
+            clean_rest_api_environment(is_rest_api_container)
             clean_web_app_environment()
 
         # Jenkins File - 2 / 3 #
-        elif clean_server == "REST_API": clean_rest_api_environment()
+        elif clean_server == "REST_API": clean_rest_api_environment(is_rest_api_container)
         elif clean_server == "WEB_APP" : clean_web_app_environment()
 
     else:
         server_type = servers_menu()
-        if   server_type == "REST_API": clean_rest_api_environment()
+        if   server_type == "REST_API": clean_rest_api_environment(is_rest_api_container)
         elif server_type == "WEB_APP" : clean_web_app_environment()
 
 
