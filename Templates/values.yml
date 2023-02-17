@@ -1,10 +1,10 @@
 replicaCount: 5
 
 pythonFlaskApp:
-  name: python_rest_application
+  name: rest_api_application
   image:
     repository: dingolan/devops_experts_final_project
-    tag: python_app_version_latest_3
+    tag: rest_api_version_latest_1
     pullPolicy: Always
   ports:
     restPort: 5000

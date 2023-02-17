@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rest_api_application_service
+spec:
+  selector:
+    app: rest_api_application
+  ports:
+  - name: port_5000
+    protocol: "TCP"
+    port: 5000
+    targetPort: 5000
+  type: LoadBalancer
