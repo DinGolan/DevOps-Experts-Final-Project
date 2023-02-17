@@ -1,6 +1,8 @@
 # From Image #
 FROM python:3.9.16-alpine3.17
 
+ARG MYSQL_GUEST_PORT
+
 RUN apk add --no-cache  \
     build-base          \
     linux-headers       \

@@ -5,6 +5,7 @@ services:
       - ../.env
     image: "mysql:${MYSQL_TAG}"
     container_name: ${MYSQL_CONTAINER_NAME}
+    hostname: ${MYSQL_HOST_NAME}
     environment:
       MYSQL_ROOT_USER: ${MYSQL_ROOT_USER}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -12,8 +13,7 @@ services:
       MYSQL_USER_NAME: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "3306:3306"
-    hostname: ${MYSQL_HOST_NAME}
+      - "${MYSQL_HOST_PORT}:${MYSQL_GUEST_PORT}"
     healthcheck:
         test: [ "CMD", "mysqladmin", "-u$MYSQL_USER", "-p$MYSQL_PASSWORD", "ping", "-h", "localhost" ]
         interval: 3s
@@ -28,12 +28,18 @@ services:
       - ../.env
     image: "dingolan/devops_experts_final_project:${REST_TAG}${IMAGE_TAG_2}"
     container_name: ${REST_CONTAINER_NAME}
+    hostname: ${REST_HOST_NAME}
     ports:
       - "5000:5000"
     build:
       context: ..
+      args:
+        MYSQL_CONTAINER_NAME: ${MYSQL_CONTAINER_NAME}
+        MYSQL_GUEST_PORT: ${MYSQL_GUEST_PORT}
       dockerfile: /Dockerfiles/Dockerfile_rest_api
-    hostname: ${REST_HOST_NAME}
+    environment:
+      MYSQL_CONTAINER_NAME: ${MYSQL_CONTAINER_NAME}
+      MYSQL_GUEST_PORT: ${MYSQL_GUEST_PORT}
     healthcheck:
       test: [ "CMD-SHELL", "ping -c 1 rest_api" ]
       interval: 2s
@@ -49,16 +55,23 @@ services:
       - ../.env
     image: "dingolan/devops_experts_final_project:${PY_TAG}${IMAGE_TAG_2}"
     container_name: ${DOCKER_BACKEND_TESTING_CONTAINER_NAME}
+    hostname: ${DOCKER_BACKEND_TESTING_HOST_NAME}
     ports:
       - "5000"
     build:
       context: ..
+      args:
+        MYSQL_CONTAINER_NAME: ${MYSQL_CONTAINER_NAME}
+        MYSQL_GUEST_PORT: ${MYSQL_GUEST_PORT}
       dockerfile: /Dockerfiles/Dockerfile_docker_backend_testing
-    hostname: ${DOCKER_BACKEND_TESTING_HOST_NAME}
+    environment:
+      MYSQL_CONTAINER_NAME: ${MYSQL_CONTAINER_NAME}
+      MYSQL_GUEST_PORT: ${MYSQL_GUEST_PORT}
     healthcheck:
       test: [ "CMD-SHELL", "ping -c 1 docker_backend_testing" ]
       interval: 2s
       timeout: 10s
       retries: 5
     links:
+      - database
       - rest_api

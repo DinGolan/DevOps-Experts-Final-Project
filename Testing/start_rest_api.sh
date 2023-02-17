@@ -36,7 +36,7 @@ check_file_exist () {
   fi
 }
 
-wait_for_db "database" "3306"
+wait_for_db "$MYSQL_CONTAINER_NAME" "$MYSQL_GUEST_PORT"
 
 check_file_exist "/DevOps_Experts_Final_Project/REST_API/rest_app.py"
 check_file_exist "/DevOps_Experts_Final_Project/DB/db_pre_definitions.py"

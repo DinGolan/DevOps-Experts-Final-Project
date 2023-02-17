@@ -43,7 +43,7 @@ check_file_exist () {
   fi
 }
 
-wait_for_db "database" "3306"
+wait_for_db "$MYSQL_CONTAINER_NAME" "$MYSQL_GUEST_PORT"
 
 check_file_exist "/DevOps_Experts_Final_Project/Testing/docker_backend_testing.py"
 

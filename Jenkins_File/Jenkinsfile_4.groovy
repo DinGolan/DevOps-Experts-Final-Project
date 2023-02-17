@@ -15,6 +15,8 @@ pipeline {
         DOCKER_REPOSITORY                     = "dingolan/devops_experts_final_project"
         DOCKER_COMPOSE_FILE                   = "docker-compose-2.yml"
         MYSQL_SCHEMA_NAME                     = "freedb_Din_Golan_Container"
+        MYSQL_HOST_PORT                       = 3306
+        MYSQL_GUEST_PORT                      = 3306
         MYSQL_CONTAINER_NAME                  = "mysql_container"
         REST_CONTAINER_NAME                   = "rest_api_container"
         DOCKER_BACKEND_TESTING_CONTAINER_NAME = "docker_backend_testing_container"
@@ -308,6 +310,8 @@ def setEnvFile() {
         bat 'echo MYSQL_USER=%MYSQL_USER_NAME%                                                  >> .env'
         bat 'echo MYSQL_PASSWORD=%MYSQL_PASSWORD%                                               >> .env'
         bat 'echo MYSQL_SCHEMA_NAME=%MYSQL_SCHEMA_NAME%                                         >> .env'
+        bat 'echo MYSQL_HOST_PORT=%MYSQL_HOST_PORT%                                             >> .env'
+        bat 'echo MYSQL_GUEST_PORT=%MYSQL_GUEST_PORT%                                           >> .env'
         bat 'echo MYSQL_CONTAINER_NAME=%MYSQL_CONTAINER_NAME%                                   >> .env'
         bat 'echo REST_CONTAINER_NAME=%REST_CONTAINER_NAME%                                     >> .env'
         bat 'echo DOCKER_BACKEND_TESTING_CONTAINER_NAME=%DOCKER_BACKEND_TESTING_CONTAINER_NAME% >> .env'
@@ -325,6 +329,8 @@ def setEnvFile() {
         sh 'echo MYSQL_USER=${MYSQL_USER_NAME}                                                  >> .env'
         sh 'echo MYSQL_PASSWORD=${MYSQL_PASSWORD}                                               >> .env'
         sh 'echo MYSQL_SCHEMA_NAME=${MYSQL_SCHEMA_NAME}                                         >> .env'
+        sh 'echo MYSQL_HOST_PORT=${MYSQL_HOST_PORT}                                             >> .env'
+        sh 'echo MYSQL_GUEST_PORT=${MYSQL_GUEST_PORT}                                           >> .env'
         sh 'echo MYSQL_CONTAINER_NAME=${MYSQL_CONTAINER_NAME}                                   >> .env'
         sh 'echo REST_CONTAINER_NAME=${REST_CONTAINER_NAME}                                     >> .env'
         sh 'echo DOCKER_BACKEND_TESTING_CONTAINER_NAME=${DOCKER_BACKEND_TESTING_CONTAINER_NAME} >> .env'

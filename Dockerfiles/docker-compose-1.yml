@@ -13,7 +13,7 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "3306:3306"
+      - "${MYSQL_HOST_PORT}:${MYSQL_GUEST_PORT}"
     healthcheck:
       test: [ "CMD", "mysqladmin", "-u$MYSQL_USER", "-p$MYSQL_PASSWORD", "ping", "-h", "localhost" ]
       interval: 3s
@@ -28,12 +28,18 @@ services:
       - ../.env
     image: "dingolan/devops_experts_final_project:${REST_TAG}${IMAGE_TAG_1}"
     container_name: ${REST_CONTAINER_NAME}
+    hostname: ${REST_HOST_NAME}
     ports:
       - "5000:5000"
     build:
       context: ..
+      args:
+        MYSQL_CONTAINER_NAME: ${MYSQL_CONTAINER_NAME}
+        MYSQL_GUEST_PORT: ${MYSQL_GUEST_PORT}
       dockerfile: /Dockerfiles/Dockerfile_rest_api
-    hostname: ${REST_HOST_NAME}
+    environment:
+      MYSQL_CONTAINER_NAME: ${MYSQL_CONTAINER_NAME}
+      MYSQL_GUEST_PORT: ${MYSQL_GUEST_PORT}
     healthcheck:
       test: [ "CMD-SHELL", "ping -c 1 rest_api" ]
       interval: 2s
