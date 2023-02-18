@@ -21,6 +21,7 @@ pipeline {
         REST_CONTAINER_NAME                   = "rest_api_container"
         DOCKER_BACKEND_TESTING_CONTAINER_NAME = "docker_backend_testing_container"
         MYSQL_HOST_NAME                       = "database"
+        MYSQL_REMOTE_HOST_NAME                = "sql.freedb.tech"
         REST_HOST_NAME                        = "rest_api"
         DOCKER_BACKEND_TESTING_HOST_NAME      = "docker_backend_testing"
         IMAGE_TAG_1                           = "latest_1"
@@ -33,7 +34,7 @@ pipeline {
 
     stages {
         // Step 1 - Clone Git From GitHub //
-        stage("Clone Git") {
+        stage("[Backend] Clone Git") {
             steps {
                 script {
                     properties([pipelineTriggers([pollSCM('H/30 * * * *')])])
@@ -43,7 +44,7 @@ pipeline {
         }
 
         // Step 2 - Install Pip Packages //
-        stage("Run `pip install`") {
+        stage("[Backend] Run `pip install`") {
             steps {
                 script {
                     if (checkPackages() == "Already Exists") {
@@ -60,7 +61,7 @@ pipeline {
         }
 
         // Step 3 - Run REST API //
-        stage("Run `rest_app.py` (Backend)") {
+        stage("[Backend] Run `rest_app.py` (Backend)") {
             steps {
                 script {
                     if (checkOS() == "Windows") {
@@ -77,7 +78,7 @@ pipeline {
         }
 
         // Step 4 - Run Backend Test //
-        stage("Run `backend_testing.py` (Testing)") {
+        stage("[Backend] Run `backend_testing.py` (Testing)") {
             steps {
                 script {
                     if (checkOS() == "Windows") {
@@ -94,7 +95,7 @@ pipeline {
         }
 
         // Step 5 - Run Clean Environment //
-        stage("Run `clean_environment.py` (Clean)") {
+        stage("[Backend] Run `clean_environment.py` (Clean)") {
             steps {
                 script {
                     if (checkOS() == "Windows") {
@@ -111,7 +112,7 @@ pipeline {
         }
 
         // Step 6 - Update `.env` File //
-        stage("Update `.env` File") {
+        stage("[Docker] Update `.env` File") {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'container_root_database_credentials', usernameVariable: 'MYSQL_ROOT_USER', passwordVariable: 'MYSQL_ROOT_PASSWORD'),
@@ -123,7 +124,7 @@ pipeline {
         }
 
         // Step 7 - Login to Docker Hub //
-        stage("Login to Docker Hub") {
+        stage("[Docker] Login to Docker Hub") {
             steps {
                 script {
                     if (checkOS() == "Windows") {
@@ -140,7 +141,7 @@ pipeline {
         }
 
         // Step 8 - Build & Up Docker Compose //
-        stage("Build & Up Docker Compose") {
+        stage("[Docker] Build & Up Docker Compose") {
             steps {
                 script {
                     if (checkOS() == "Windows") {
@@ -154,7 +155,7 @@ pipeline {
         }
 
         // Step 9 - Push Docker Compose //
-        stage("Push Docker Compose") {
+        stage("[Docker] Push Docker Compose") {
             steps {
                 script {
                     if (checkOS() == "Windows") {
@@ -167,7 +168,7 @@ pipeline {
         }
 
         // Step 10 - Check Docker Service Healthy //
-        stage("Check Docker Compose Services Health") {
+        stage("[Docker] Check Docker Compose Services Health") {
             steps {
                 script {
                     if (checkOS() == "Windows") {
@@ -256,7 +257,7 @@ pipeline {
         */
     }
 
-    // Step 12 - Clean & Remove Docker Images Build & Push //
+    // Step 12 - [Docker] Clean & Remove Docker Images Build & Push //
     post {
         always {
             script {
@@ -317,6 +318,7 @@ def setEnvFile() {
         bat 'echo REST_CONTAINER_NAME=%REST_CONTAINER_NAME%                                     >> .env'
         bat 'echo DOCKER_BACKEND_TESTING_CONTAINER_NAME=%DOCKER_BACKEND_TESTING_CONTAINER_NAME% >> .env'
         bat 'echo MYSQL_HOST_NAME=%MYSQL_HOST_NAME%                                             >> .env'
+        bat 'echo MYSQL_REMOTE_HOST_NAME=%MYSQL_REMOTE_HOST_NAME%                               >> .env'
         bat 'echo REST_HOST_NAME=%REST_HOST_NAME%                                               >> .env'
         bat 'echo DOCKER_BACKEND_TESTING_HOST_NAME=%DOCKER_BACKEND_TESTING_HOST_NAME%           >> .env'
         bat 'echo IMAGE_TAG_1=%IMAGE_TAG_1%                                                     >> .env'
@@ -337,6 +339,7 @@ def setEnvFile() {
         sh 'echo REST_CONTAINER_NAME=${REST_CONTAINER_NAME}                                     >> .env'
         sh 'echo DOCKER_BACKEND_TESTING_CONTAINER_NAME=${DOCKER_BACKEND_TESTING_CONTAINER_NAME} >> .env'
         sh 'echo MYSQL_HOST_NAME=${MYSQL_HOST_NAME}                                             >> .env'
+        sh 'echo MYSQL_REMOTE_HOST_NAME=${MYSQL_REMOTE_HOST_NAME}                               >> .env'
         sh 'echo REST_HOST_NAME=${REST_HOST_NAME}                                               >> .env'
         sh 'echo DOCKER_BACKEND_TESTING_HOST_NAME=${DOCKER_BACKEND_TESTING_HOST_NAME}           >> .env'
         sh 'echo IMAGE_TAG_1=${IMAGE_TAG_1}                                                     >> .env'

@@ -1,6 +1,7 @@
 # From Image #
 FROM python:3.9.16-alpine3.17
 
+# Args #
 ARG MYSQL_HOST_NAME
 ARG MYSQL_GUEST_PORT
 
@@ -27,10 +28,10 @@ COPY ../Web_Interface /DevOps_Experts_Final_Project/Web_Interface
 COPY ../.env          /DevOps_Experts_Final_Project/.env
 
 # dos2unix - change file encoding #
-RUN dos2unix /DevOps_Experts_Final_Project/Testing/start_rest_api.sh
+RUN dos2unix /DevOps_Experts_Final_Project/Testing/start_rest_api_for_docker.sh
 
-# change start_rest_api.sh file permissions #
-RUN chmod +x /DevOps_Experts_Final_Project/Testing/start_rest_api.sh
+# change start_rest_api_for_docker.sh file permissions #
+RUN chmod +x /DevOps_Experts_Final_Project/Testing/start_rest_api_for_docker.sh
 
 # Pip Commands #
 RUN python -m pip install --upgrade pip
@@ -38,4 +39,4 @@ RUN pip install --trusted-host pypi.python.org -r /DevOps_Experts_Final_Project/
 
 
 # Run Command #
-CMD ["/bin/sh", "/DevOps_Experts_Final_Project/Testing/start_rest_api.sh"]
+CMD ["/bin/sh", "/DevOps_Experts_Final_Project/Testing/start_rest_api_for_docker.sh"]

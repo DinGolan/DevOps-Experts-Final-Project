@@ -1,0 +1,42 @@
+# From Image #
+FROM python:3.9.16-alpine3.17
+
+# Args #
+ARG MYSQL_REMOTE_HOST_NAME
+ARG MYSQL_GUEST_PORT
+
+RUN apk add --no-cache  \
+    build-base          \
+    linux-headers       \
+    dos2unix            \
+    curl                \
+    vim
+
+# Set working directory in container #
+WORKDIR /DevOps_Experts_Final_Project
+
+# Copies to Container #
+COPY ../Clean         /DevOps_Experts_Final_Project/Clean
+COPY ../Config        /DevOps_Experts_Final_Project/Config
+COPY ../DB            /DevOps_Experts_Final_Project/DB
+COPY ../Driver        /DevOps_Experts_Final_Project/Driver
+COPY ../HTML_Files    /DevOps_Experts_Final_Project/HTML_Files
+COPY ../Packages      /DevOps_Experts_Final_Project/Packages
+COPY ../REST_API      /DevOps_Experts_Final_Project/REST_API
+COPY ../Testing       /DevOps_Experts_Final_Project/Testing
+COPY ../Web_Interface /DevOps_Experts_Final_Project/Web_Interface
+COPY ../.env          /DevOps_Experts_Final_Project/.env
+
+# dos2unix - change file encoding #
+RUN dos2unix /DevOps_Experts_Final_Project/Testing/start_rest_api_for_k8s.sh
+
+# change start_rest_api_for_k8s.sh file permissions #
+RUN chmod +x /DevOps_Experts_Final_Project/Testing/start_rest_api_for_k8s.sh
+
+# Pip Commands #
+RUN python -m pip install --upgrade pip
+RUN pip install --trusted-host pypi.python.org -r /DevOps_Experts_Final_Project/Packages/requirements.txt
+
+
+# Run Command #
+CMD ["/bin/sh", "/DevOps_Experts_Final_Project/Testing/start_rest_api_for_k8s.sh"]

@@ -2,11 +2,8 @@
 
 # VARS #
 IS_DOCKER="True"
-IS_JOB_RUN="True"
-REQUEST_TYPE="GET"
-IS_REST_API_CONTAINER="True"
-MYSQL_PASSWORD="keeBetw3%kG4k3R"
-MYSQL_USER_NAME="freedb_Din_Golan_Container"
+MYSQL_GUEST_PORT=3306
+MYSQL_HOST_NAME="database"
 
 wait_for_db() {
   echo ""
@@ -44,8 +41,12 @@ check_file_exist () {
   fi
 }
 
+#########################
+# Local DB (For Docker) #
+#########################
 wait_for_db "$MYSQL_HOST_NAME" "$MYSQL_GUEST_PORT"
 
-check_file_exist "/DevOps_Experts_Final_Project/Testing/docker_backend_testing.py"
+check_file_exist "/DevOps_Experts_Final_Project/REST_API/rest_app.py"
+check_file_exist "/DevOps_Experts_Final_Project/DB/db_pre_definitions.py"
 
-/bin/sh -c "sleep 20 && python /DevOps_Experts_Final_Project/Testing/docker_backend_testing.py -u $MYSQL_USER_NAME -p $MYSQL_PASSWORD -i $IS_JOB_RUN -r $REQUEST_TYPE --is_docker $IS_DOCKER -d $IS_REST_API_CONTAINER"
+/bin/sh -c "python /DevOps_Experts_Final_Project/DB/db_pre_definitions.py --is_docker $IS_DOCKER && sleep 5 && python /DevOps_Experts_Final_Project/REST_API/rest_app.py"

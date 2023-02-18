@@ -13,7 +13,7 @@ pipeline {
     // Environments //
     environment {
         DOCKER_REPOSITORY                     = "dingolan/devops_experts_final_project"
-        DOCKER_COMPOSE_FILE                   = "docker-compose-1.yml"
+        DOCKER_COMPOSE_FILE                   = "docker-compose-3.yml"
         MYSQL_SCHEMA_NAME                     = "freedb_Din_Golan_Container"
         MYSQL_HOST_PORT                       = 3306
         MYSQL_GUEST_PORT                      = 3306
@@ -276,16 +276,68 @@ pipeline {
             }
         }
         */
-    }
 
-    // Step 13 - [Docker] Clean & Remove Docker Images Build & Push //
-    post {
-        always {
-            script {
-                if (checkOS() == "Windows") {
-                    bat 'docker-compose --file Dockerfiles\\%DOCKER_COMPOSE_FILE% down --rmi all --volumes'
-                } else {
-                    sh "docker-compose --file Dockerfiles/${DOCKER_COMPOSE_FILE} down --rmi all --volumes"
+        // Step 13 - Clean & Remove Docker Images Build & Push //
+        stage("[Docker] Clean & Remove Docker Images Build & Push") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        bat 'docker-compose --file Dockerfiles\\%DOCKER_COMPOSE_FILE% down --rmi all --volumes'
+                    } else {
+                        sh "docker-compose --file Dockerfiles/${DOCKER_COMPOSE_FILE} down --rmi all --volumes"
+                    }
+                }
+            }
+        }
+
+        // Step 14 - Deploy HELM Chart with Passing Image //
+        stage("[K8S] Deploy HELM Chart with Passing Image") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+
+                    } else {
+
+                    }
+                }
+            }
+        }
+
+        // Step 15 - Write Service URL into `k8s_url.txt` //
+        stage("[K8S] Write service URL into `k8s_url.txt`") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+
+                    } else {
+
+                    }
+                }
+            }
+        }
+
+        // Step 16 - Test Deployed Application //
+        stage("[K8S] Test Deployed Application - `k8s_backend_testing.py`") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+
+                    } else {
+
+                    }
+                }
+            }
+        }
+
+        // Step 17 - Clean HELM Environment //
+        stage("[K8S] Clean HELM Environment") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        bat 'helm delete'
+                    } else {
+                        sh 'helm delete'
+                    }
                 }
             }
         }

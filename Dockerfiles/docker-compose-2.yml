@@ -36,7 +36,7 @@ services:
       args:
         MYSQL_HOST_NAME: ${MYSQL_HOST_NAME}
         MYSQL_GUEST_PORT: ${MYSQL_GUEST_PORT}
-      dockerfile: /Dockerfiles/Dockerfile_rest_api
+      dockerfile: /Dockerfiles/Dockerfile_rest_api_for_docker
     environment:
       MYSQL_HOST_NAME: ${MYSQL_HOST_NAME}
       MYSQL_GUEST_PORT: ${MYSQL_GUEST_PORT}

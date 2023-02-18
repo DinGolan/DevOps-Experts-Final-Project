@@ -41,11 +41,6 @@ check_file_exist () {
   fi
 }
 
-#########################
-# Local DB (For Docker) #
-#########################
-# wait_for_db "$MYSQL_HOST_NAME" "$MYSQL_GUEST_PORT"
-
 #######################
 # Remote DB (For K8S) #
 #######################
