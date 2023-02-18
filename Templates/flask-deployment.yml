@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: rest-api-application
-          image: dingolan/devops_experts_final_project:rest_api_version_latest_1
+          image: dingolan/devops_experts_final_project:rest_api_version_latest_3
           imagePullPolicy: Always
           ports:
             - containerPort: 5000

@@ -4,7 +4,7 @@ pythonFlaskApp:
   name: rest-api-application
   image:
     repository: dingolan/devops_experts_final_project
-    tag: rest_api_version_latest_1
+    tag: rest_api_version_latest_3
     pullPolicy: Always
   ports:
     restPort: 5000
