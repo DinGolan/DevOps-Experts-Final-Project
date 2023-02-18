@@ -25,6 +25,7 @@ pipeline {
         DOCKER_BACKEND_TESTING_HOST_NAME      = "docker_backend_testing"
         IMAGE_TAG_1                           = "latest_1"
         IMAGE_TAG_2                           = "latest_2"
+        IMAGE_TAG_3                           = "latest_3"
         MYSQL_TAG                             = "8.0.32"
         REST_TAG                              = "rest_api_version_"
         PY_TAG                                = "python_app_version_"
@@ -341,6 +342,7 @@ def setEnvFile() {
         bat 'echo DOCKER_BACKEND_TESTING_HOST_NAME=%DOCKER_BACKEND_TESTING_HOST_NAME%           >> .env'
         bat 'echo IMAGE_TAG_1=%IMAGE_TAG_1%                                                     >> .env'
         bat 'echo IMAGE_TAG_2=%IMAGE_TAG_2%                                                     >> .env'
+        bat 'echo IMAGE_TAG_3=%IMAGE_TAG_3%                                                     >> .env'
         bat 'echo MYSQL_TAG=%MYSQL_TAG%                                                         >> .env'
         bat 'echo REST_TAG=%REST_TAG%                                                           >> .env'
         bat 'echo PY_TAG=%PY_TAG%                                                               >> .env'
@@ -360,6 +362,7 @@ def setEnvFile() {
         sh 'echo DOCKER_BACKEND_TESTING_HOST_NAME=${DOCKER_BACKEND_TESTING_HOST_NAME}           >> .env'
         sh 'echo IMAGE_TAG_1=${IMAGE_TAG_1}                                                     >> .env'
         sh 'echo IMAGE_TAG_2=${IMAGE_TAG_2}                                                     >> .env'
+        sh 'echo IMAGE_TAG_3=${IMAGE_TAG_3}                                                     >> .env'
         sh 'echo MYSQL_TAG=${MYSQL_TAG}                                                         >> .env'
         sh 'echo REST_TAG=${REST_TAG}                                                           >> .env'
         sh 'echo PY_TAG=${PY_TAG}                                                               >> .env'
