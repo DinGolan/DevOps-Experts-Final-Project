@@ -22,7 +22,7 @@ from DB.db_connector   import *
 
 
 # Create Flask Instance #
-web_app = Flask(__name__)
+web_app = Flask(__name__, template_folder=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "HTML_Files"))
 
 
 @web_app.route("/users/get_user_name/<user_id>")
