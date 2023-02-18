@@ -2,6 +2,7 @@
 
 # VARS #
 IS_DOCKER="False"
+MYSQL_GUEST_PORT=3306
 MYSQL_REMOTE_HOST_NAME="sql.freedb.tech"
 
 wait_for_db() {
