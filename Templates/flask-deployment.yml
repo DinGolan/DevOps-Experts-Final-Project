@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rest-api-application
+  name: {{ .Values.flaskImage.name }}
 spec:
   selector:
     matchLabels:
-      app: rest-api-application
-  replicas: 2
+      app: {{ .Values.flaskImage.name }}
+  replicas: {{ .Values.replicaCount }}
   template:
     metadata:
       labels:
-        app: rest-api-application
+        app: {{ .Values.flaskImage.name }}
     spec:
       containers:
-        - name: rest-api-application
-          image: dingolan/devops_experts_final_project:rest_api_version_latest_3
+        - name: {{ .Values.flaskImage.name }}
+          image: {{ .Values.flaskImage.image.repository }}:{{ .Values.flaskImage.image.tag }}
           imagePullPolicy: Always
           ports:
-            - containerPort: 5000
+            - containerPort: {{ .Values.flaskImage.port }}

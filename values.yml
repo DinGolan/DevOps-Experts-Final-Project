@@ -1,13 +1,12 @@
 replicaCount: 5
 
-pythonFlaskApp:
+flaskImage:
   name: rest-api-application
   image:
     repository: dingolan/devops_experts_final_project
     tag: rest_api_version_latest_3
     pullPolicy: Always
-  ports:
-    restPort: 5000
+  port: 5000
 
 mysql:
   name: mysql
@@ -15,8 +14,6 @@ mysql:
     repository: mysql:8.0.32
     tag: 8.0.32
     pullPolicy: Always
-  ports:
-    dbPort: 3306
+  port: 3306
 
-service:
-  type: LoadBalancer
+type: LoadBalancer
