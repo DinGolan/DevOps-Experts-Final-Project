@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# VARS #
+IS_DOCKER="False"
+MYSQL_REMOTE_HOST_NAME="sql.freedb.tech"
+
 wait_for_db() {
   echo ""
   echo "###############"
@@ -36,9 +40,17 @@ check_file_exist () {
   fi
 }
 
-wait_for_db "$MYSQL_CONTAINER_NAME" "$MYSQL_GUEST_PORT"
+#########################
+# Local DB (For Docker) #
+#########################
+# wait_for_db "$MYSQL_HOST_NAME" "$MYSQL_GUEST_PORT"
+
+#######################
+# Remote DB (For K8S) #
+#######################
+wait_for_db "$MYSQL_REMOTE_HOST_NAME" "$MYSQL_GUEST_PORT"
 
 check_file_exist "/DevOps_Experts_Final_Project/REST_API/rest_app.py"
 check_file_exist "/DevOps_Experts_Final_Project/DB/db_pre_definitions.py"
 
-/bin/sh -c "python /DevOps_Experts_Final_Project/DB/db_pre_definitions.py && sleep 5 && python /DevOps_Experts_Final_Project/REST_API/rest_app.py"
+/bin/sh -c "python /DevOps_Experts_Final_Project/DB/db_pre_definitions.py --is_docker $IS_DOCKER && sleep 5 && python /DevOps_Experts_Final_Project/REST_API/rest_app.py"

@@ -60,7 +60,7 @@ def generate_response_dict(requests_result, json_result, json_key, message):
     }
 
 
-def check_requests_result(request_title, user_id, requests_result, json_result, json_key):
+def check_requests_result(request_title, user_id, requests_result, json_result, json_key, isDocker):
     """
     :explanations:
     - Check the result after request.
@@ -70,6 +70,7 @@ def check_requests_result(request_title, user_id, requests_result, json_result, 
     :param requests_result: (requests).
     :param json_result: (JSON).
     :param json_key: (str).
+    :param isDocker: (str).
 
     :return: None.
     """
@@ -81,7 +82,7 @@ def check_requests_result(request_title, user_id, requests_result, json_result, 
             message = f"We get status code different then 200 , status_code = {status_code} ..."
             raise Exception(f"\n[{request_title}] Test Failed : " + str(generate_response_dict(requests_result, json_result, json_key, message)) + "\n")
 
-        db_user_ids = get_user_ids_of_specific_user_name_from_users_table(jason_user_name, isDocker="True")
+        db_user_ids = get_user_ids_of_specific_user_name_from_users_table(jason_user_name, isDocker=isDocker)
 
         if request_title in ["POST", "GET", "PUT"]:
             if user_id not in db_user_ids:
@@ -135,13 +136,14 @@ def check_requests_result_for_get_all(request_title, requests_result, json_resul
         raise Exception(f"\n[{request_title}] Test Failed : {message}" + "\n")
 
 
-def send_post_request(user_name, rest_host):
+def send_post_request(user_name, rest_host, isDocker):
     """
     :explanations:
     - Send POST request.
 
     :param: user_name (str).
     :param: rest_host (str).
+    :param: isDocker (str).
 
     :return: None
     """
@@ -150,20 +152,21 @@ def send_post_request(user_name, rest_host):
     print("##########\n")
     headers         = {'Content-Type': 'application/json'}
     data            = {"user_name": user_name, "isDocker": "True"}
-    new_user_id     = get_new_user_id_from_users_table(isDocker="True")
+    new_user_id     = get_new_user_id_from_users_table(isDocker=isDocker)
     url             = f"http://{rest_host}:{get_rest_port()}/{get_db_users_table_name()}/{new_user_id}"
     requests_result = requests.post(url=url, headers=headers, json=data)
     json_result     = requests_result.json()
-    check_requests_result("POST", new_user_id, requests_result, json_result, "user_added")
+    check_requests_result("POST", new_user_id, requests_result, json_result, "user_added", isDocker=isDocker)
 
 
-def send_get_request(url, user_id):
+def send_get_request(url, user_id, isDocker):
     """
     :explanations:
     - Send GET request.
 
     :param: url: (str).
     :param: user_id: (str).
+    :param: isDocker: (str).
 
     :return: None
     """
@@ -174,7 +177,7 @@ def send_get_request(url, user_id):
     data            = {"user_id": user_id, "isDocker": "True"}
     requests_result = requests.get(url=url, headers=headers, json=data)
     json_result     = requests_result.json()
-    check_requests_result("GET", user_id, requests_result, json_result, "user_name")
+    check_requests_result("GET", user_id, requests_result, json_result, "user_name", isDocker=isDocker)
 
 
 def send_get_all_request(url):
@@ -196,7 +199,7 @@ def send_get_all_request(url):
     check_requests_result_for_get_all("GET_ALL", requests_result, json_result, "users_table")
 
 
-def send_put_request(is_job_run, url, user_id, test_name):
+def send_put_request(is_job_run, url, user_id, test_name, isDocker):
     """
     :explanations:
     - Send PUT request.
@@ -205,6 +208,7 @@ def send_put_request(is_job_run, url, user_id, test_name):
     :param: url: (str).
     :param: user_id: (str).
     :param: test_name: (str).
+    :param: isDocker: (str).
 
     :return: None
     """
@@ -225,16 +229,17 @@ def send_put_request(is_job_run, url, user_id, test_name):
     data            = {"user_id": user_id, "new_user_name": new_user_name, "isDocker": "True"}
     requests_result = requests.put(url=url, headers=headers, json=data)
     json_result     = requests_result.json()
-    check_requests_result("PUT", user_id, requests_result, json_result, "user_updated")
+    check_requests_result("PUT", user_id, requests_result, json_result, "user_updated", isDocker=isDocker)
 
 
-def send_delete_request(url, user_id):
+def send_delete_request(url, user_id, isDocker):
     """
     :explanations:
     - Send DELETE request.
 
     :param: url: (str).
     :param: user_id: (str).
+    :param: isDocker: (str).
 
     :return: None
     """
@@ -245,7 +250,7 @@ def send_delete_request(url, user_id):
     data            = {"user_id": user_id, "isDocker": "True"}
     requests_result = requests.delete(url=url, headers=headers, json=data)
     json_result     = requests_result.json()
-    check_requests_result("DELETE", user_id, requests_result, json_result, "user_deleted")
+    check_requests_result("DELETE", user_id, requests_result, json_result, "user_deleted", isDocker=isDocker)
 
 
 def docker_backend_testing_function():
@@ -263,6 +268,7 @@ def docker_backend_testing_function():
     # Jenkins / Docker #
     ####################
     is_job_run            = get_from_jenkins_arguments().is_job_run
+    isDocker              = get_from_jenkins_arguments().is_docker
     is_rest_api_container = get_from_jenkins_arguments().is_rest_api_container
     rest_host             = get_rest_host() if (is_rest_api_container is None or is_rest_api_container == "False") else get_rest_host_container()
 
@@ -283,14 +289,14 @@ def docker_backend_testing_function():
         elif request_type in ["GET", "PUT", "DELETE"]: print("[GET, PUT, DELETE] : "   + str({'user_id': user_id_docker_backend_test, 'url': url}) + "\n")
         else:                                          print("[GET_ALL, PRINT_ALL] : " + str({'url': url}) + "\n")
 
-        if   request_type == "POST"       : send_post_request(user_name_docker_backend_test, rest_host)
-        elif request_type == "GET"        : send_get_request(url, user_id_docker_backend_test)
+        if   request_type == "POST"       : send_post_request(user_name_docker_backend_test, rest_host, isDocker=isDocker)
+        elif request_type == "GET"        : send_get_request(url, user_id_docker_backend_test, isDocker=isDocker)
         elif request_type == "GET_ALL"    : send_get_all_request(url)
-        elif request_type == "PUT"        : send_put_request(is_job_run, url, user_id_docker_backend_test, "Backend")
-        elif request_type == "DELETE"     : send_delete_request(url, user_id_docker_backend_test)
+        elif request_type == "PUT"        : send_put_request(is_job_run, url, user_id_docker_backend_test, "Backend", isDocker=isDocker)
+        elif request_type == "DELETE"     : send_delete_request(url, user_id_docker_backend_test, isDocker=isDocker)
         elif request_type == "PRINT_TABLE":
-            print_table(get_db_users_table_name() , isDocker="True")
-            print_table(get_db_config_table_name(), isDocker="True")
+            print_table(get_db_users_table_name() , isDocker=isDocker)
+            print_table(get_db_config_table_name(), isDocker=isDocker)
 
     else:
 
@@ -301,40 +307,40 @@ def docker_backend_testing_function():
 
             # Send POST Request #
             if request_type == "POST":
-                user_name_docker_backend_test = get_details_from_external_user_for_backend(request_type="POST", test_name="Backend", isDocker="True")
-                send_post_request(user_name_docker_backend_test, rest_host)
+                user_name_docker_backend_test = get_details_from_external_user_for_backend(request_type="POST", test_name="Backend", isDocker=isDocker)
+                send_post_request(user_name_docker_backend_test, rest_host, isDocker=isDocker)
 
             # Send GET Request #
             elif request_type == "GET":
-                url, user_id_docker_backend_test = get_details_from_external_user_for_backend(request_type="GET", test_name="Backend", isDocker="True")
-                send_get_request(url, user_id_docker_backend_test)
+                url, user_id_docker_backend_test = get_details_from_external_user_for_backend(request_type="GET", test_name="Backend", isDocker=isDocker)
+                send_get_request(url, user_id_docker_backend_test, isDocker=isDocker)
 
             # Send GET_ALL Request #
             elif request_type == "GET_ALL":
-                url = get_details_from_external_user_for_backend(request_type="GET_ALL", test_name="Backend", isDocker="True")
+                url = get_details_from_external_user_for_backend(request_type="GET_ALL", test_name="Backend", isDocker=isDocker)
                 send_get_all_request(url)
 
             # Send PUT Request #
             elif request_type == "PUT":
-                url, user_id_docker_backend_test = get_details_from_external_user_for_backend(request_type="PUT", test_name="Backend", isDocker="True")
-                send_put_request(is_job_run, url, user_id_docker_backend_test, "Backend")
+                url, user_id_docker_backend_test = get_details_from_external_user_for_backend(request_type="PUT", test_name="Backend", isDocker=isDocker)
+                send_put_request(is_job_run, url, user_id_docker_backend_test, "Backend", isDocker=isDocker)
 
             # Send DELETE Request #
             elif request_type == "DELETE":
-                url, user_id_docker_backend_test = get_details_from_external_user_for_backend(request_type="DELETE", test_name="Backend", isDocker="True")
-                send_delete_request(url, user_id_docker_backend_test)
+                url, user_id_docker_backend_test = get_details_from_external_user_for_backend(request_type="DELETE", test_name="Backend", isDocker=isDocker)
+                send_delete_request(url, user_id_docker_backend_test, isDocker=isDocker)
 
             # Print Tables #
             elif request_type == "PRINT_TABLE":
                 print("\n###############")
                 print("# USERS TABLE #")
                 print("###############\n")
-                print_table(get_db_users_table_name(), isDocker="True")
+                print_table(get_db_users_table_name(), isDocker=isDocker)
 
                 print("\n################")
                 print("# CONFIG TABLE #")
                 print("################\n")
-                print_table(get_db_config_table_name(), isDocker="True")
+                print_table(get_db_config_table_name(), isDocker=isDocker)
 
             # Exit from `request type` menu #
             else:

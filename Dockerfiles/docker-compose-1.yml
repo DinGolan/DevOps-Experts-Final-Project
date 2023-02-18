@@ -34,11 +34,11 @@ services:
     build:
       context: ..
       args:
-        MYSQL_CONTAINER_NAME: ${MYSQL_CONTAINER_NAME}
+        MYSQL_HOST_NAME: ${MYSQL_HOST_NAME}
         MYSQL_GUEST_PORT: ${MYSQL_GUEST_PORT}
       dockerfile: /Dockerfiles/Dockerfile_rest_api
     environment:
-      MYSQL_CONTAINER_NAME: ${MYSQL_CONTAINER_NAME}
+      MYSQL_HOST_NAME: ${MYSQL_HOST_NAME}
       MYSQL_GUEST_PORT: ${MYSQL_GUEST_PORT}
     healthcheck:
       test: [ "CMD-SHELL", "ping -c 1 rest_api" ]

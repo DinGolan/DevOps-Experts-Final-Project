@@ -87,15 +87,18 @@ def frontend_testing_function():
     print("| Frontend Test |")
     print("-----------------\n")
 
+    # Arguments #
+    isDocker = get_from_jenkins_arguments().is_docker
+
     # Vars #
-    is_config_table_exist = is_table_exist_in_db(get_db_config_table_name(), isDocker="False")
-    is_users_table_exist  = is_table_exist_in_db(get_db_users_table_name() , isDocker="False")
+    is_config_table_exist = is_table_exist_in_db(get_db_config_table_name(), isDocker=isDocker)
+    is_users_table_exist  = is_table_exist_in_db(get_db_users_table_name() , isDocker=isDocker)
 
     ###########################
     # Drop Tables (If Exists) #
     ###########################
-    if is_config_table_exist is True: drop_table(get_db_config_table_name(), isDocker="False")
-    if is_users_table_exist  is True: drop_table(get_db_users_table_name() , isDocker="False")
+    if is_config_table_exist is True: drop_table(get_db_config_table_name(), isDocker=isDocker)
+    if is_users_table_exist  is True: drop_table(get_db_users_table_name() , isDocker=isDocker)
 
     ###########
     # Jenkins #
@@ -106,23 +109,23 @@ def frontend_testing_function():
     # Config Details #
     ##################
     # Create config table inside MySQL DB #
-    create_config_table(isDocker="False")
+    create_config_table(isDocker=isDocker)
 
     # Insert rows to config table inside MySQL DB #
-    insert_rows_to_config_table(is_job_run, "Frontend", isDocker="False")
+    insert_rows_to_config_table(is_job_run, "Frontend", isDocker=isDocker)
 
     ################
     # User Details #
     ################
     # Create users table inside MySQL DB #
-    create_users_table(isDocker="False")
+    create_users_table(isDocker=isDocker)
 
     # Insert rows to users table inside MySQL DB #
-    insert_rows_to_users_table(isDocker="False")
+    insert_rows_to_users_table(isDocker=isDocker)
 
     # For User Details #
     if is_job_run == "True":
-        url, browser = get_details_from_external_user_for_frontend(test_name="Frontend", isDocker="False", user_id_frontend_test=get_user_id_frontend_test())
+        url, browser = get_details_from_external_user_for_frontend(test_name="Frontend", isDocker=isDocker, user_id_frontend_test=get_user_id_frontend_test())
 
         print("\n#############################################")
         print("# Jenkins - Parameters For Frontend Testing #")
@@ -134,7 +137,7 @@ def frontend_testing_function():
     else:
 
         while True:
-            url, browser = get_details_from_external_user_for_frontend(test_name="Frontend", isDocker="False")
+            url, browser = get_details_from_external_user_for_frontend(test_name="Frontend", isDocker=isDocker)
             open_chrome_web_browser(url, browser)
 
             # Check if the `User` want to exit from program #

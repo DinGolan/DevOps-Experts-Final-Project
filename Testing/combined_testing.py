@@ -39,15 +39,18 @@ def combined_testing_function():
     print("| Combined Test |")
     print("-----------------\n")
 
+    # Arguments #
+    isDocker = get_from_jenkins_arguments().is_docker
+
     # Vars #
-    is_config_table_exist = is_table_exist_in_db(get_db_config_table_name(), isDocker="False")
-    is_users_table_exist  = is_table_exist_in_db(get_db_users_table_name() , isDocker="False")
+    is_config_table_exist = is_table_exist_in_db(get_db_config_table_name(), isDocker=isDocker)
+    is_users_table_exist  = is_table_exist_in_db(get_db_users_table_name() , isDocker=isDocker)
 
     ###########################
     # Drop Tables (If Exists) #
     ###########################
-    if is_config_table_exist is True: drop_table(get_db_config_table_name(), isDocker="False")
-    if is_users_table_exist  is True: drop_table(get_db_users_table_name() , isDocker="False")
+    if is_config_table_exist is True: drop_table(get_db_config_table_name(), isDocker=isDocker)
+    if is_users_table_exist  is True: drop_table(get_db_users_table_name() , isDocker=isDocker)
 
     ###########
     # Jenkins #
@@ -58,19 +61,19 @@ def combined_testing_function():
     # Config Details #
     ##################
     # Create config table inside MySQL DB #
-    create_config_table(isDocker="False")
+    create_config_table(isDocker=isDocker)
 
     # Insert rows to config table inside MySQL DB #
-    insert_rows_to_config_table(is_job_run, "Combined", isDocker="False")
+    insert_rows_to_config_table(is_job_run, "Combined", isDocker=isDocker)
 
     ################
     # User Details #
     ################
     # Create users table inside MySQL DB #
-    create_users_table(isDocker="False")
+    create_users_table(isDocker=isDocker)
 
     # Insert rows to users table inside MySQL DB #
-    insert_rows_to_users_table(isDocker="False")
+    insert_rows_to_users_table(isDocker=isDocker)
 
     if is_job_run == "True":
 
@@ -94,17 +97,17 @@ def combined_testing_function():
             elif request_type in ["GET", "PUT", "DELETE"]: print("[GET, PUT, DELETE] : "   + str({'user_id': user_id_combined_test, 'url': url}) + "\n")
             else:                                          print("[GET_ALL, PRINT_ALL] : " + str({'url': url}) + "\n")
 
-            if   request_type == "POST"   : send_post_request(user_name_combined_test)
-            elif request_type == "GET"    : send_get_request(url, user_id_combined_test)
+            if   request_type == "POST"   : send_post_request(user_name_combined_test, isDocker=isDocker)
+            elif request_type == "GET"    : send_get_request(url, user_id_combined_test, isDocker=isDocker)
             elif request_type == "GET_ALL": send_get_all_request(url)
-            elif request_type == "PUT"    : send_put_request(is_job_run, url, user_id_combined_test, "Combined")
-            elif request_type == "DELETE" : send_delete_request(url, user_id_combined_test)
+            elif request_type == "PUT"    : send_put_request(is_job_run, url, user_id_combined_test, "Combined", isDocker=isDocker)
+            elif request_type == "DELETE" : send_delete_request(url, user_id_combined_test, isDocker=isDocker)
             elif request_type == "PRINT_TABLE":
-                print_table(get_db_users_table_name() , isDocker="False")
-                print_table(get_db_config_table_name(), isDocker="False")
+                print_table(get_db_users_table_name() , isDocker=isDocker)
+                print_table(get_db_config_table_name(), isDocker=isDocker)
 
         elif test_side == "Frontend":
-            url, browser = get_details_from_external_user_for_frontend(test_name="Frontend", isDocker="False", user_id_frontend_test=get_user_id_combined_frontend_test())
+            url, browser = get_details_from_external_user_for_frontend(test_name="Frontend", isDocker=isDocker, user_id_frontend_test=get_user_id_combined_frontend_test())
 
             print("\n#############################################")
             print("# Jenkins - Parameters For Combined Testing #")
@@ -127,39 +130,39 @@ def combined_testing_function():
 
                 # Send POST Request #
                 if request_type == "POST":
-                    user_name_combined_test = get_details_from_external_user_for_backend(request_type="POST", test_name="Combined", isDocker="False")
-                    send_post_request(user_name_combined_test)
+                    user_name_combined_test = get_details_from_external_user_for_backend(request_type="POST", test_name="Combined", isDocker=isDocker)
+                    send_post_request(user_name_combined_test, isDocker=isDocker)
 
                 # Send GET Request #
                 elif request_type == "GET":
-                    url, user_id_combined_test = get_details_from_external_user_for_backend(request_type="GET", test_name="Combined", isDocker="False")
-                    send_get_request(url, user_id_combined_test)
+                    url, user_id_combined_test = get_details_from_external_user_for_backend(request_type="GET", test_name="Combined", isDocker=isDocker)
+                    send_get_request(url, user_id_combined_test, isDocker=isDocker)
 
                 elif request_type == "GET_ALL":
-                    url = get_details_from_external_user_for_backend(request_type="GET_ALL", test_name="Combined", isDocker="False")
+                    url = get_details_from_external_user_for_backend(request_type="GET_ALL", test_name="Combined", isDocker=isDocker)
                     send_get_all_request(url)
 
                 # Send PUT Request #
                 elif request_type == "PUT":
-                    url, user_id_combined_test = get_details_from_external_user_for_backend(request_type="PUT", test_name="Combined", isDocker="False")
-                    send_put_request(is_job_run, url, user_id_combined_test, "Combined")
+                    url, user_id_combined_test = get_details_from_external_user_for_backend(request_type="PUT", test_name="Combined", isDocker=isDocker)
+                    send_put_request(is_job_run, url, user_id_combined_test, "Combined", isDocker=isDocker)
 
                 # Send DELETE Request #
                 elif request_type == "DELETE":
-                    url, user_id_combined_test = get_details_from_external_user_for_backend(request_type="DELETE", test_name="Combined", isDocker="False")
-                    send_delete_request(url, user_id_combined_test)
+                    url, user_id_combined_test = get_details_from_external_user_for_backend(request_type="DELETE", test_name="Combined", isDocker=isDocker)
+                    send_delete_request(url, user_id_combined_test, isDocker=isDocker)
 
                 # Print Tables #
                 elif request_type == "PRINT_TABLE":
                     print("\n###############")
                     print("# USERS TABLE #")
                     print("###############\n")
-                    print_table(get_db_users_table_name(),  isDocker="False")
+                    print_table(get_db_users_table_name(),  isDocker=isDocker)
 
                     print("\n################")
                     print("# CONFIG TABLE #")
                     print("################\n")
-                    print_table(get_db_config_table_name(), isDocker="False")
+                    print_table(get_db_config_table_name(), isDocker=isDocker)
 
                 # Exit from `request type` menu #
                 else:
@@ -167,7 +170,7 @@ def combined_testing_function():
 
             # Check Web Interface #
             elif test_side == "Frontend":
-                url, browser = get_details_from_external_user_for_frontend(test_name="Frontend", isDocker="False")
+                url, browser = get_details_from_external_user_for_frontend(test_name="Frontend", isDocker=isDocker)
                 open_chrome_web_browser(url, browser)
 
             # Exit from `test side` menu #
