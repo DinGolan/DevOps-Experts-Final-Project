@@ -1,20 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.flaskImage.name }}
+  name: rest-api-deployment
+  labels:
+    app: rest-api-deployment
 spec:
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Values.flaskImage.name }}
-  replicas: {{ .Values.replicaCount }}
+      app: {{ .Values.restApiApp.name }}
   template:
     metadata:
       labels:
-        app: {{ .Values.flaskImage.name }}
+        app: {{ .Values.restApiApp.name }}
     spec:
       containers:
-        - name: {{ .Values.flaskImage.name }}
-          image: {{ .Values.flaskImage.image.repository }}:{{ .Values.flaskImage.image.tag }}
+        - name: {{ .Values.restApiApp.name }}
+          image: {{ .Values.restApiApp.image.repository }}:{{ .Values.restApiApp.image.tag }}
+          env:
+            - name: MYSQL_HOST_NAME
+              value: database
+            - name: MYSQL_GUEST_PORT
+              value: "3306"
           imagePullPolicy: Always
           ports:
-            - containerPort: {{ .Values.flaskImage.port }}
+            - containerPort: {{ .Values.restApiApp.restPort }}

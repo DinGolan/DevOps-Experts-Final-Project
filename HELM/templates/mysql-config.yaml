@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-config
+data:
+  create_schema.sql: |-
+    CREATE DATABASE IF NOT EXISTS `freedb_Din_Golan_Container`;
+  create_user.sql: |-
+    CREATE USER 'freedb_Din_Golan_Container'@'%' IDENTIFIED BY 'keeBetw3%kG4k3R';
+    GRANT ALL PRIVILEGES ON freedb_Din_Golan_Container.* TO 'freedb_Din_Golan_Container'@'%';
+    FLUSH PRIVILEGES;

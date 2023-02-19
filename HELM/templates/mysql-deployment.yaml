@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.mysql.name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  serviceName: "mysql"
+  selector:
+    matchLabels:
+      app: { { .Values.mysql.name } }
+  template:
+    metadata:
+      labels:
+        app: { { .Values.mysql.name } }
+        tier: database
+    spec:
+      hostname: database
+      containers:
+        - name: {{ .Values.mysql.name }}
+          image: {{ .Values.mysql.image.repository }}:{{ .Values.mysql.image.tag }}
+          imagePullPolicy: Always
+          env:
+            - name: MYSQL_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.name }}
+                  key: MYSQL_ROOT_USER
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: { { .Values.secret.name } }
+                  key: MYSQL_ROOT_PASSWORD
+            - name: MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: { { .Values.secret.name } }
+                  key: MYSQL_DATABASE
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: { { .Values.secret.name } }
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: { { .Values.secret.name } }
+                  key: MYSQL_PASSWORD
+          ports:
+            - containerPort: {{ .Values.mysql.port }}
+              name: {{ .Values.mysql.name }}
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql
+            - name: mysql-config
+              mountPath: /etc/mysql/conf.d
+      volumes:
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: mysql-pvc-claim
+        - name: mysql-config
+          configMap:
+            name: mysql-config

@@ -1,19 +1,33 @@
-replicaCount: 5
+# Default values for rest-api-application.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
 
-flaskImage:
+replicaCount: 1
+
+restApiApp:
   name: rest-api-application
+  serviceName: rest-api-application-service
   image:
     repository: dingolan/devops_experts_final_project
     tag: rest_api_version_latest_3
     pullPolicy: Always
-  port: 5000
+  restPort: 5000
 
 mysql:
   name: mysql
   image:
-    repository: mysql:8.0.32
+    repository: mysql
     tag: 8.0.32
     pullPolicy: Always
   port: 3306
 
-type: LoadBalancer
+service:
+  type: LoadBalancer
+
+secret:
+  name: mysql-secrets
+  mysqlRootUser: root
+  mysqlRootPassword: 6G24*7bAr5KaU3G
+  mysqlDatabase: freedb_Din_Golan_Container
+  mysqlUser: freedb_Din_Golan_Container
+  mysqlPassword: keeBetw3%kG4k3R

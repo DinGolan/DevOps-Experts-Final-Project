@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.flaskImage.name }}-service
+  name: rest-api-service
 spec:
   selector:
-    app: {{ .Values.flaskImage.name }}
+    app: {{ .Values.restApiApp.name }}
   ports:
-  - name: port-{{ .Values.flaskImage.port }}
+  - name: rest-api-port-{{ .Values.restApiApp.restPort }}
     protocol: "TCP"
-    port: {{ .Values.flaskImage.port }}
-    targetPort: {{ .Values.flaskImage.port }}
-  type: {{ .Values.type }}
+    port: {{ .Values.restApiApp.restPort }}
+    targetPort: {{ .Values.restApiApp.restPort }}
+  type: {{ .Values.service.type }}
