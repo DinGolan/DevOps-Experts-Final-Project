@@ -30,6 +30,8 @@ pipeline {
         MYSQL_TAG                             = "8.0.32"
         REST_TAG                              = "rest_api_version_"
         PY_TAG                                = "python_app_version_"
+        REST_API_SERVICE_NAME                 = "rest-api-application"
+        HELM_CHART_NAME                       = "helm-chart-testing"
     }
 
     stages {
@@ -290,46 +292,65 @@ pipeline {
             }
         }
 
-        // Step 14 - Deploy HELM Chart with Passing Image //
+        // Step 14 - Minikube Start //
+        stage("[K8S] Minikube Start") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        bat 'minikube start'
+                    } else {
+                        sh 'minikube start'
+                    }
+                }
+            }
+        }
+
+        // Step 15 - Deploy HELM Chart with Passing Image //
         stage("[K8S] Deploy HELM Chart with Passing Image") {
             steps {
                 script {
                     if (checkOS() == "Windows") {
-
+                        bat 'helm install %HELM_CHART_NAME% HELM\\'
                     } else {
-
+                        sh 'helm install ${HELM_CHART_NAME} HELM/'
                     }
                 }
             }
         }
 
-        // Step 15 - Write Service URL into `k8s_url.txt` //
+        // Step 16 - Write Service URL into `k8s_url.txt` //
         stage("[K8S] Write service URL into `k8s_url.txt`") {
             steps {
                 script {
                     if (checkOS() == "Windows") {
-
+                        bat 'minikube service %REST_API_SERVICE_NAME% --url > Testing\\k8s_url.txt'
                     } else {
-
+                        sh 'minikube service ${REST_API_SERVICE_NAME} --url > Testing/k8s_url.txt'
                     }
                 }
             }
         }
 
-        // Step 16 - Test Deployed Application //
+        // Step 17 - Test Deployed Application //
         stage("[K8S] Test Deployed Application - `k8s_backend_testing.py`") {
             steps {
                 script {
                     if (checkOS() == "Windows") {
-
+                        sleep(time: 2, unit: "SECONDS")
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            bat 'python Testing\\k8s_backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE% --is_docker %IS_DOCKER%'
+                        }
                     } else {
-
+                        sleep(time: 2, unit: "SECONDS")
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                           sh 'python Testing/k8s_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE} --is_docker ${IS_DOCKER}'
+                        }
                     }
                 }
             }
         }
 
-        // Step 17 - Clean HELM Environment //
+        // Step 18 - Clean HELM Environment //
         stage("[K8S] Clean HELM Environment") {
             steps {
                 script {
