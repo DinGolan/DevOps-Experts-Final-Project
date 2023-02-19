@@ -152,8 +152,8 @@ def send_post_request(user_name, is_mysql_container):
     headers         = {'Content-Type': 'application/json'}
     data            = {"user_name": user_name}
     new_user_id     = get_new_user_id_from_users_table(is_mysql_container)
-    url             = f"http://{get_rest_host()}:{get_rest_port()}/{get_db_users_table_name()}/{new_user_id}"
-    requests_result = requests.post(url=url, headers=headers, json=data)
+    new_url         = f"http://{get_rest_host()}:{get_rest_port()}/{get_db_users_table_name()}/{new_user_id}"
+    requests_result = requests.post(url=new_url, headers=headers, json=data)
     json_result     = requests_result.json()
     check_requests_result("POST", new_user_id, requests_result, json_result, "user_added", is_mysql_container)
 

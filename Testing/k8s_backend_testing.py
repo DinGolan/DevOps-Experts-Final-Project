@@ -60,30 +60,6 @@ def generate_response_dict(requests_result, json_result, json_key, message):
     }
 
 
-def get_k8s_url():
-    """
-    :explanations:
-    - Get K8S url.
-
-    :return: k8s_url (str).
-    """
-    url_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "k8s_url.txt")
-
-    if os.path.exists(url_path):
-        with open(url_path, 'r') as content_to_read:
-            return content_to_read.readline()
-    else:
-        print("\nError : You need to run the following commands :" + "\n" +
-              "(1) minikube start"                                 + "\n" +
-              "(2) helm install helm-chart-testing .\\HELM\\ --set image.version=dingolan/devops_experts_final_project:rest_api_version_latest_3" + "\n" +
-              "(3) minikube service rest-api-application-service --url > Testing\\k8s_url.txt"                                                    + "\n" +
-              "(4) python Testing/k8s_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i True -r GET -s False"                      + "\n")
-
-        # Exit from program, we can't continue #
-        exit(1)
-
-
-
 def check_requests_result(request_title, user_id, requests_result, json_result, json_key, is_mysql_container):
     """
     :explanations:
@@ -160,13 +136,12 @@ def check_requests_result_for_get_all(request_title, requests_result, json_resul
         raise Exception(f"\n[{request_title}] Test Failed : {message}" + "\n")
 
 
-def send_post_request(user_name, rest_host, is_mysql_container):
+def send_post_request(user_name, is_mysql_container):
     """
     :explanations:
     - Send POST request.
 
     :param: user_name: (str).
-    :param: rest_host: (str).
     :param: is_mysql_container: (str).
 
     :return: None
@@ -177,8 +152,8 @@ def send_post_request(user_name, rest_host, is_mysql_container):
     headers         = {'Content-Type': 'application/json'}
     data            = {"user_name": user_name, "is_mysql_container": "True"}
     new_user_id     = get_new_user_id_from_users_table(is_mysql_container)
-    url             = f"http://{rest_host}:{get_rest_port()}/{get_db_users_table_name()}/{new_user_id}"
-    requests_result = requests.post(url=url, headers=headers, json=data)
+    new_url         = f"http://{get_k8s_url()}/{get_db_users_table_name()}/{new_user_id}"
+    requests_result = requests.post(url=new_url, headers=headers, json=data)
     json_result     = requests_result.json()
     check_requests_result("POST", new_user_id, requests_result, json_result, "user_added", is_mysql_container)
 
@@ -293,7 +268,7 @@ def k8s_backend_testing_function():
     #################
     is_job_run            = get_from_jenkins_arguments().is_job_run
     is_mysql_container    = get_from_jenkins_arguments().is_mysql_container
-    rest_host             = get_rest_host()
+    is_k8s_url            = get_from_jenkins_arguments().is_k8s_url
 
     if is_job_run == "True":
 
@@ -312,7 +287,7 @@ def k8s_backend_testing_function():
         elif request_type in ["GET", "PUT", "DELETE"]: print("[GET, PUT, DELETE] : "   + str({'user_id': user_id_k8s_backend_test, 'url': url}) + "\n")
         else:                                          print("[GET_ALL, PRINT_ALL] : " + str({'url': url}) + "\n")
 
-        if   request_type == "POST"       : send_post_request(user_name_k8s_backend_test, rest_host, is_mysql_container)
+        if   request_type == "POST"       : send_post_request(user_name_k8s_backend_test, is_mysql_container)
         elif request_type == "GET"        : send_get_request(url, user_id_k8s_backend_test, is_mysql_container)
         elif request_type == "GET_ALL"    : send_get_all_request(url)
         elif request_type == "PUT"        : send_put_request(is_job_run, url, user_id_k8s_backend_test, "Backend", is_mysql_container)
@@ -331,7 +306,7 @@ def k8s_backend_testing_function():
             # Send POST Request #
             if request_type == "POST":
                 user_name_k8s_backend_test = get_details_from_external_user_for_backend(request_type="POST", test_name="Backend", is_mysql_container=is_mysql_container)
-                send_post_request(user_name_k8s_backend_test, rest_host, is_mysql_container)
+                send_post_request(user_name_k8s_backend_test, is_mysql_container)
 
             # Send GET Request #
             elif request_type == "GET":
@@ -340,7 +315,7 @@ def k8s_backend_testing_function():
 
             # Send GET_ALL Request #
             elif request_type == "GET_ALL":
-                url = get_details_from_external_user_for_backend(request_type="GET_ALL", test_name="Backend", is_mysql_container=is_mysql_container)
+                url = get_details_from_external_user_for_backend(request_type="GET_ALL", test_name="Backend", is_mysql_container=is_mysql_container, is_k8s_url=is_k8s_url)
                 send_get_all_request(url)
 
             # Send PUT Request #

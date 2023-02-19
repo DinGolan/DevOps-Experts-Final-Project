@@ -141,7 +141,7 @@ def is_table_exist_in_db(table_name, is_mysql_container):
     return is_table_exist
 
 
-def get_details_from_external_user_for_backend(request_type, test_name, is_mysql_container):
+def get_details_from_external_user_for_backend(request_type, test_name, is_mysql_container, is_k8s_url = "False"):
     """
     :explanations:
     - Get from external user some details.
@@ -149,6 +149,7 @@ def get_details_from_external_user_for_backend(request_type, test_name, is_mysql
     :param: request_type: (str).
     :param: test_name: (str).
     :param: is_mysql_container: (str).
+    :param: is_k8s_url: (str).
 
     :return: [POST] user_name_backend_test (str).
              [GET, PUT, DELETE] url (str), user_id_backend_test (str).
@@ -180,9 +181,13 @@ def get_details_from_external_user_for_backend(request_type, test_name, is_mysql
 
         # GET_ALL #
         else:
-            is_rest_api_container = get_from_jenkins_arguments().is_rest_api_container
-            rest_host             = get_rest_host() if is_rest_api_container == "False" else get_rest_host_container()
-            url                   = f"http://{rest_host}:{get_rest_port()}/{get_db_users_table_name()}/get_all_users"
+            if is_k8s_url == "False":
+                is_rest_api_container = get_from_jenkins_arguments().is_rest_api_container
+                rest_host             = get_rest_host() if is_rest_api_container == "False" else get_rest_host_container()
+                url                   = f"http://{rest_host}:{get_rest_port()}/{get_db_users_table_name()}/get_all_users"
+            else:
+                url                   = f"http://{get_k8s_url()}/{get_db_users_table_name()}/get_all_users"
+
             return url
 
 
@@ -415,6 +420,29 @@ def drop_table(table_name, is_mysql_container):
     finally:
         # Close connection #
         close_connection_of_db(connection, cursor)
+
+
+def get_k8s_url():
+    """
+    :explanations:
+    - Get K8S url.
+
+    :return: k8s_url (str).
+    """
+    url_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Testing", "k8s_url.txt")
+
+    if os.path.exists(url_path):
+        with open(url_path, 'r') as content_to_read:
+            return content_to_read.readline()
+    else:
+        print("\nError : You need to run the following commands :" + "\n" +
+              "(1) minikube start"                                 + "\n" +
+              "(2) helm install helm-chart-testing .\\HELM\\ --set image.version=dingolan/devops_experts_final_project:rest_api_version_latest_3" + "\n" +
+              "(3) minikube service rest-api-application-service --url > Testing\\k8s_url.txt"                                                    + "\n" +
+              "(4) python Testing/k8s_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i True -r GET -s False"                      + "\n")
+
+        # Exit from program, we can't continue #
+        exit(1)
 
 
 ######################
@@ -714,7 +742,7 @@ def create_config_table(is_mysql_container):
     """
     :explanations:
     - Create another table (in DB) and call it config, the table will contain :
-      * The API gateway URL (e.g: 127.0.0.1:5000/users)
+      * The API gateway URL (e.g: 127.0.0.1:5000/users/1)
       * The browser to test on (e.g: Chrome).
       * user id.
       * user name to be inserted.
@@ -748,7 +776,7 @@ def create_config_table(is_mysql_container):
         close_connection_of_db(connection, cursor)
 
 
-def insert_rows_to_config_table(is_job_run, test_name, is_mysql_container):
+def insert_rows_to_config_table(is_job_run, test_name, is_mysql_container, is_k8s_url = "False"):
     """
     :explanations:
     - Insert new rows to config table.
@@ -756,6 +784,7 @@ def insert_rows_to_config_table(is_job_run, test_name, is_mysql_container):
     :param: is_job_run: (Boolean).
     :param: test_name: (str).
     :param: is_mysql_container: (str).
+    :param: is_k8s_url: (str).
 
     :return: None.
     """
@@ -789,7 +818,11 @@ def insert_rows_to_config_table(is_job_run, test_name, is_mysql_container):
     rest_host             = get_rest_host() if is_rest_api_container == "False" else get_rest_host_container()
 
     while idx < len(user_names):
-        url       = f"http://{rest_host}:{get_rest_port()}/{get_db_users_table_name()}/{user_id}"
+        if is_k8s_url == "False":
+            url = f"http://{rest_host}:{get_rest_port()}/{get_db_users_table_name()}/{user_id}"
+        else:
+            url = f"http://{get_k8s_url()}/{get_db_users_table_name()}/{user_id}"
+
         try:
             # Inserting data into table #
             statementToExecute = f"INSERT into `{schema_name}`.`{get_db_config_table_name()}` " \
@@ -813,7 +846,7 @@ def insert_rows_to_config_table(is_job_run, test_name, is_mysql_container):
         raise Exception(f"\nError : `{get_db_config_table_name()}` table can't be empty ...\n")
 
 
-def insert_new_user_to_config_table(user_id, user_name, is_mysql_container):
+def insert_new_user_to_config_table(user_id, user_name, is_mysql_container, url):
     """
     :explanations:
     - Insert new row to config table.
@@ -821,6 +854,7 @@ def insert_new_user_to_config_table(user_id, user_name, is_mysql_container):
     :param: user_id: (str).
     :param: user_name: (str).
     :param: is_mysql_container: (str).
+    :param: url: (str).
 
     :return: True: Succeed.
              False: Not Succeed.
@@ -830,14 +864,11 @@ def insert_new_user_to_config_table(user_id, user_name, is_mysql_container):
 
     try:
         # Inserting data into table #
-        is_rest_api_container = get_from_jenkins_arguments().is_rest_api_container
-        rest_host             = get_rest_host() if is_rest_api_container == "False" else get_rest_host_container()
-        url                   = f"http://{rest_host}:{get_rest_port()}/{get_db_users_table_name()}/{user_id}"
         browser               = "Chrome"
         schema_name           = get_db_schema_name() if is_mysql_container == "False" else get_db_schema_name_container()
         statementToExecute    = f"INSERT into `{schema_name}`.`{get_db_config_table_name()}` " \
-                             f"(url, browser, user_id, user_name) "                         \
-                             f"VALUES ('{url}', '{browser}', '{user_id}', '{user_name}')"
+                                f"(url, browser, user_id, user_name) "                         \
+                                f"VALUES ('{url}', '{browser}', '{user_id}', '{user_name}')"
         cursor.execute(statementToExecute)
 
     except pymysql.err.IntegrityError as integrity_exception:

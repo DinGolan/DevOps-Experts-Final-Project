@@ -17,6 +17,7 @@ sys.path.append(package_path)
 
 # From #
 from Config.config   import *
+from DB.db_connector import get_k8s_url
 
 
 # Global Vars #
@@ -43,7 +44,7 @@ def servers_menu():
     return server_type
 
 
-def clean_rest_api_environment(is_rest_api_container):
+def clean_rest_api_environment(is_rest_api_container, is_k8s_url):
     """
     :explanations:
     - Clean REST API environment.
@@ -52,11 +53,13 @@ def clean_rest_api_environment(is_rest_api_container):
 
     :return: None
     """
-    rest_host = get_rest_host() if is_rest_api_container == "False" else get_rest_host_container()
-    url       = f"http://{rest_host}:{get_rest_port()}/{STOP_SERVER}"
+    if is_k8s_url == "False":
+        rest_host = get_rest_host() if is_rest_api_container == "False" else get_rest_host_container()
+        url       = f"http://{rest_host}:{get_rest_port()}/{STOP_SERVER}"
+    else:
+        url       = f"{get_k8s_url()}/{STOP_SERVER}"
 
     try:
-        proxies         = {"http": url, "https": url}
         headers         = {
                             'user-agent'     : "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.5359.125 Mobile Safari/537.36",
                             'Connection'     : "keep-alive",
@@ -64,7 +67,8 @@ def clean_rest_api_environment(is_rest_api_container):
                             'Accept-Encoding': "*",
                             'method'         : "GET"
                         }
-        requests_result = requests.get(url, headers, proxies)
+
+        requests_result = requests.get(url, headers)
 
         if requests_result.ok:
             requests_result.raise_for_status()
@@ -100,7 +104,6 @@ def clean_web_app_environment():
     url = f"http://{get_web_host()}:{get_web_port()}/{STOP_SERVER}"
 
     try:
-        proxies         = {"http": url, "https": url}
         headers         = {
                             'user-agent'     : "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.5359.125 Mobile Safari/537.36",
                             'Connection'     : "keep-alive",
@@ -108,7 +111,8 @@ def clean_web_app_environment():
                             'Accept-Encoding': "*",
                             'method'         : "GET"
                         }
-        requests_result = requests.get(url, headers, proxies)
+
+        requests_result = requests.get(url, headers)
 
         if requests_result.ok:
             requests_result.raise_for_status()
@@ -145,21 +149,22 @@ def main():
     jenkins_arguments     = get_from_jenkins_arguments()
     is_job_run            = jenkins_arguments.is_job_run
     is_rest_api_container = jenkins_arguments.is_rest_api_container
+    is_k8s_url            = jenkins_arguments.is_k8s_url
     clean_server          = jenkins_arguments.clean_server
 
     if is_job_run == "True":
         # Jenkins File - 1 #
         if clean_server is None:
-            clean_rest_api_environment(is_rest_api_container)
+            clean_rest_api_environment(is_rest_api_container, is_k8s_url)
             clean_web_app_environment()
 
         # Jenkins File - 2 / 3 #
-        elif clean_server == "REST_API": clean_rest_api_environment(is_rest_api_container)
+        elif clean_server == "REST_API": clean_rest_api_environment(is_rest_api_container, is_k8s_url)
         elif clean_server == "WEB_APP" : clean_web_app_environment()
 
     else:
         server_type = servers_menu()
-        if   server_type == "REST_API": clean_rest_api_environment(is_rest_api_container)
+        if   server_type == "REST_API": clean_rest_api_environment(is_rest_api_container, is_k8s_url)
         elif server_type == "WEB_APP" : clean_web_app_environment()
 
 

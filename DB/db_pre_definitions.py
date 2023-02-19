@@ -22,6 +22,7 @@ def db_pre_definitions():
 
     # Vars #
     is_mysql_container    = get_from_jenkins_arguments().is_mysql_container
+    is_k8s_url            = get_from_jenkins_arguments().is_k8s_url
     is_config_table_exist = is_table_exist_in_db(get_db_config_table_name(), is_mysql_container)
     is_users_table_exist  = is_table_exist_in_db(get_db_users_table_name() , is_mysql_container)
 
@@ -38,7 +39,7 @@ def db_pre_definitions():
     create_config_table(is_mysql_container)
 
     # Insert rows to config table inside MySQL DB #
-    insert_rows_to_config_table(is_job_run="True", test_name="Backend", is_mysql_container=is_mysql_container)
+    insert_rows_to_config_table(is_job_run="True", test_name="Backend", is_mysql_container=is_mysql_container, is_k8s_url=is_k8s_url)
 
     ################
     # User Details #

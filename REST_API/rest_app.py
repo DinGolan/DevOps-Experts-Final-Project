@@ -92,7 +92,7 @@ def rest_api_requests(user_id):
         user_name          = request_data.get('user_name')
         is_mysql_container = "True" if request_data.get('is_mysql_container') is not None else "False"
         creation_date = get_user_creation_date()
-        insert_result = insert_new_user_to_users_table(user_id, user_name, creation_date, is_mysql_container) and insert_new_user_to_config_table(user_id, user_name, is_mysql_container)
+        insert_result = insert_new_user_to_users_table(user_id, user_name, creation_date, is_mysql_container) and insert_new_user_to_config_table(user_id, user_name, is_mysql_container, request.url)
 
         if insert_result is False:
             response    = make_response(jsonify({"status": "error", "reason": "ID Already Exists"}))
