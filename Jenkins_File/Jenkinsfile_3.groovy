@@ -220,13 +220,13 @@ pipeline {
                         def containerId = bat(script: 'docker ps --filter "name=%REST_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
                         sleep(time: 2, unit: "SECONDS")
                         withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-                            bat "docker exec -i ${containerId} sh -c \"/usr/local/bin/python Testing/docker_backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE% --is_docker %IS_DOCKER%\""
+                            bat "docker exec -i ${containerId} sh -c \"/usr/local/bin/python Testing/docker_backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE% -s %IS_MYSQL_CONTAINER%\""
                         }
                     } else {
                         def containerId = sh(script: 'docker ps --filter "name=${REST_CONTAINER_NAME}" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
                         sleep(time: 2, unit: "SECONDS")
                         withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-                            sh "docker exec -i ${containerId} sh \"/usr/local/bin/python Testing/docker_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE} --is_docker ${IS_DOCKER}\""
+                            sh "docker exec -i ${containerId} sh \"/usr/local/bin/python Testing/docker_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE} -s ${IS_MYSQL_CONTAINER}\""
                         }
                     }
                 }
@@ -328,7 +328,8 @@ def checkOS() {
 def setEnvFile() {
     // Note - We can write also the following IMAGE_TAG : IMAGE_TAG=%BUILD_NUMBER% / IMAGE_TAG=${BUILD_NUMBER} //
     if (checkOS() == 'Windows') {
-        bat 'echo MYSQL_ROOT_USER=%MYSQL_ROOT_USER%                                              > .env'
+        bat 'echo DOCKER_REPOSITORY=%DOCKER_REPOSITORY%                                          > .env'
+        bat 'echo MYSQL_ROOT_USER=%MYSQL_ROOT_USER%                                             >> .env'
         bat 'echo MYSQL_ROOT_PASSWORD=%MYSQL_ROOT_PASSWORD%                                     >> .env'
         bat 'echo MYSQL_USER=%MYSQL_USER_NAME%                                                  >> .env'
         bat 'echo MYSQL_PASSWORD=%MYSQL_PASSWORD%                                               >> .env'
@@ -349,9 +350,10 @@ def setEnvFile() {
         bat 'echo REST_TAG=%REST_TAG%                                                           >> .env'
         bat 'echo PY_TAG=%PY_TAG%                                                               >> .env'
     } else {
-        sh 'echo MYSQL_ROOT_USER=${MYSQL_ROOT_USER}                                              > .env'
+        sh 'echo DOCKER_REPOSITORY=${DOCKER_REPOSITORY}                                          > .env'
+        sh 'echo MYSQL_ROOT_USER=${MYSQL_ROOT_USER}                                             >> .env'
         sh 'echo MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}                                     >> .env'
-        sh 'echo MYSQL_USER=${MYSQL_USER_NAME}                                             >> .env'
+        sh 'echo MYSQL_USER=${MYSQL_USER_NAME}                                                  >> .env'
         sh 'echo MYSQL_PASSWORD=${MYSQL_PASSWORD}                                               >> .env'
         sh 'echo MYSQL_SCHEMA_NAME=${MYSQL_SCHEMA_NAME}                                         >> .env'
         sh 'echo MYSQL_HOST_PORT=${MYSQL_HOST_PORT}                                             >> .env'

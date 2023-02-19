@@ -60,7 +60,31 @@ def generate_response_dict(requests_result, json_result, json_key, message):
     }
 
 
-def check_requests_result(request_title, user_id, requests_result, json_result, json_key, isDocker):
+def get_k8s_url():
+    """
+    :explanations:
+    - Get K8S url.
+
+    :return: k8s_url (str).
+    """
+    url_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "k8s_url.txt")
+
+    if os.path.exists(url_path):
+        with open(url_path, 'r') as content_to_read:
+            return content_to_read.readline()
+    else:
+        print("\nError : You need to run the following commands :" + "\n" +
+              "(1) minikube start"                                 + "\n" +
+              "(2) helm install helm-chart-testing .\\HELM\\ --set image.version=dingolan/devops_experts_final_project:rest_api_version_latest_3" + "\n" +
+              "(3) minikube service rest-api-application-service --url > Testing\\k8s_url.txt"                                                    + "\n" +
+              "(4) python Testing/k8s_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i True -r GET -s False"                      + "\n")
+
+        # Exit from program, we can't continue #
+        exit(1)
+
+
+
+def check_requests_result(request_title, user_id, requests_result, json_result, json_key, is_mysql_container):
     """
     :explanations:
     - Check the result after request.
@@ -70,7 +94,7 @@ def check_requests_result(request_title, user_id, requests_result, json_result, 
     :param requests_result: (requests).
     :param json_result: (JSON).
     :param json_key: (str).
-    :param isDocker: (str).
+    :param is_mysql_container: (str).
 
     :return: None.
     """
@@ -82,7 +106,7 @@ def check_requests_result(request_title, user_id, requests_result, json_result, 
             message = f"We get status code different then 200 , status_code = {status_code} ..."
             raise Exception(f"\n[{request_title}] Test Failed : " + str(generate_response_dict(requests_result, json_result, json_key, message)) + "\n")
 
-        db_user_ids = get_user_ids_of_specific_user_name_from_users_table(jason_user_name, isDocker=isDocker)
+        db_user_ids = get_user_ids_of_specific_user_name_from_users_table(jason_user_name, is_mysql_container)
 
         if request_title in ["POST", "GET", "PUT"]:
             if user_id not in db_user_ids:
@@ -136,14 +160,14 @@ def check_requests_result_for_get_all(request_title, requests_result, json_resul
         raise Exception(f"\n[{request_title}] Test Failed : {message}" + "\n")
 
 
-def send_post_request(user_name, rest_host, isDocker):
+def send_post_request(user_name, rest_host, is_mysql_container):
     """
     :explanations:
     - Send POST request.
 
-    :param: user_name (str).
-    :param: rest_host (str).
-    :param: isDocker (str).
+    :param: user_name: (str).
+    :param: rest_host: (str).
+    :param: is_mysql_container: (str).
 
     :return: None
     """
@@ -151,22 +175,22 @@ def send_post_request(user_name, rest_host, isDocker):
     print("#  POST  #")
     print("##########\n")
     headers         = {'Content-Type': 'application/json'}
-    data            = {"user_name": user_name, "isDocker": "True"}
-    new_user_id     = get_new_user_id_from_users_table(isDocker=isDocker)
+    data            = {"user_name": user_name, "is_mysql_container": "True"}
+    new_user_id     = get_new_user_id_from_users_table(is_mysql_container)
     url             = f"http://{rest_host}:{get_rest_port()}/{get_db_users_table_name()}/{new_user_id}"
     requests_result = requests.post(url=url, headers=headers, json=data)
     json_result     = requests_result.json()
-    check_requests_result("POST", new_user_id, requests_result, json_result, "user_added", isDocker=isDocker)
+    check_requests_result("POST", new_user_id, requests_result, json_result, "user_added", is_mysql_container)
 
 
-def send_get_request(url, user_id, isDocker):
+def send_get_request(url, user_id, is_mysql_container):
     """
     :explanations:
     - Send GET request.
 
     :param: url: (str).
     :param: user_id: (str).
-    :param: isDocker: (str)
+    :param: is_mysql_container: (str)
 
     :return: None
     """
@@ -174,10 +198,10 @@ def send_get_request(url, user_id, isDocker):
     print("#  GET  #")
     print("#########\n")
     headers         = {'Content-Type': 'application/json'}
-    data            = {"user_id": user_id, "isDocker": "True"}
+    data            = {"user_id": user_id, "is_mysql_container": "True"}
     requests_result = requests.get(url=url, headers=headers, json=data)
     json_result     = requests_result.json()
-    check_requests_result("GET", user_id, requests_result, json_result, "user_name", isDocker=isDocker)
+    check_requests_result("GET", user_id, requests_result, json_result, "user_name", is_mysql_container)
 
 
 def send_get_all_request(url):
@@ -193,22 +217,22 @@ def send_get_all_request(url):
     print("#  GET ALL  #")
     print("#############\n")
     headers         = {'Content-Type': 'application/json'}
-    data            = {"isDocker": "True"}
+    data            = {"is_mysql_container": "True"}
     requests_result = requests.get(url=url, headers=headers, json=data)
     json_result     = requests_result.json()
     check_requests_result_for_get_all("GET_ALL", requests_result, json_result, "users_table")
 
 
-def send_put_request(is_job_run, url, user_id, test_name, isDocker):
+def send_put_request(is_job_run, url, user_id, test_name, is_mysql_container):
     """
     :explanations:
     - Send PUT request.
 
-    :param: is_job_run (Boolean).
+    :param: is_job_run: (Boolean).
     :param: url: (str).
     :param: user_id: (str).
     :param: test_name: (str).
-    :param: isDocker: (str).
+    :param: is_mysql_container: (str).
 
     :return: None
     """
@@ -226,20 +250,20 @@ def send_put_request(is_job_run, url, user_id, test_name, isDocker):
         new_user_name = input("Please type new user name : ")
 
     headers         = {'Content-Type': 'application/json'}
-    data            = {"user_id": user_id, "new_user_name": new_user_name, "isDocker": "True"}
+    data            = {"user_id": user_id, "new_user_name": new_user_name, "is_mysql_container": "True"}
     requests_result = requests.put(url=url, headers=headers, json=data)
     json_result     = requests_result.json()
-    check_requests_result("PUT", user_id, requests_result, json_result, "user_updated", isDocker=isDocker)
+    check_requests_result("PUT", user_id, requests_result, json_result, "user_updated", is_mysql_container)
 
 
-def send_delete_request(url, user_id, isDocker):
+def send_delete_request(url, user_id, is_mysql_container):
     """
     :explanations:
     - Send DELETE request.
 
     :param: url: (str).
     :param: user_id: (str).
-    :param: isDocker: (str).
+    :param: is_mysql_container: (str).
 
     :return: None
     """
@@ -247,10 +271,10 @@ def send_delete_request(url, user_id, isDocker):
     print("#  DELETE  #")
     print("############\n")
     headers         = {'Content-Type': 'application/json'}
-    data            = {"user_id": user_id, "isDocker": "True"}
+    data            = {"user_id": user_id, "is_mysql_container": "True"}
     requests_result = requests.delete(url=url, headers=headers, json=data)
     json_result     = requests_result.json()
-    check_requests_result("DELETE", user_id, requests_result, json_result, "user_deleted", isDocker=isDocker)
+    check_requests_result("DELETE", user_id, requests_result, json_result, "user_deleted", is_mysql_container)
 
 
 def k8s_backend_testing_function():
@@ -264,15 +288,12 @@ def k8s_backend_testing_function():
     print("| K8S Backend Test |")
     print("--------------------\n")
 
-    # Arguments #
-    isDocker = get_from_jenkins_arguments().is_docker
-
     #################
     # Jenkins / K8S #
     #################
     is_job_run            = get_from_jenkins_arguments().is_job_run
-    is_rest_api_container = get_from_jenkins_arguments().is_rest_api_container
-    rest_host             = get_rest_host() if (is_rest_api_container is None or is_rest_api_container == "False") else get_rest_host_container()
+    is_mysql_container    = get_from_jenkins_arguments().is_mysql_container
+    rest_host             = get_rest_host()
 
     if is_job_run == "True":
 
@@ -282,7 +303,7 @@ def k8s_backend_testing_function():
         # Jenkins - Parameters For K8S Backend Testing #
         user_name_k8s_backend_test = get_user_name_backend_test()
         user_id_k8s_backend_test   = get_user_id_backend_test()
-        url                        = f"http://{rest_host}:{get_rest_port()}/{get_db_users_table_name()}/{user_id_k8s_backend_test}"
+        url                        = f"{get_k8s_url()}/{get_db_users_table_name()}/{user_id_k8s_backend_test}"
 
         print("\n################################################")
         print("# Jenkins - Parameters For K8S Backend Testing #")
@@ -291,14 +312,14 @@ def k8s_backend_testing_function():
         elif request_type in ["GET", "PUT", "DELETE"]: print("[GET, PUT, DELETE] : "   + str({'user_id': user_id_k8s_backend_test, 'url': url}) + "\n")
         else:                                          print("[GET_ALL, PRINT_ALL] : " + str({'url': url}) + "\n")
 
-        if   request_type == "POST"       : send_post_request(user_name_k8s_backend_test, rest_host, isDocker=isDocker)
-        elif request_type == "GET"        : send_get_request(url, user_id_k8s_backend_test, isDocker=isDocker)
+        if   request_type == "POST"       : send_post_request(user_name_k8s_backend_test, rest_host, is_mysql_container)
+        elif request_type == "GET"        : send_get_request(url, user_id_k8s_backend_test, is_mysql_container)
         elif request_type == "GET_ALL"    : send_get_all_request(url)
-        elif request_type == "PUT"        : send_put_request(is_job_run, url, user_id_k8s_backend_test, "Backend", isDocker=isDocker)
-        elif request_type == "DELETE"     : send_delete_request(url, user_id_k8s_backend_test, isDocker=isDocker)
+        elif request_type == "PUT"        : send_put_request(is_job_run, url, user_id_k8s_backend_test, "Backend", is_mysql_container)
+        elif request_type == "DELETE"     : send_delete_request(url, user_id_k8s_backend_test, is_mysql_container)
         elif request_type == "PRINT_TABLE":
-            print_table(get_db_users_table_name() , isDocker=isDocker)
-            print_table(get_db_config_table_name(), isDocker=isDocker)
+            print_table(get_db_users_table_name() , is_mysql_container)
+            print_table(get_db_config_table_name(), is_mysql_container)
 
     else:
 
@@ -309,40 +330,40 @@ def k8s_backend_testing_function():
 
             # Send POST Request #
             if request_type == "POST":
-                user_name_k8s_backend_test = get_details_from_external_user_for_backend(request_type="POST", test_name="Backend", isDocker=isDocker)
-                send_post_request(user_name_k8s_backend_test, rest_host, isDocker=isDocker)
+                user_name_k8s_backend_test = get_details_from_external_user_for_backend(request_type="POST", test_name="Backend", is_mysql_container=is_mysql_container)
+                send_post_request(user_name_k8s_backend_test, rest_host, is_mysql_container)
 
             # Send GET Request #
             elif request_type == "GET":
-                url, user_id_k8s_backend_test = get_details_from_external_user_for_backend(request_type="GET", test_name="Backend", isDocker=isDocker)
-                send_get_request(url, user_id_k8s_backend_test, isDocker=isDocker)
+                url, user_id_k8s_backend_test = get_details_from_external_user_for_backend(request_type="GET", test_name="Backend", is_mysql_container=is_mysql_container)
+                send_get_request(url, user_id_k8s_backend_test, is_mysql_container)
 
             # Send GET_ALL Request #
             elif request_type == "GET_ALL":
-                url = get_details_from_external_user_for_backend(request_type="GET_ALL", test_name="Backend", isDocker=isDocker)
+                url = get_details_from_external_user_for_backend(request_type="GET_ALL", test_name="Backend", is_mysql_container=is_mysql_container)
                 send_get_all_request(url)
 
             # Send PUT Request #
             elif request_type == "PUT":
-                url, user_id_k8s_backend_test = get_details_from_external_user_for_backend(request_type="PUT", test_name="Backend", isDocker=isDocker)
-                send_put_request(is_job_run, url, user_id_k8s_backend_test, "Backend", isDocker=isDocker)
+                url, user_id_k8s_backend_test = get_details_from_external_user_for_backend(request_type="PUT", test_name="Backend", is_mysql_container=is_mysql_container)
+                send_put_request(is_job_run, url, user_id_k8s_backend_test, "Backend", is_mysql_container)
 
             # Send DELETE Request #
             elif request_type == "DELETE":
-                url, user_id_k8s_backend_test = get_details_from_external_user_for_backend(request_type="DELETE", test_name="Backend", isDocker=isDocker)
-                send_delete_request(url, user_id_k8s_backend_test, isDocker=isDocker)
+                url, user_id_k8s_backend_test = get_details_from_external_user_for_backend(request_type="DELETE", test_name="Backend", is_mysql_container=is_mysql_container)
+                send_delete_request(url, user_id_k8s_backend_test, is_mysql_container)
 
             # Print Tables #
             elif request_type == "PRINT_TABLE":
                 print("\n###############")
                 print("# USERS TABLE #")
                 print("###############\n")
-                print_table(get_db_users_table_name(), isDocker=isDocker)
+                print_table(get_db_users_table_name(), is_mysql_container)
 
                 print("\n################")
                 print("# CONFIG TABLE #")
                 print("################\n")
-                print_table(get_db_config_table_name(), isDocker=isDocker)
+                print_table(get_db_config_table_name(), is_mysql_container)
 
             # Exit from `request type` menu #
             else:

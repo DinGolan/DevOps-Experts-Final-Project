@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # VARS #
-IS_DOCKER="True"
 IS_JOB_RUN="True"
 REQUEST_TYPE="GET"
+IS_MYSQL_CONTAINER="True"
 IS_REST_API_CONTAINER="True"
 MYSQL_PASSWORD="keeBetw3%kG4k3R"
 MYSQL_USER_NAME="freedb_Din_Golan_Container"
@@ -48,4 +48,4 @@ wait_for_db "$MYSQL_HOST_NAME" "$MYSQL_GUEST_PORT"
 
 check_file_exist "/DevOps_Experts_Final_Project/Testing/docker_backend_testing.py"
 
-/bin/sh -c "sleep 20 && python /DevOps_Experts_Final_Project/Testing/docker_backend_testing.py -u $MYSQL_USER_NAME -p $MYSQL_PASSWORD -i $IS_JOB_RUN -r $REQUEST_TYPE --is_docker $IS_DOCKER -d $IS_REST_API_CONTAINER"
+/bin/sh -c "sleep 20 && python /DevOps_Experts_Final_Project/Testing/docker_backend_testing.py -u $MYSQL_USER_NAME -p $MYSQL_PASSWORD -i $IS_JOB_RUN -r $REQUEST_TYPE -s $IS_MYSQL_CONTAINER -d $IS_REST_API_CONTAINER"

@@ -48,11 +48,11 @@ def clean_rest_api_environment(is_rest_api_container):
     :explanations:
     - Clean REST API environment.
 
-    :param: is_rest_api_container (str).
+    :param: is_rest_api_container: (str).
 
     :return: None
     """
-    rest_host = get_rest_host() if (is_rest_api_container is None or is_rest_api_container == "False") else get_rest_host_container()
+    rest_host = get_rest_host() if is_rest_api_container == "False" else get_rest_host_container()
     url       = f"http://{rest_host}:{get_rest_port()}/{STOP_SERVER}"
 
     try:
@@ -64,7 +64,7 @@ def clean_rest_api_environment(is_rest_api_container):
                             'Accept-Encoding': "*",
                             'method'         : "GET"
                         }
-        requests_result = requests.get(url, headers=headers, proxies=proxies)
+        requests_result = requests.get(url, headers, proxies)
 
         if requests_result.ok:
             requests_result.raise_for_status()
@@ -108,7 +108,7 @@ def clean_web_app_environment():
                             'Accept-Encoding': "*",
                             'method'         : "GET"
                         }
-        requests_result = requests.get(url, headers=headers, proxies=proxies)
+        requests_result = requests.get(url, headers, proxies)
 
         if requests_result.ok:
             requests_result.raise_for_status()

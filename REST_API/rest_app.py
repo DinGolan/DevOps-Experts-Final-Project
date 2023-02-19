@@ -26,14 +26,14 @@ from flask import Flask, make_response, request, send_file, jsonify
 rest_app = Flask(__name__, template_folder=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "HTML_Files"))
 
 
-def is_table_exist_in_db_for_rest_api(table_name, isDocker, db_host):
+def is_table_exist_in_db_for_rest_api(table_name, is_mysql_container, db_host):
     """
     :explanations:
     - Check if table exist already in DB (For REST API).
 
-    :param: table_name (str).
-    :param: isDocker (str).
-    :param: db_host (str).
+    :param: table_name: (str).
+    :param: is_mysql_container: (str).
+    :param: db_host: (str).
 
     :return: True - Table exist.
             False - Table not exist.
@@ -46,13 +46,13 @@ def is_table_exist_in_db_for_rest_api(table_name, isDocker, db_host):
     try:
         user_name = get_from_jenkins_arguments().user_name
         if user_name is None:
-            user_name = get_db_user_name() if isDocker == "False" else get_db_user_name_container()
+            user_name = get_db_user_name() if is_mysql_container == "False" else get_db_user_name_container()
 
         password = get_from_jenkins_arguments().password
         if password is None:
             password = get_db_password()
 
-        schema_name = get_db_schema_name() if isDocker == "False" else get_db_schema_name_container()
+        schema_name = get_db_schema_name() if is_mysql_container == "False" else get_db_schema_name_container()
         connection  = pymysql.connect(host=db_host, port=get_db_port(), user=user_name, passwd=password, db=schema_name)
         connection.autocommit(True)
 
@@ -88,11 +88,11 @@ def rest_api_requests(user_id):
     :return: Json format.
     """
     if request.method == "POST":
-        request_data  = request.json
-        user_name     = request_data.get('user_name')
-        isDocker      = "True" if request_data.get('isDocker') is not None else "False"
+        request_data       = request.json
+        user_name          = request_data.get('user_name')
+        is_mysql_container = "True" if request_data.get('is_mysql_container') is not None else "False"
         creation_date = get_user_creation_date()
-        insert_result = insert_new_user_to_users_table(user_id, user_name, creation_date, isDocker) and insert_new_user_to_config_table(user_id, user_name, isDocker)
+        insert_result = insert_new_user_to_users_table(user_id, user_name, creation_date, is_mysql_container) and insert_new_user_to_config_table(user_id, user_name, is_mysql_container)
 
         if insert_result is False:
             response    = make_response(jsonify({"status": "error", "reason": "ID Already Exists"}))
@@ -110,17 +110,17 @@ def rest_api_requests(user_id):
         db_host = None
 
         if request.is_json:
-            request_data = request.json
-            isDocker     = "True" if request_data.get('isDocker') is not None else "False"
+            request_data       = request.json
+            is_mysql_container = "True" if request_data.get('is_mysql_container') is not None else "False"
         else:
-            if   is_table_exist_in_db_for_rest_api(get_db_users_table_name(), isDocker="True" , db_host = "127.0.0.1")   is True: isDocker, db_host = "True" , "127.0.0.1"
-            elif is_table_exist_in_db_for_rest_api(get_db_users_table_name(), isDocker="False", db_host = get_db_host()) is True: isDocker, db_host = "False", get_db_host()
+            if   is_table_exist_in_db_for_rest_api(table_name=get_db_users_table_name(), is_mysql_container="True" , db_host="127.0.0.1")   is True: is_mysql_container, db_host = "True" , "127.0.0.1"
+            elif is_table_exist_in_db_for_rest_api(table_name=get_db_users_table_name(), is_mysql_container="False", db_host=get_db_host()) is True: is_mysql_container, db_host = "False", get_db_host()
             else:
                 response = make_response(jsonify({"status": "error", "reason": "Tables not exist in DB ---> No such ID - " + user_id}))
                 status_code = 500
                 return response, status_code
 
-        user_name = get_user_name_of_specific_user_id_from_users_table(user_id, isDocker, db_host)
+        user_name = get_user_name_of_specific_user_id_from_users_table(user_id, is_mysql_container, db_host)
 
         if user_name is None:
             response    = make_response(jsonify({"status": "error", "reason": "No such ID - " + user_id}))
@@ -133,10 +133,10 @@ def rest_api_requests(user_id):
         return response, status_code
 
     elif request.method == "PUT":
-        request_data  = request.json
-        new_user_name = request_data.get('new_user_name')
-        isDocker      = "True" if request_data.get('isDocker') is not None else "False"
-        update_result = update_user_in_table(user_id, new_user_name, get_db_users_table_name(), isDocker) and update_user_in_table(user_id, new_user_name, get_db_config_table_name(), isDocker)
+        request_data       = request.json
+        new_user_name      = request_data.get('new_user_name')
+        is_mysql_container = "True" if request_data.get('is_mysql_container') is not None else "False"
+        update_result      = update_user_in_table(user_id, new_user_name, get_db_users_table_name(), is_mysql_container) and update_user_in_table(user_id, new_user_name, get_db_config_table_name(), is_mysql_container)
 
         if update_result is False:
             response    = make_response(jsonify({"status": "error", "reason": f"No such ID - {user_id}"}))
@@ -149,9 +149,9 @@ def rest_api_requests(user_id):
         return response, status_code
 
     elif request.method == "DELETE":
-        request_data  = request.json
-        isDocker      = "True" if request_data.get('isDocker') is not None else "False"
-        delete_result = delete_user_from_table(user_id, get_db_users_table_name(), isDocker) and delete_user_from_table(user_id, get_db_config_table_name(), isDocker)
+        request_data       = request.json
+        is_mysql_container = "True" if request_data.get('is_mysql_container') is not None else "False"
+        delete_result      = delete_user_from_table(user_id, get_db_users_table_name(), is_mysql_container) and delete_user_from_table(user_id, get_db_config_table_name(), is_mysql_container)
 
         if delete_result is False:
             response    = make_response(jsonify({"status": "error", "reason": f"No such ID - {user_id}"}))
@@ -178,17 +178,17 @@ def get_all_users_request():
         db_host = None
 
         if request.is_json:
-            request_data      = request.json
-            isDocker          = "True" if request_data.get('isDocker') is not None else "False"
+            request_data       = request.json
+            is_mysql_container = "True" if request_data.get('is_mysql_container') is not None else "False"
         else:
-            if   is_table_exist_in_db_for_rest_api(get_db_users_table_name(), isDocker="True" , db_host = "127.0.0.1")   is True: isDocker, db_host = "True" , "127.0.0.1"
-            elif is_table_exist_in_db_for_rest_api(get_db_users_table_name(), isDocker="False", db_host = get_db_host()) is True: isDocker, db_host = "False", get_db_host()
+            if   is_table_exist_in_db_for_rest_api(table_name=get_db_users_table_name(), is_mysql_container="True" , db_host="127.0.0.1")   is True: is_mysql_container, db_host = "True" , "127.0.0.1"
+            elif is_table_exist_in_db_for_rest_api(table_name=get_db_users_table_name(), is_mysql_container="False", db_host=get_db_host()) is True: is_mysql_container, db_host = "False", get_db_host()
             else:
                 response = make_response(jsonify({"status": "error", "reason": "Tables not exist in DB"}))
                 status_code = 500
                 return response, status_code
 
-        all_users_as_json = get_all_users_as_json(isDocker, db_host)
+        all_users_as_json = get_all_users_as_json(is_mysql_container, db_host)
 
         if all_users_as_json is not None:
             all_users_as_json = json.loads(all_users_as_json)

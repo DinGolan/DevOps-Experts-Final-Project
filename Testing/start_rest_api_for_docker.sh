@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # VARS #
-IS_DOCKER="True"
 MYSQL_GUEST_PORT=3306
+IS_MYSQL_CONTAINER="True"
 MYSQL_HOST_NAME="database"
 
 wait_for_db() {
@@ -49,4 +49,4 @@ wait_for_db "$MYSQL_HOST_NAME" "$MYSQL_GUEST_PORT"
 check_file_exist "/DevOps_Experts_Final_Project/REST_API/rest_app.py"
 check_file_exist "/DevOps_Experts_Final_Project/DB/db_pre_definitions.py"
 
-/bin/sh -c "python /DevOps_Experts_Final_Project/DB/db_pre_definitions.py --is_docker $IS_DOCKER && sleep 5 && python /DevOps_Experts_Final_Project/REST_API/rest_app.py"
+/bin/sh -c "python /DevOps_Experts_Final_Project/DB/db_pre_definitions.py -s $IS_MYSQL_CONTAINER && sleep 5 && python /DevOps_Experts_Final_Project/REST_API/rest_app.py"

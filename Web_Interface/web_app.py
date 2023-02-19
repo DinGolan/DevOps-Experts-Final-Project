@@ -17,8 +17,8 @@ sys.path.append(package_path)
 
 
 # From #
-from flask             import Flask, request, send_file, make_response, jsonify
-from DB.db_connector   import *
+from flask           import Flask, request, send_file, make_response, jsonify
+from DB.db_connector import *
 
 
 # Create Flask Instance #
@@ -35,8 +35,8 @@ def get_user_name(user_id):
 
     :return: HTML Format.
     """
-    isDocker  = get_from_jenkins_arguments().is_docker
-    user_name = get_user_name_of_specific_user_id_from_users_table(user_id, isDocker=isDocker)
+    is_mysql_container = get_from_jenkins_arguments().is_mysql_container
+    user_name          = get_user_name_of_specific_user_id_from_users_table(user_id, is_mysql_container)
 
     if user_name is not None:
         return "<h1 id='user'>" + "`user name` is : " + user_name + "</h1>", 200

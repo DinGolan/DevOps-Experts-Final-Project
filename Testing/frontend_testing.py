@@ -22,9 +22,9 @@ def create_web_driver_session(browser):
     :explanations:
     - Create Web Driver Session.
 
-    :param: browser (str).
+    :param: browser: (str).
 
-    :return: web_driver (webdriver).
+    :return: web_driver: (webdriver).
     """
     driver_path = os.path.join("C:", "Users", "ding", "OneDrive - NVIDIA Corporation", "Desktop", "DevOps Engineer - Road Map", "DevOps Experts - Course DevOps","פרויקט", "חלק - 1", "Driver", f"{browser}driver.exe")
     options     = webdriver.ChromeOptions()
@@ -39,7 +39,7 @@ def check_element_from_web_interface(web_driver):
     :explanations:
     - Check that `user_name` appear in the Web Page.
 
-    :param: web_driver (webDriver).
+    :param: web_driver: (webDriver).
 
     :return: None.
     """
@@ -88,17 +88,17 @@ def frontend_testing_function():
     print("-----------------\n")
 
     # Arguments #
-    isDocker = get_from_jenkins_arguments().is_docker
+    is_mysql_container = get_from_jenkins_arguments().is_mysql_container
 
     # Vars #
-    is_config_table_exist = is_table_exist_in_db(get_db_config_table_name(), isDocker=isDocker)
-    is_users_table_exist  = is_table_exist_in_db(get_db_users_table_name() , isDocker=isDocker)
+    is_config_table_exist = is_table_exist_in_db(get_db_config_table_name(), is_mysql_container)
+    is_users_table_exist  = is_table_exist_in_db(get_db_users_table_name() , is_mysql_container)
 
     ###########################
     # Drop Tables (If Exists) #
     ###########################
-    if is_config_table_exist is True: drop_table(get_db_config_table_name(), isDocker=isDocker)
-    if is_users_table_exist  is True: drop_table(get_db_users_table_name() , isDocker=isDocker)
+    if is_config_table_exist is True: drop_table(get_db_config_table_name(), is_mysql_container)
+    if is_users_table_exist  is True: drop_table(get_db_users_table_name() , is_mysql_container)
 
     ###########
     # Jenkins #
@@ -109,23 +109,23 @@ def frontend_testing_function():
     # Config Details #
     ##################
     # Create config table inside MySQL DB #
-    create_config_table(isDocker=isDocker)
+    create_config_table(is_mysql_container)
 
     # Insert rows to config table inside MySQL DB #
-    insert_rows_to_config_table(is_job_run, "Frontend", isDocker=isDocker)
+    insert_rows_to_config_table(is_job_run=is_job_run, test_name="Frontend", is_mysql_container=is_mysql_container)
 
     ################
     # User Details #
     ################
     # Create users table inside MySQL DB #
-    create_users_table(isDocker=isDocker)
+    create_users_table(is_mysql_container)
 
     # Insert rows to users table inside MySQL DB #
-    insert_rows_to_users_table(isDocker=isDocker)
+    insert_rows_to_users_table(is_mysql_container)
 
     # For User Details #
     if is_job_run == "True":
-        url, browser = get_details_from_external_user_for_frontend(test_name="Frontend", isDocker=isDocker, user_id_frontend_test=get_user_id_frontend_test())
+        url, browser = get_details_from_external_user_for_frontend(test_name="Frontend", is_mysql_container=is_mysql_container, user_id_frontend_test=get_user_id_frontend_test())
 
         print("\n#############################################")
         print("# Jenkins - Parameters For Frontend Testing #")
@@ -137,7 +137,7 @@ def frontend_testing_function():
     else:
 
         while True:
-            url, browser = get_details_from_external_user_for_frontend(test_name="Frontend", isDocker=isDocker)
+            url, browser = get_details_from_external_user_for_frontend(test_name="Frontend", is_mysql_container=is_mysql_container)
             open_chrome_web_browser(url, browser)
 
             # Check if the `User` want to exit from program #

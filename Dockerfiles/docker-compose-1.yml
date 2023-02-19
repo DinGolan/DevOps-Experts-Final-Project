@@ -26,7 +26,7 @@ services:
         condition: service_healthy
     env_file:
       - ../.env
-    image: "dingolan/devops_experts_final_project:${REST_TAG}${IMAGE_TAG_1}"
+    image: "${DOCKER_REPOSITORY}:${REST_TAG}${IMAGE_TAG_1}"
     container_name: ${REST_CONTAINER_NAME}
     hostname: ${REST_HOST_NAME}
     ports:
