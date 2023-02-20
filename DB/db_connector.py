@@ -433,7 +433,11 @@ def get_k8s_url():
 
     if os.path.exists(url_path):
         with open(url_path, 'r') as content_to_read:
-            return content_to_read.readline()
+            all_lines = [line for line in content_to_read.readlines() if line != "" or line != "\n"]
+
+        # Return the most updated IP Address #
+        return all_lines[-1]
+
     else:
         print("\nError : You need to run the following commands :" + "\n" +
               "(1) minikube start"                                 + "\n" +
