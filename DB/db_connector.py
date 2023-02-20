@@ -439,12 +439,17 @@ def get_k8s_url():
         # Return the most updated IP Address #
         if all_lines[-1].startswith("http") is True:
             return all_lines[-1]
+        else:
+            print("\nError : IP Address not exist in `k8s_url.txt`, please check it ..." + "\n")
 
-    print("\nError : You need to run the following commands :" + "\n" +
-          "(1) minikube start"                                 + "\n" +
-          "(2) helm install helm-chart-testing .\\HELM\\ --set image.version=dingolan/devops_experts_final_project:rest_api_version_latest_3"             + "\n" +
-          "(3) minikube service rest-api-application-service --url > Testing\\k8s_url.txt"                                                               + "\n" +
-          "(4) python Testing/k8s_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i True -r GET -s ${IS_MYSQL_CONTAINER} -k ${IS_K8S_URL}" + "\n")
+            # Exit from program, we can't continue #
+            exit(1)
+    else:
+        print("\nError : File not exist, You need to run the following commands :" + "\n" +
+              "(1) minikube start"                                 + "\n" +
+              "(2) helm install helm-chart-testing .\\HELM\\ --set image.version=dingolan/devops_experts_final_project:rest_api_version_latest_3"             + "\n" +
+              "(3) minikube service rest-api-application-service --url > Testing\\k8s_url.txt"                                                                + "\n" +
+              "(4) python Testing/k8s_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i True -r GET -s ${IS_MYSQL_CONTAINER} -k ${IS_K8S_URL}" + "\n")
 
     # Exit from program, we can't continue #
     exit(1)
