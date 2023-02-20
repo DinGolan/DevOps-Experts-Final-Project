@@ -27,6 +27,8 @@ services:
     env_file:
       - ../.env
     image: "${DOCKER_REPOSITORY}:${REST_TAG}${IMAGE_TAG_3}"
+    volumes:
+      - ../Testing/k8s_url.txt:/DevOps_Experts_Final_Project/Testing/k8s_url.txt
     container_name: ${REST_CONTAINER_NAME}
     hostname: ${REST_HOST_NAME}
     ports:
