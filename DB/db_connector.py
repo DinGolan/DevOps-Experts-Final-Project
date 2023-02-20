@@ -432,7 +432,7 @@ def get_k8s_url():
     url_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Testing", "k8s_url.txt")
 
     if os.path.exists(url_path):
-        file_object = open(url_path, "r", encoding="utf-8")
+        file_object = open(url_path, "r", encoding="utf-16")
         all_lines   = [line_to_read for line_to_read in file_object.read().split("\n") if line_to_read != "" and line_to_read != "\n" and "#" not in line_to_read]
         file_object.close()
 
@@ -443,7 +443,7 @@ def get_k8s_url():
     print("\nError : You need to run the following commands :" + "\n" +
           "(1) minikube start"                                 + "\n" +
           "(2) helm install helm-chart-testing .\\HELM\\ --set image.version=dingolan/devops_experts_final_project:rest_api_version_latest_3"             + "\n" +
-          "(3) minikube service rest-api-application-service --url >> Testing\\k8s_url.txt"                                                               + "\n" +
+          "(3) minikube service rest-api-application-service --url > Testing\\k8s_url.txt"                                                               + "\n" +
           "(4) python Testing/k8s_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i True -r GET -s ${IS_MYSQL_CONTAINER} -k ${IS_K8S_URL}" + "\n")
 
     # Exit from program, we can't continue #
