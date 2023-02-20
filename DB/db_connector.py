@@ -186,7 +186,7 @@ def get_details_from_external_user_for_backend(request_type, test_name, is_mysql
                 rest_host             = get_rest_host() if is_rest_api_container == "False" else get_rest_host_container()
                 url                   = f"http://{rest_host}:{get_rest_port()}/{get_db_users_table_name()}/get_all_users"
             else:
-                url                   = f"http://{get_k8s_url()}/{get_db_users_table_name()}/get_all_users"
+                url                   = f"{get_k8s_url()}/{get_db_users_table_name()}/get_all_users"
 
             return url
 
@@ -432,8 +432,9 @@ def get_k8s_url():
     url_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Testing", "k8s_url.txt")
 
     if os.path.exists(url_path):
-        with open(url_path, 'r') as content_to_read:
-            all_lines = [line for line in content_to_read.readlines() if line != "" or line != "\n"]
+        file_object = open(url_path, "r", encoding="utf-8")
+        all_lines   = [line_to_read for line_to_read in file_object.read().split("\n") if line_to_read != "" and line_to_read != "\n" and "#" not in line_to_read]
+        file_object.close()
 
         # Return the most updated IP Address #
         if all_lines[-1].startswith("http") is True:
@@ -825,7 +826,7 @@ def insert_rows_to_config_table(is_job_run, test_name, is_mysql_container, is_k8
         if is_k8s_url == "False":
             url = f"http://{rest_host}:{get_rest_port()}/{get_db_users_table_name()}/{user_id}"
         else:
-            url = f"http://{get_k8s_url()}/{get_db_users_table_name()}/{user_id}"
+            url = f"{get_k8s_url()}/{get_db_users_table_name()}/{user_id}"
 
         try:
             # Inserting data into table #

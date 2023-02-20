@@ -50,4 +50,4 @@ wait_for_db "$MYSQL_REMOTE_HOST_NAME" "$MYSQL_GUEST_PORT"
 check_file_exist "/DevOps_Experts_Final_Project/REST_API/rest_app.py"
 check_file_exist "/DevOps_Experts_Final_Project/DB/db_pre_definitions.py"
 
-/bin/sh -c "python /DevOps_Experts_Final_Project/DB/db_pre_definitions.py -s $IS_MYSQL_CONTAINER -k $IS_K8S_URL && sleep 5 && python /DevOps_Experts_Final_Project/REST_API/rest_app.py"
+/bin/sh -c "sleep 5 && python /DevOps_Experts_Final_Project/DB/db_pre_definitions.py -s $IS_MYSQL_CONTAINER -k $IS_K8S_URL && sleep 5 && python /DevOps_Experts_Final_Project/REST_API/rest_app.py"
