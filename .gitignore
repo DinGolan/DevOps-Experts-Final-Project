@@ -3,3 +3,4 @@
 Jenkins_File/lib/groovy*.jar
 Jenkins_File/Jenkins_File.iml
 Testing/k8s_url.txt
+Dockerfiles/.dockerignore
