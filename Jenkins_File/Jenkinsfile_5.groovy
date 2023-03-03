@@ -432,11 +432,11 @@ def storeUrlInFile() {
     def file = ''
 
     if (checkOS() == "Windows") {
-        url  = bat(script: "start /B minikube service %REST_API_SERVICE_NAME% --url", returnStdout: true).trim().readLines().drop(1).join(" ")
+        url  = bat(script: "start /B minikube service %REST_API_SERVICE_NAME% --url", returnStdout: true).trim().readLines()
         echo "URL is : ${url}"
         file = 'Testing\\k8s_url.txt'
     } else {
-        url  = sh(script: "start /B minikube service ${REST_API_SERVICE_NAME} --url", returnStdout: true).trim().readLines().drop(1).join(" ")
+        url  = sh(script: "start /B minikube service ${REST_API_SERVICE_NAME} --url", returnStdout: true).trim().readLines()
         file = 'Testing/k8s_url.txt'
     }
 
