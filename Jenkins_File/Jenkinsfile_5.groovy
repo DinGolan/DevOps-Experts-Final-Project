@@ -348,6 +348,7 @@ pipeline {
         }
 
         // Step 18 - Write Service URL into `k8s_url.txt` - Option 1 //
+        /*
         stage("[K8S] Write service URL into `k8s_url.txt`") {
             steps {
                 script {
@@ -359,9 +360,9 @@ pipeline {
                 }
             }
         }
+        */
 
         // Step 18 - Write Service URL into `k8s_url.txt` - Option 2 //
-        /*
         stage("[K8S] Write service URL into `k8s_url.txt`") {
             steps {
                 script {
@@ -373,7 +374,7 @@ pipeline {
                 }
             }
         }
-        */
+
 
         // Step 19 - Test Deployed Application //
         stage("[K8S] Test Deployed Application - `k8s_backend_testing.py`") {
@@ -433,11 +434,10 @@ def storeUrlInFile() {
 
     if (checkOS() == "Windows") {
         url  = bat(script: 'start /B minikube service %REST_API_SERVICE_NAME% --url', returnStdout: true).trim().readLines().join(" ").replaceAll("\'","")
-        echo "URL is : ${url}"
-        file = 'Testing\\k8s_url.txt'
+        file = 'Testing\\%K8S_URL_FILE%'
     } else {
         url  = sh(script: 'minikube service ${REST_API_SERVICE_NAME} --url &', returnStdout: true).trim().readLines().join(" ").replaceAll("\'","")
-        file = 'Testing/k8s_url.txt'
+        file = 'Testing/${K8S_URL_FILE}'
     }
 
     if (url == '') {
