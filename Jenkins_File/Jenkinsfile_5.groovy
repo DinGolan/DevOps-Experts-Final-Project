@@ -33,6 +33,7 @@ pipeline {
         PY_TAG                                = "python_app_version_"
         REST_API_SERVICE_NAME                 = "rest-api-application-service"
         HELM_CHART_NAME                       = "helm-chart-testing"
+        K8S_URL_FILE                          = "k8s_url.txt"
     }
 
     stages {
@@ -351,9 +352,9 @@ pipeline {
             steps {
                 script {
                     if (checkOS() == "Windows") {
-                        bat 'minikube service %REST_API_SERVICE_NAME% --url > Testing\\k8s_url.txt'
+                        bat 'minikube service %REST_API_SERVICE_NAME% --url > Testing\\%K8S_URL_FILE%'
                     } else {
-                        sh 'minikube service ${REST_API_SERVICE_NAME} --url > Testing/k8s_url.txt'
+                        sh 'minikube service ${REST_API_SERVICE_NAME} --url > Testing/${K8S_URL_FILE}'
                     }
                 }
             }
@@ -383,12 +384,12 @@ pipeline {
             steps {
                 script {
                     if (checkOS() == "Windows") {
-                        if (fileExists('Testing\\k8s_url.txt')) {
-                            bat 'del Testing\\k8s_url.txt'
+                        if (fileExists('Testing\\%K8S_URL_FILE%')) {
+                            bat 'del Testing\\%K8S_URL_FILE%'
                         }
                     } else {
-                        if (fileExists('Testing/k8s_url.txt')) {
-                            sh 'rm Testing/k8s_url.txt'
+                        if (fileExists('Testing/${K8S_URL_FILE}')) {
+                            sh 'rm Testing/${K8S_URL_FILE}'
                         }
                     }
                 }
