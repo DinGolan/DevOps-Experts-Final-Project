@@ -354,7 +354,7 @@ pipeline {
                     def result = false
 
                     while (result == false) {
-                        storeUrlInFile()
+                        result = storeUrlInFile()
                     }
                 }
             }
