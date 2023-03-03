@@ -178,7 +178,7 @@ pipeline {
 //                     if (checkOS() == "Windows") {
 //                         def servicesOutput = bat(script: 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_1% ps --services', returnStdout: true).trim().readLines().drop(1)
 //                         for (def service : servicesOutput) {
-//                             def containers = bat(script: "docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_1% ps -q --services ${service}", returnStdout: true).trim().readLines().drop(1)
+//                             def containers = bat(script: 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_1% ps -q --services ${service}', returnStdout: true).trim().readLines().drop(1)
 //                             for (def container : containers) {
 //                                 def inspectStateStatusOutput = bat(script: "docker inspect ${container} --format '{{.State.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
 //                                 def inspectHealthStatusOutput = bat(script: "docker inspect ${container} --format '{{.State.Health.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
@@ -194,9 +194,9 @@ pipeline {
 //                             }
 //                         }
 //                     } else {
-//                         def servicesOutput = sh(script: "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_1} ps --services", returnStdout: true).trim().readLines().drop(1)
+//                         def servicesOutput = sh(script: 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_1} ps --services', returnStdout: true).trim().readLines().drop(1)
 //                         for (def service : servicesOutput) {
-//                             def containers = sh(script: "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_1} ps -q --services ${service}", returnStdout: true).trim().readLines().drop(1)
+//                             def containers = sh(script: 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_1} ps -q --services ${service}', returnStdout: true).trim().readLines().drop(1)
 //                             for (def container : containers) {
 //                                 def inspectStateStatusOutput = sh(script: "docker inspect ${container} --format '{{.State.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
 //                                 def inspectHealthStatusOutput = sh(script: "docker inspect ${container} --format '{{.State.Health.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
@@ -368,7 +368,7 @@ pipeline {
                     if (checkOS() == "Windows") {
                         bat 'start /B minikube service %REST_API_SERVICE_NAME% --url > Testing\\%K8S_URL_FILE%'
                     } else {
-                        sh 'start /B minikube service ${REST_API_SERVICE_NAME} --url > Testing/${K8S_URL_FILE}'
+                        sh 'minikube service ${REST_API_SERVICE_NAME} --url > Testing/${K8S_URL_FILE} &'
                     }
                 }
             }
@@ -432,11 +432,11 @@ def storeUrlInFile() {
     def file = ''
 
     if (checkOS() == "Windows") {
-        url  = bat(script: "start /B minikube service %REST_API_SERVICE_NAME% --url", returnStdout: true).trim().readLines()
+        url  = bat(script: 'start /B minikube service %REST_API_SERVICE_NAME% --url', returnStdout: true).trim().readLines().drop(1).join(" ")
         echo "URL is : ${url}"
         file = 'Testing\\k8s_url.txt'
     } else {
-        url  = sh(script: "start /B minikube service ${REST_API_SERVICE_NAME} --url", returnStdout: true).trim().readLines()
+        url  = sh(script: 'minikube service ${REST_API_SERVICE_NAME} --url &', returnStdout: true).trim().readLines().drop(1).join(" ")
         file = 'Testing/k8s_url.txt'
     }
 
@@ -452,7 +452,7 @@ String checkPackages() {
     if (checkOS() == "Windows") {
         installed_packages = bat(script: 'pip freeze', returnStdout: true).trim().readLines().drop(1).join(" ")
     } else {
-        installed_packages = sh(script: "pip freeze", returnStdout: true).trim().readLines().drop(1).join(" ")
+        installed_packages = sh(script: 'pip freeze', returnStdout: true).trim().readLines().drop(1).join(" ")
     }
     echo "installed_packages :\n${installed_packages}"
 
