@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: rest-api-service
+  name: {{ .Values.restApiApp.serviceName }}
 spec:
   selector:
     app: {{ .Values.restApiApp.name }}
