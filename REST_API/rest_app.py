@@ -87,10 +87,10 @@ def rest_api_requests(user_id):
 
     :return: Json format.
     """
-    if request.method == "POST":
+    if   request.method == "POST":
         request_data       = request.json
         user_name          = request_data.get('user_name')
-        is_mysql_container = "True" if request_data.get('is_mysql_container') is not None else "False"
+        is_mysql_container = request_data.get('is_mysql_container')
         creation_date = get_user_creation_date()
         insert_result = insert_new_user_to_users_table(user_id, user_name, creation_date, is_mysql_container) and insert_new_user_to_config_table(user_id, user_name, is_mysql_container, request.url)
 
@@ -111,10 +111,10 @@ def rest_api_requests(user_id):
 
         if request.is_json:
             request_data       = request.json
-            is_mysql_container = "True" if request_data.get('is_mysql_container') is not None else "False"
+            is_mysql_container = request_data.get('is_mysql_container')
         else:
-            if   is_table_exist_in_db_for_rest_api(table_name=get_db_users_table_name(), is_mysql_container="True" , db_host="127.0.0.1")   is True: is_mysql_container, db_host = "True" , "127.0.0.1"
-            elif is_table_exist_in_db_for_rest_api(table_name=get_db_users_table_name(), is_mysql_container="False", db_host=get_db_host()) is True: is_mysql_container, db_host = "False", get_db_host()
+            if   is_table_exist_in_db_for_rest_api(table_name=get_db_users_table_name(), is_mysql_container="False", db_host=get_db_host()) is True: is_mysql_container, db_host = "False", get_db_host()
+            elif is_table_exist_in_db_for_rest_api(table_name=get_db_users_table_name(), is_mysql_container="True" , db_host="127.0.0.1")   is True: is_mysql_container, db_host = "True" , "127.0.0.1"
             else:
                 response = make_response(jsonify({"status": "error", "reason": "Tables not exist in DB ---> No such ID - " + user_id}))
                 status_code = 500
@@ -135,7 +135,7 @@ def rest_api_requests(user_id):
     elif request.method == "PUT":
         request_data       = request.json
         new_user_name      = request_data.get('new_user_name')
-        is_mysql_container = "True" if request_data.get('is_mysql_container') is not None else "False"
+        is_mysql_container = request_data.get('is_mysql_container')
         update_result      = update_user_in_table(user_id, new_user_name, get_db_users_table_name(), is_mysql_container) and update_user_in_table(user_id, new_user_name, get_db_config_table_name(), is_mysql_container)
 
         if update_result is False:
@@ -150,7 +150,7 @@ def rest_api_requests(user_id):
 
     elif request.method == "DELETE":
         request_data       = request.json
-        is_mysql_container = "True" if request_data.get('is_mysql_container') is not None else "False"
+        is_mysql_container = request_data.get('is_mysql_container')
         delete_result      = delete_user_from_table(user_id, get_db_users_table_name(), is_mysql_container) and delete_user_from_table(user_id, get_db_config_table_name(), is_mysql_container)
 
         if delete_result is False:
@@ -179,7 +179,7 @@ def get_all_users_request():
 
         if request.is_json:
             request_data       = request.json
-            is_mysql_container = "True" if request_data.get('is_mysql_container') is not None else "False"
+            is_mysql_container = request_data.get('is_mysql_container')
         else:
             if   is_table_exist_in_db_for_rest_api(table_name=get_db_users_table_name(), is_mysql_container="True" , db_host="127.0.0.1")   is True: is_mysql_container, db_host = "True" , "127.0.0.1"
             elif is_table_exist_in_db_for_rest_api(table_name=get_db_users_table_name(), is_mysql_container="False", db_host=get_db_host()) is True: is_mysql_container, db_host = "False", get_db_host()

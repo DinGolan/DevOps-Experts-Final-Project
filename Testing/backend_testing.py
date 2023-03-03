@@ -150,7 +150,7 @@ def send_post_request(user_name, is_mysql_container):
     print("#  POST  #")
     print("##########\n")
     headers         = {'Content-Type': 'application/json'}
-    data            = {"user_name": user_name}
+    data            = {"user_name": user_name, "is_mysql_container": is_mysql_container}
     new_user_id     = get_new_user_id_from_users_table(is_mysql_container)
     new_url         = f"http://{get_rest_host()}:{get_rest_port()}/{get_db_users_table_name()}/{new_user_id}"
     requests_result = requests.post(url=new_url, headers=headers, json=data)
@@ -173,18 +173,19 @@ def send_get_request(url, user_id, is_mysql_container):
     print("#  GET  #")
     print("#########\n")
     headers         = {'Content-Type': 'application/json'}
-    data            = {"user_id": user_id}
+    data            = {"user_id": user_id, "is_mysql_container": is_mysql_container}
     requests_result = requests.get(url=url, headers=headers, json=data)
     json_result     = requests_result.json()
     check_requests_result("GET", user_id, requests_result, json_result, "user_name", is_mysql_container)
 
 
-def send_get_all_request(url):
+def send_get_all_request(url, is_mysql_container):
     """
     :explanations:
     - Send GET_ALL request.
 
     :param: url: (str).
+    :param: is_mysql_container: (str).
 
     :return: None
     """
@@ -192,7 +193,8 @@ def send_get_all_request(url):
     print("#  GET ALL  #")
     print("#############\n")
     headers         = {'Content-Type': 'application/json'}
-    requests_result = requests.get(url=url, headers=headers)
+    data            = {"is_mysql_container": is_mysql_container}
+    requests_result = requests.get(url=url, headers=headers, json=data)
     json_result     = requests_result.json()
     check_requests_result_for_get_all("GET_ALL", requests_result, json_result, "users_table")
 
@@ -224,7 +226,7 @@ def send_put_request(is_job_run, url, user_id, test_name, is_mysql_container):
         new_user_name = input("Please type new user name : ")
 
     headers         = {'Content-Type': 'application/json'}
-    data            = {"user_id": user_id, "new_user_name": new_user_name}
+    data            = {"user_id": user_id, "new_user_name": new_user_name, "is_mysql_container": is_mysql_container}
     requests_result = requests.put(url=url, headers=headers, json=data)
     json_result     = requests_result.json()
     check_requests_result("PUT", user_id, requests_result, json_result, "user_updated", is_mysql_container)
@@ -245,7 +247,7 @@ def send_delete_request(url, user_id, is_mysql_container):
     print("#  DELETE  #")
     print("############\n")
     headers         = {'Content-Type': 'application/json'}
-    data            = {"user_id": user_id}
+    data            = {"user_id": user_id, "is_mysql_container": is_mysql_container}
     requests_result = requests.delete(url=url, headers=headers, json=data)
     json_result     = requests_result.json()
     check_requests_result("DELETE", user_id, requests_result, json_result, "user_deleted", is_mysql_container)
@@ -318,7 +320,7 @@ def backend_testing_function():
 
         if   request_type == "POST"       : send_post_request(user_name_backend_test, is_mysql_container)
         elif request_type == "GET"        : send_get_request(url, user_id_backend_test, is_mysql_container)
-        elif request_type == "GET_ALL"    : send_get_all_request(url)
+        elif request_type == "GET_ALL"    : send_get_all_request(url, is_mysql_container)
         elif request_type == "PUT"        : send_put_request(is_job_run, url, user_id_backend_test, "Backend", is_mysql_container)
         elif request_type == "DELETE"     : send_delete_request(url, user_id_backend_test, is_mysql_container)
         elif request_type == "PRINT_TABLE":
@@ -345,7 +347,7 @@ def backend_testing_function():
             # Send GET_ALL Request #
             elif request_type == "GET_ALL":
                 url = get_details_from_external_user_for_backend(request_type="GET_ALL", test_name="Backend", is_mysql_container=is_mysql_container)
-                send_get_all_request(url)
+                send_get_all_request(url, is_mysql_container)
 
             # Send PUT Request #
             elif request_type == "PUT":

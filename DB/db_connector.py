@@ -165,18 +165,24 @@ def get_details_from_external_user_for_backend(request_type, test_name, is_mysql
 
         elif request_type in ["GET", "PUT", "DELETE"]:
             user_id_backend_test = int(input("\nPlease enter `user id` : "))
-            sql_query               = f"SELECT url "                                          \
-                                      f"FROM `{schema_name}`.`{get_db_config_table_name()}` " \
-                                      f"WHERE user_id = '{user_id_backend_test}';"
-            query_result            = run_sql_query(sql_query, is_mysql_container)
-            query_result            = list(itertools.chain(*query_result))
 
-            if len(query_result) == 0:
-                print(f"\n[{test_name} Test] : (`user_id` = {user_id_backend_test}) not exist in `{get_db_config_table_name()}` table ...\n")
-                print(f"\n[{test_name} Test] : The `users_ids` that exists in the `{get_db_config_table_name()}` table are : {str(get_all_users_ids_from_config_table(is_mysql_container))} ...\n")
-                continue
+            if is_k8s_url == "False":
+                sql_query    = f"SELECT url "                                          \
+                               f"FROM `{schema_name}`.`{get_db_config_table_name()}` " \
+                               f"WHERE user_id = '{user_id_backend_test}';"
+                query_result = run_sql_query(sql_query, is_mysql_container)
+                query_result = list(itertools.chain(*query_result))
 
-            url = "".join(query_result)
+                if len(query_result) == 0:
+                    print(f"\n[{test_name} Test] : (`user_id` = {user_id_backend_test}) not exist in `{get_db_config_table_name()}` table ...\n")
+                    print(f"\n[{test_name} Test] : The `users_ids` that exists in the `{get_db_config_table_name()}` table are : {str(get_all_users_ids_from_config_table(is_mysql_container))} ...\n")
+                    continue
+
+                url = "".join(query_result)
+
+            else:
+                url = f"{get_k8s_url()}/{get_db_users_table_name()}/{user_id_backend_test}"
+
             return url, user_id_backend_test
 
         # GET_ALL #
@@ -210,11 +216,11 @@ def get_details_from_external_user_for_frontend(test_name, is_mysql_container, u
         if user_id_frontend_test is None:
             user_id_frontend_test = int(input("\nPlease enter `user id` : "))
 
-        sql_query               = f"SELECT url, browser "                                 \
-                                  f"FROM `{schema_name}`.`{get_db_config_table_name()}` " \
-                                  f"WHERE user_id = '{user_id_frontend_test}';"
-        query_result            = run_sql_query(sql_query, is_mysql_container)
-        query_result            = list(itertools.chain(*query_result))
+        sql_query    = f"SELECT url, browser "                                 \
+                       f"FROM `{schema_name}`.`{get_db_config_table_name()}` " \
+                       f"WHERE user_id = '{user_id_frontend_test}';"
+        query_result = run_sql_query(sql_query, is_mysql_container)
+        query_result = list(itertools.chain(*query_result))
 
         if len(query_result) == 0:
             print(f"\n[{test_name} Test] : (`user_id` = {user_id_frontend_test}) not exist in `{get_db_config_table_name()}` table ...\n")
@@ -446,10 +452,10 @@ def get_k8s_url():
             exit(1)
     else:
         print("\nError : File not exist, You need to run the following commands :" + "\n" +
-              "(1) minikube start"                                 + "\n" +
+              "(1) minikube start"                                                 + "\n" +
               "(2) helm install helm-chart-testing .\\HELM\\ --set image.version=dingolan/devops_experts_final_project:rest_api_version_latest_3"             + "\n" +
               "(3) minikube service rest-api-application-service --url > Testing\\k8s_url.txt"                                                                + "\n" +
-              "(4) python Testing/k8s_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i True -r GET -s ${IS_MYSQL_CONTAINER} -k ${IS_K8S_URL}" + "\n")
+              "(4) python Testing\\k8s_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i True -r GET -s ${IS_MYSQL_CONTAINER} -k ${IS_K8S_URL}" + "\n")
 
     # Exit from program, we can't continue #
     exit(1)
@@ -595,7 +601,7 @@ def get_user_name_of_specific_user_id_from_users_table(user_id, is_mysql_contain
              None: Not Succeed.
     """
     # Establishing a connection to DB #
-    connection, cursor = create_connection_to_db(db_host)
+    connection, cursor = create_connection_to_db(is_mysql_container, db_host)
 
     # Column to search #
     column_table = "user_name"
@@ -714,7 +720,7 @@ def get_all_users_as_json(is_mysql_container, db_host):
     schema_name        = get_db_schema_name() if is_mysql_container == "False" else get_db_schema_name_container()
 
     # Establishing a connection to DB #
-    connection, cursor = create_connection_to_db(db_host)
+    connection, cursor = create_connection_to_db(is_mysql_container, db_host)
 
     # PyPika SELECT #
     pypika_query = Query.from_(Schema(schema_name).users).select('*')

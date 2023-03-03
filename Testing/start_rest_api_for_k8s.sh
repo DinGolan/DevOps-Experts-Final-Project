@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # VARS #
-IS_K8S_URL="True"
+IS_K8S_URL="False"
 MYSQL_GUEST_PORT=3306
 IS_MYSQL_CONTAINER="False"
 MYSQL_REMOTE_HOST_NAME="sql.freedb.tech"

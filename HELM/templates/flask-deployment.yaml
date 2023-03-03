@@ -18,8 +18,8 @@ spec:
         - name: {{ .Values.restApiApp.name }}
           image: {{ .Values.restApiApp.image.repository }}:{{ .Values.restApiApp.image.tag }}
           env:
-            - name: MYSQL_HOST_NAME
-              value: database
+            - name: MYSQL_REMOTE_HOST_NAME
+              value: sql.freedb.tech
             - name: MYSQL_GUEST_PORT
               value: "3306"
           imagePullPolicy: Always

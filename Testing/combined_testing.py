@@ -99,7 +99,7 @@ def combined_testing_function():
 
             if   request_type == "POST"   : send_post_request(user_name_combined_test, is_mysql_container)
             elif request_type == "GET"    : send_get_request(url, user_id_combined_test, is_mysql_container)
-            elif request_type == "GET_ALL": send_get_all_request(url)
+            elif request_type == "GET_ALL": send_get_all_request(url, is_mysql_container)
             elif request_type == "PUT"    : send_put_request(is_job_run, url, user_id_combined_test, "Combined", is_mysql_container)
             elif request_type == "DELETE" : send_delete_request(url, user_id_combined_test, is_mysql_container)
             elif request_type == "PRINT_TABLE":
@@ -140,7 +140,7 @@ def combined_testing_function():
 
                 elif request_type == "GET_ALL":
                     url = get_details_from_external_user_for_backend(request_type="GET_ALL", test_name="Combined", is_mysql_container=is_mysql_container)
-                    send_get_all_request(url)
+                    send_get_all_request(url, is_mysql_container)
 
                 # Send PUT Request #
                 elif request_type == "PUT":
