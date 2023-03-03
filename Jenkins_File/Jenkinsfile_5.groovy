@@ -307,32 +307,32 @@ pipeline {
             }
         }
 
-        // Step 15 - Build & Up Docker Compose //
-        stage("[K8S] Build Docker Compose") {
-            steps {
-                script {
-                    if (checkOS() == "Windows") {
-                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_3% build'
-                    } else {
-                        sh "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_3} build"
-                    }
-                    sleep(time: 10, unit: "SECONDS")
-                }
-            }
-        }
-
-        // Step 16 - Push Docker Compose //
-        stage("[K8S] Push Docker Compose") {
-            steps {
-                script {
-                    if (checkOS() == "Windows") {
-                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_3% push'
-                    } else {
-                        sh "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_3} push"
-                    }
-                }
-            }
-        }
+//         // Step 15 - Build & Up Docker Compose //
+//         stage("[K8S] Build Docker Compose") {
+//             steps {
+//                 script {
+//                     if (checkOS() == "Windows") {
+//                         bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_3% build'
+//                     } else {
+//                         sh "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_3} build"
+//                     }
+//                     sleep(time: 10, unit: "SECONDS")
+//                 }
+//             }
+//         }
+//
+//         // Step 16 - Push Docker Compose //
+//         stage("[K8S] Push Docker Compose") {
+//             steps {
+//                 script {
+//                     if (checkOS() == "Windows") {
+//                         bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_3% push'
+//                     } else {
+//                         sh "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_3} push"
+//                     }
+//                 }
+//             }
+//         }
 
         // Step 17 - Deploy HELM Chart with Passing Image //
         stage("[K8S] Deploy HELM Chart with Passing Image") {
