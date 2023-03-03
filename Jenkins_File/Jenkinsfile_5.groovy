@@ -432,15 +432,15 @@ def storeUrlInFile() {
     def file = ''
 
     if (checkOS() == "Windows") {
-        url = bat(script: "start /B minikube service %REST_API_SERVICE_NAME% --url", returnStdout: true).trim()
-        file = new File('Testing\\k8s_url.txt')
+        url  = bat(script: "cmd /C minikube service %REST_API_SERVICE_NAME% --url", returnStdout: true).trim()
+        file = 'Testing\\k8s_url.txt'
     } else {
-        url = sh(script: "start /B minikube service ${REST_API_SERVICE_NAME} --url", returnStdout: true).trim()
-        file = new File('Testing/k8s_url.txt')
+        url  = sh(script: "minikube service ${REST_API_SERVICE_NAME} --url", returnStdout: true).trim()
+        file = 'Testing/k8s_url.txt'
     }
 
-    file.write(url)
-    return file.exists() && file.text.contains(url)
+    writeFile file: file, text: url
+    return readFile(file) == url
 }
 
 String checkPackages() {
