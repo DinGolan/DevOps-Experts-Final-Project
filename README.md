@@ -227,7 +227,8 @@ Chrome Web Driver supporting Chrome Version 108.0.5359.125 (Official Build) (64-
 ## K8S ##
 ```bash
 1 - Follow the steps of 'Docker Compose Instructions'.
-2 - Create HELM chart locally on your machine with the following command : 'helm install <HELM Chart Name> <HELM Path>'.
+2 - Use with Minikube command : 'minikube start'.
+3 - Create HELM chart locally on your machine with the following command : 'helm install <HELM Chart Name> <HELM Path>'.
 ```
 
 ---
