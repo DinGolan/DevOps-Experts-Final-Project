@@ -7,7 +7,7 @@
 
 • Python Backend & Frontend Stack.
 
-• The Project Includes 3 Parts.
+• The Project Includes 4 Parts - [MySQL & Python , Jenkins , Docker , K8S & HELM].
 
 ---
 
@@ -28,6 +28,10 @@
 
 > Docker Compose
 
+> K8S
+
+> HELM
+
 ---
 
 ## Libraries ##
@@ -42,6 +46,8 @@
 - webdriver
 
 - prettytable
+
+- socket
 
 ---
 
@@ -214,6 +220,14 @@ Chrome Web Driver supporting Chrome Version 108.0.5359.125 (Official Build) (64-
 1 - Create 'docker-compose.yml' locally on your machine.
 2 - Create '.env' locally on your machine.
 3 - Run docker compose with the following command : 'docker-compose --env-file .env --file docker-compose.yml up'.
+```
+
+---
+
+## K8S ##
+```bash
+1 - Follow the steps of 'Docker Compose Instructions'.
+2 - Create HELM chart locally on your machine with the following command : 'helm install <HELM Chart Name> <HELM Path>'.
 ```
 
 ---
