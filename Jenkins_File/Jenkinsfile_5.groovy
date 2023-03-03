@@ -381,12 +381,12 @@ pipeline {
             steps {
                 script {
                     if (checkOS() == "Windows") {
-                        sleep(time: 10, unit: "SECONDS")
+                        sleep(time: 240, unit: "SECONDS")
                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
                             bat 'python Testing\\k8s_backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE% -s %IS_MYSQL_CONTAINER_FOR_K8S% -k %IS_K8S_URL%'
                         }
                     } else {
-                        sleep(time: 10, unit: "SECONDS")
+                        sleep(time: 240, unit: "SECONDS")
                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
                            sh 'python Testing/k8s_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE} -s ${IS_MYSQL_CONTAINER_FOR_K8S} -k ${IS_K8S_URL}'
                         }
