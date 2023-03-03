@@ -115,17 +115,17 @@ pipeline {
 //             }
 //         }
 //
-        // Step 6 - Update `.env` File //
-        stage("[Docker] Update `.env` File") {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'container_root_database_credentials', usernameVariable: 'MYSQL_ROOT_USER', passwordVariable: 'MYSQL_ROOT_PASSWORD'),
-                                     usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-                        setEnvFile()
-                    }
-                }
-            }
-        }
+//         // Step 6 - Update `.env` File //
+//         stage("[Docker] Update `.env` File") {
+//             steps {
+//                 script {
+//                     withCredentials([usernamePassword(credentialsId: 'container_root_database_credentials', usernameVariable: 'MYSQL_ROOT_USER', passwordVariable: 'MYSQL_ROOT_PASSWORD'),
+//                                      usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+//                         setEnvFile()
+//                     }
+//                 }
+//             }
+//         }
 //
 //         // Step 7 - Login to Docker Hub //
 //         stage("[Docker] Login to Docker Hub") {
@@ -307,32 +307,32 @@ pipeline {
             }
         }
 
-//         // Step 15 - Build & Up Docker Compose //
-//         stage("[K8S] Build Docker Compose") {
-//             steps {
-//                 script {
-//                     if (checkOS() == "Windows") {
-//                         bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_3% build'
-//                     } else {
-//                         sh "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_3} build"
-//                     }
-//                     sleep(time: 10, unit: "SECONDS")
-//                 }
-//             }
-//         }
-//
-//         // Step 16 - Push Docker Compose //
-//         stage("[K8S] Push Docker Compose") {
-//             steps {
-//                 script {
-//                     if (checkOS() == "Windows") {
-//                         bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_3% push'
-//                     } else {
-//                         sh "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_3} push"
-//                     }
-//                 }
-//             }
-//         }
+        // Step 15 - Build & Up Docker Compose //
+        stage("[K8S] Build Docker Compose") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_3% build'
+                    } else {
+                        sh "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_3} build"
+                    }
+                    sleep(time: 10, unit: "SECONDS")
+                }
+            }
+        }
+
+        // Step 16 - Push Docker Compose //
+        stage("[K8S] Push Docker Compose") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_3% push'
+                    } else {
+                        sh "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_3} push"
+                    }
+                }
+            }
+        }
 
         // Step 17 - Deploy HELM Chart with Passing Image //
         stage("[K8S] Deploy HELM Chart with Passing Image") {
@@ -432,10 +432,10 @@ def storeUrlInFile() {
     def file = ''
 
     if (checkOS() == "Windows") {
-        url  = bat(script: "start /B minikube service %REST_API_SERVICE_NAME% --url", returnStdout: true).trim()
+        url  = bat(script: "start /B minikube service %REST_API_SERVICE_NAME% --url", returnStdout: true).trim().readLines().drop(1).join(" ")
         file = 'Testing\\k8s_url.txt'
     } else {
-        url  = sh(script: "start /B minikube service ${REST_API_SERVICE_NAME} --url", returnStdout: true).trim()
+        url  = sh(script: "start /B minikube service ${REST_API_SERVICE_NAME} --url", returnStdout: true).trim().readLines().drop(1).join(" ")
         file = 'Testing/k8s_url.txt'
     }
 

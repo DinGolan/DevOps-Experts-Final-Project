@@ -435,13 +435,19 @@ def get_k8s_url():
 
     :return: k8s_url (str).
     """
-    url_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Testing", "k8s_url.txt")
+
+    url_path   = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Testing", "k8s_url.txt")
 
     # Sleep Before Reading the File #
     time.sleep(10)
 
     if os.path.exists(url_path):
-        file_object = open(url_path, "r", encoding="utf-16")
+        """
+        Notes :
+        (1) From Jenkins - Need to remove `encoding="utf-16"` from `open` command.
+        (2) From PyCharm - Need to add `encoding="utf-16"` to `open` command.
+        """
+        file_object = open(url_path, "r")
         all_lines   = [line_to_read for line_to_read in file_object.read().split("\n") if line_to_read != "" and line_to_read != "\n" and "#" not in line_to_read]
         file_object.close()
 
