@@ -178,7 +178,7 @@ pipeline {
                     if (checkOS() == "Windows") {
                         def servicesOutput = bat(script: 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_1% ps --services', returnStdout: true).trim().readLines().drop(1)
                         for (def service : servicesOutput) {
-                            def containers = bat(script: 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_1% ps -q --services ${service}', returnStdout: true).trim().readLines().drop(1)
+                            def containers = bat(script: "docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_1% ps -q --services ${service}", returnStdout: true).trim().readLines().drop(1)
                             for (def container : containers) {
                                 def inspectStateStatusOutput = bat(script: "docker inspect ${container} --format '{{.State.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
                                 def inspectHealthStatusOutput = bat(script: "docker inspect ${container} --format '{{.State.Health.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
@@ -196,7 +196,7 @@ pipeline {
                     } else {
                         def servicesOutput = sh(script: 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_1} ps --services', returnStdout: true).trim().readLines().drop(1)
                         for (def service : servicesOutput) {
-                            def containers = sh(script: 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_1} ps -q --services ${service}', returnStdout: true).trim().readLines().drop(1)
+                            def containers = sh(script: "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_1} ps -q --services ${service}", returnStdout: true).trim().readLines().drop(1)
                             for (def container : containers) {
                                 def inspectStateStatusOutput = sh(script: "docker inspect ${container} --format '{{.State.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
                                 def inspectHealthStatusOutput = sh(script: "docker inspect ${container} --format '{{.State.Health.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
