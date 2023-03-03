@@ -338,9 +338,9 @@ pipeline {
             steps {
                 script {
                     if (checkOS() == "Windows") {
-                        bat 'helm install %HELM_CHART_NAME% HELM\\ --set image.version=%DOCKER_REPOSITORY%:%REST_TAG%%IMAGE_TAG_3%'
+                        bat 'helm upgrade -i %HELM_CHART_NAME% HELM\\ --set image.version=%DOCKER_REPOSITORY%:%REST_TAG%%IMAGE_TAG_3%'
                     } else {
-                        sh 'helm install ${HELM_CHART_NAME} HELM/ --set image.version=${DOCKER_REPOSITORY}:${REST_TAG}${IMAGE_TAG_3}'
+                        sh 'helm upgrade -i ${HELM_CHART_NAME} HELM/ --set image.version=${DOCKER_REPOSITORY}:${REST_TAG}${IMAGE_TAG_3}'
                     }
                 }
             }
