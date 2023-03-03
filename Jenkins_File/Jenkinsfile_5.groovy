@@ -440,6 +440,10 @@ def storeUrlInFile() {
         file = 'Testing/k8s_url.txt'
     }
 
+    if (url == '') {
+        return false
+    }
+
     writeFile file: file, text: url
     return readFile(file) == url
 }
