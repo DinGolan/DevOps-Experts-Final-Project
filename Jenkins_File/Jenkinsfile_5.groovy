@@ -13,7 +13,7 @@ pipeline {
     // Environments //
     environment {
         DOCKER_REPOSITORY                     = "dingolan/devops_experts_final_project"
-        DOCKER_COMPOSE_FILE                   = "docker-compose-3.yml"
+        DOCKER_COMPOSE_FILE                   = "docker-compose-1.yml"
         MYSQL_SCHEMA_NAME                     = "freedb_Din_Golan_Container"
         MYSQL_HOST_PORT                       = 3306
         MYSQL_GUEST_PORT                      = 3306
