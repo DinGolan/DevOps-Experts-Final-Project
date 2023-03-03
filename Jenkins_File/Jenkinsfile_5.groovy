@@ -37,262 +37,262 @@ pipeline {
     }
 
     stages {
-//         // Step 1 - Clone Git From GitHub //
-//         stage("[Backend] Clone Git") {
-//             steps {
-//                 script {
-//                     properties([pipelineTriggers([pollSCM('H/30 * * * *')])])
-//                 }
-//                 git  credentialsId: "github_credentials", url: "https://github.com/DinGolan/DevOps-Experts-Final-Project.git", branch: 'main'
-//             }
-//         }
-//
-//         // Step 2 - Install Pip Packages //
-//         stage("[Backend] Run `pip install`") {
-//             steps {
-//                 script {
-//                     if (checkPackages() == "Already Exists") {
-//                         echo '[pymysql, requests, selenium, flask, prettytable, pypika, psutil] - Already Exist ...'
-//                     } else {
-//                         if (checkOS() == "Windows") {
-//                             bat 'python -m pip install --ignore-installed --trusted-host pypi.python.org -r Packages\\requirements.txt'
-//                         } else {
-//                             sh "python -m pip install --ignore-installed --trusted-host pypi.python.org -r Packages/requirements.txt"
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//
-//         // Step 3 - Run REST API //
-//         stage("[Backend] Run `rest_app.py` (Backend)") {
-//             steps {
-//                 script {
-//                     if (checkOS() == "Windows") {
-//                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-//                             bat 'start /min python REST_API\\rest_app.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD%'
-//                         }
-//                     } else {
-//                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-//                             sh "start /min python REST_API/rest_app.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD}"
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//
-//         // Step 4 - Run Backend Test //
-//         stage("[Backend] Run `backend_testing.py` (Testing)") {
-//             steps {
-//                 script {
-//                     if (checkOS() == "Windows") {
-//                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-//                             bat 'python Testing\\backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%'
-//                         }
-//                     } else {
-//                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-//                             sh "python Testing/backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}"
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//
-//         // Step 5 - Run Clean Environment //
-//         stage("[Backend] Run `clean_environment.py` (Clean)") {
-//             steps {
-//                 script {
-//                     if (checkOS() == "Windows") {
-//                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-//                             bat 'python Clean\\clean_environment.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -c %CLEAN_SERVER%'
-//                         }
-//                     } else {
-//                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-//                             sh "python Clean/clean_environment.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -c ${CLEAN_SERVER}"
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//
-//         // Step 6 - Update `.env` File //
-//         stage("[Docker] Update `.env` File") {
-//             steps {
-//                 script {
-//                     withCredentials([usernamePassword(credentialsId: 'container_root_database_credentials', usernameVariable: 'MYSQL_ROOT_USER', passwordVariable: 'MYSQL_ROOT_PASSWORD'),
-//                                      usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-//                         setEnvFile()
-//                     }
-//                 }
-//             }
-//         }
-//
-//         // Step 7 - Login to Docker Hub //
-//         stage("[Docker] Login to Docker Hub") {
-//             steps {
-//                 script {
-//                     if (checkOS() == "Windows") {
-//                         withCredentials([usernamePassword(credentialsId: 'docker_hub', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
-//                             bat 'docker login --username "%DOCKER_HUB_USERNAME%" --password "%DOCKER_HUB_PASSWORD%"'
-//                         }
-//                     } else {
-//                         withCredentials([usernamePassword(credentialsId: 'docker_hub', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
-//                             sh "docker login --username ${DOCKER_HUB_USERNAME} --password ${DOCKER_HUB_PASSWORD}"
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//
-//         // Step 8 - Build & Up Docker Compose //
-//         stage("[Docker] Build & Up Docker Compose") {
-//             steps {
-//                 script {
-//                     if (checkOS() == "Windows") {
-//                         bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_1% up -d --build & docker ps -a'
-//                     } else {
-//                         sh "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_1} up -d --build & docker ps -a"
-//                     }
-//                     sleep(time: 10, unit: "SECONDS")
-//                 }
-//             }
-//         }
-//
-//         // Step 9 - Push Docker Compose //
-//         stage("[Docker] Push Docker Compose") {
-//             steps {
-//                 script {
-//                     if (checkOS() == "Windows") {
-//                         bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_1% push'
-//                     } else {
-//                         sh "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_1} push"
-//                     }
-//                 }
-//             }
-//         }
-//
-//         // Step 10 - Check Docker Service Healthy //
-//         stage("[Docker] Check Docker Compose Services Health") {
-//             steps {
-//                 script {
-//                     if (checkOS() == "Windows") {
-//                         def servicesOutput = bat(script: 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_1% ps --services', returnStdout: true).trim().readLines().drop(1)
-//                         for (def service : servicesOutput) {
-//                             def containers = bat(script: 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_1% ps -q --services ${service}', returnStdout: true).trim().readLines().drop(1)
-//                             for (def container : containers) {
-//                                 def inspectStateStatusOutput = bat(script: "docker inspect ${container} --format '{{.State.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
-//                                 def inspectHealthStatusOutput = bat(script: "docker inspect ${container} --format '{{.State.Health.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
-//                                 if (inspectStateStatusOutput != "running" || inspectStateStatusOutput == null || inspectStateStatusOutput == "") {
-//                                     error("Container id: ${container} from Service name: ${service} Has State status: ${inspectStateStatusOutput}")
-//                                     return
-//                                 } else if (inspectHealthStatusOutput != "healthy" || inspectHealthStatusOutput == null || inspectHealthStatusOutput == "") {
-//                                     error("Service ${service} is not healthy. Container id: ${container} has health status: ${inspectHealthStatusOutput}")
-//                                     return
-//                                 } else {
-//                                     echo "Service name : ${service} is in state : ${inspectStateStatusOutput} , Container id : ${container} has health status : ${inspectHealthStatusOutput}"
-//                                 }
-//                             }
-//                         }
-//                     } else {
-//                         def servicesOutput = sh(script: 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_1} ps --services', returnStdout: true).trim().readLines().drop(1)
-//                         for (def service : servicesOutput) {
-//                             def containers = sh(script: 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_1} ps -q --services ${service}', returnStdout: true).trim().readLines().drop(1)
-//                             for (def container : containers) {
-//                                 def inspectStateStatusOutput = sh(script: "docker inspect ${container} --format '{{.State.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
-//                                 def inspectHealthStatusOutput = sh(script: "docker inspect ${container} --format '{{.State.Health.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
-//                                 if (inspectStateStatusOutput != "running" || inspectStateStatusOutput == null) {
-//                                     error("Container id: ${container} from Service name: ${service} Has State status: ${inspectStateStatusOutput}")
-//                                     return
-//                                 } else if (inspectHealthStatusOutput != "healthy" || inspectHealthStatusOutput == null) {
-//                                     error("Service ${service} is not healthy. Container id: ${container} has health status: ${inspectHealthStatusOutput}")
-//                                     return
-//                                 } else {
-//                                     echo "Service name : ${service} is in state : ${inspectStateStatusOutput} , Container id : ${container} has health status : ${inspectHealthStatusOutput}"
-//                                 }
-//                             }
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//
-//         // Step 11 - Run Backend Test (On Docker Compose Environments) //
-//         stage("[Docker] Run `docker_backend_testing.py` (Testing Docker Compose)") {
-//             steps {
-//                 script {
-//                     if (checkOS() == "Windows") {
-//                         def containerId = bat(script: 'docker ps --filter "name=%REST_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
-//                         sleep(time: 2, unit: "SECONDS")
-//                         withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-//                             bat "docker exec -i ${containerId} sh -c \"/usr/local/bin/python Testing/docker_backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE% -s %IS_MYSQL_CONTAINER_FOR_DOCKER%\""
-//                         }
-//                     } else {
-//                         def containerId = sh(script: 'docker ps --filter "name=${REST_CONTAINER_NAME}" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
-//                         sleep(time: 2, unit: "SECONDS")
-//                         withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
-//                             sh "docker exec -i ${containerId} sh \"/usr/local/bin/python Testing/docker_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE} -s ${IS_MYSQL_CONTAINER_FOR_DOCKER}\""
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//
-//         // Step 12 - Docker App - Stop Flask Servers - Option 1 //
-//         stage("[Docker] Run `clean_environment.py` (Clean)") {
-//             steps {
-//                 script {
-//                     if (checkOS() == "Windows") {
-//                         def containerId = bat(script: 'docker ps --filter "name=%REST_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
-//                         sleep(time: 2, unit: "SECONDS")
-//                         withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-//                             bat "docker exec -i ${containerId} sh -c \"/usr/local/bin/python Clean/clean_environment.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -c %CLEAN_SERVER% -d %IS_REST_API_CONTAINER%\""
-//                         }
-//                     } else {
-//                         def containerId = sh(script: 'docker ps --filter "name=${REST_CONTAINER_NAME}" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
-//                         sleep(time: 2, unit: "SECONDS")
-//                         withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-//                             sh "docker exec -i ${containerId} sh \"/usr/local/bin/python Clean/clean_environment.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -c ${CLEAN_SERVER} -d ${IS_REST_API_CONTAINER}\""
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//
-//         // Step 12 - Docker App - Stop Flask Servers - Option 2 //
-//         /*
-//         stage("[Docker] Docker App - Stop Flask Servers") {
-//             steps {
-//                 script {
-//                     if (checkOS() == "Windows") {
-//                         def containerId = bat(script: 'docker ps --filter "name=%REST_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
-//                         sleep(time: 2, unit: "SECONDS")
-//                         withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-//                             bat "docker exec -i ${containerId} sh -c \"curl -i --connect-timeout 30 http://127.0.0.1:5000/stop_server\""
-//                         }
-//                     } else {
-//                         def containerId = sh(script: 'docker ps --filter "name=${REST_CONTAINER_NAME}" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
-//                         sleep(time: 2, unit: "SECONDS")
-//                         withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
-//                             sh "docker exec -i ${containerId} sh \"curl -i --connect-timeout 30 http://127.0.0.1:5000/stop_server\""
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//         */
-//
-//         // Step 13 - Clean & Remove Docker Images //
-//         stage("[Docker] Clean & Remove Docker Images") {
-//             steps {
-//                 script {
-//                     if (checkOS() == "Windows") {
-//                         bat 'docker-compose --file Dockerfiles\\%DOCKER_COMPOSE_FILE_1% down --rmi all --volumes'
-//                     } else {
-//                         sh "docker-compose --file Dockerfiles/${DOCKER_COMPOSE_FILE_1} down --rmi all --volumes"
-//                     }
-//                 }
-//             }
-//         }
+        // Step 1 - Clone Git From GitHub //
+        stage("[Backend] Clone Git") {
+            steps {
+                script {
+                    properties([pipelineTriggers([pollSCM('H/30 * * * *')])])
+                }
+                git  credentialsId: "github_credentials", url: "https://github.com/DinGolan/DevOps-Experts-Final-Project.git", branch: 'main'
+            }
+        }
+
+        // Step 2 - Install Pip Packages //
+        stage("[Backend] Run `pip install`") {
+            steps {
+                script {
+                    if (checkPackages() == "Already Exists") {
+                        echo '[pymysql, requests, selenium, flask, prettytable, pypika, psutil] - Already Exist ...'
+                    } else {
+                        if (checkOS() == "Windows") {
+                            bat 'python -m pip install --ignore-installed --trusted-host pypi.python.org -r Packages\\requirements.txt'
+                        } else {
+                            sh "python -m pip install --ignore-installed --trusted-host pypi.python.org -r Packages/requirements.txt"
+                        }
+                    }
+                }
+            }
+        }
+
+        // Step 3 - Run REST API //
+        stage("[Backend] Run `rest_app.py` (Backend)") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            bat 'start /min python REST_API\\rest_app.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD%'
+                        }
+                    } else {
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            sh "start /min python REST_API/rest_app.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD}"
+                        }
+                    }
+                }
+            }
+        }
+
+        // Step 4 - Run Backend Test //
+        stage("[Backend] Run `backend_testing.py` (Testing)") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            bat 'python Testing\\backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE%'
+                        }
+                    } else {
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            sh "python Testing/backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE}"
+                        }
+                    }
+                }
+            }
+        }
+
+        // Step 5 - Run Clean Environment //
+        stage("[Backend] Run `clean_environment.py` (Clean)") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            bat 'python Clean\\clean_environment.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -c %CLEAN_SERVER%'
+                        }
+                    } else {
+                        withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            sh "python Clean/clean_environment.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -c ${CLEAN_SERVER}"
+                        }
+                    }
+                }
+            }
+        }
+
+        // Step 6 - Update `.env` File //
+        stage("[Docker] Update `.env` File") {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'container_root_database_credentials', usernameVariable: 'MYSQL_ROOT_USER', passwordVariable: 'MYSQL_ROOT_PASSWORD'),
+                                     usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                        setEnvFile()
+                    }
+                }
+            }
+        }
+
+        // Step 7 - Login to Docker Hub //
+        stage("[Docker] Login to Docker Hub") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        withCredentials([usernamePassword(credentialsId: 'docker_hub', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
+                            bat 'docker login --username "%DOCKER_HUB_USERNAME%" --password "%DOCKER_HUB_PASSWORD%"'
+                        }
+                    } else {
+                        withCredentials([usernamePassword(credentialsId: 'docker_hub', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
+                            sh "docker login --username ${DOCKER_HUB_USERNAME} --password ${DOCKER_HUB_PASSWORD}"
+                        }
+                    }
+                }
+            }
+        }
+
+        // Step 8 - Build & Up Docker Compose //
+        stage("[Docker] Build & Up Docker Compose") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_1% up -d --build & docker ps -a'
+                    } else {
+                        sh "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_1} up -d --build & docker ps -a"
+                    }
+                    sleep(time: 10, unit: "SECONDS")
+                }
+            }
+        }
+
+        // Step 9 - Push Docker Compose //
+        stage("[Docker] Push Docker Compose") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_1% push'
+                    } else {
+                        sh "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_1} push"
+                    }
+                }
+            }
+        }
+
+        // Step 10 - Check Docker Service Healthy //
+        stage("[Docker] Check Docker Compose Services Health") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        def servicesOutput = bat(script: 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_1% ps --services', returnStdout: true).trim().readLines().drop(1)
+                        for (def service : servicesOutput) {
+                            def containers = bat(script: 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_1% ps -q --services ${service}', returnStdout: true).trim().readLines().drop(1)
+                            for (def container : containers) {
+                                def inspectStateStatusOutput = bat(script: "docker inspect ${container} --format '{{.State.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
+                                def inspectHealthStatusOutput = bat(script: "docker inspect ${container} --format '{{.State.Health.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
+                                if (inspectStateStatusOutput != "running" || inspectStateStatusOutput == null || inspectStateStatusOutput == "") {
+                                    error("Container id: ${container} from Service name: ${service} Has State status: ${inspectStateStatusOutput}")
+                                    return
+                                } else if (inspectHealthStatusOutput != "healthy" || inspectHealthStatusOutput == null || inspectHealthStatusOutput == "") {
+                                    error("Service ${service} is not healthy. Container id: ${container} has health status: ${inspectHealthStatusOutput}")
+                                    return
+                                } else {
+                                    echo "Service name : ${service} is in state : ${inspectStateStatusOutput} , Container id : ${container} has health status : ${inspectHealthStatusOutput}"
+                                }
+                            }
+                        }
+                    } else {
+                        def servicesOutput = sh(script: 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_1} ps --services', returnStdout: true).trim().readLines().drop(1)
+                        for (def service : servicesOutput) {
+                            def containers = sh(script: 'docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_1} ps -q --services ${service}', returnStdout: true).trim().readLines().drop(1)
+                            for (def container : containers) {
+                                def inspectStateStatusOutput = sh(script: "docker inspect ${container} --format '{{.State.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
+                                def inspectHealthStatusOutput = sh(script: "docker inspect ${container} --format '{{.State.Health.Status}}'", returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","")
+                                if (inspectStateStatusOutput != "running" || inspectStateStatusOutput == null) {
+                                    error("Container id: ${container} from Service name: ${service} Has State status: ${inspectStateStatusOutput}")
+                                    return
+                                } else if (inspectHealthStatusOutput != "healthy" || inspectHealthStatusOutput == null) {
+                                    error("Service ${service} is not healthy. Container id: ${container} has health status: ${inspectHealthStatusOutput}")
+                                    return
+                                } else {
+                                    echo "Service name : ${service} is in state : ${inspectStateStatusOutput} , Container id : ${container} has health status : ${inspectHealthStatusOutput}"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Step 11 - Run Backend Test (On Docker Compose Environments) //
+        stage("[Docker] Run `docker_backend_testing.py` (Testing Docker Compose)") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        def containerId = bat(script: 'docker ps --filter "name=%REST_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
+                        sleep(time: 2, unit: "SECONDS")
+                        withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            bat "docker exec -i ${containerId} sh -c \"/usr/local/bin/python Testing/docker_backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE% -s %IS_MYSQL_CONTAINER_FOR_DOCKER%\""
+                        }
+                    } else {
+                        def containerId = sh(script: 'docker ps --filter "name=${REST_CONTAINER_NAME}" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
+                        sleep(time: 2, unit: "SECONDS")
+                        withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
+                            sh "docker exec -i ${containerId} sh \"/usr/local/bin/python Testing/docker_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE} -s ${IS_MYSQL_CONTAINER_FOR_DOCKER}\""
+                        }
+                    }
+                }
+            }
+        }
+
+        // Step 12 - Docker App - Stop Flask Servers - Option 1 //
+        stage("[Docker] Run `clean_environment.py` (Clean)") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        def containerId = bat(script: 'docker ps --filter "name=%REST_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
+                        sleep(time: 2, unit: "SECONDS")
+                        withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                            bat "docker exec -i ${containerId} sh -c \"/usr/local/bin/python Clean/clean_environment.py -u %DB_USER_NAME% -p %DB_PASSWORD% -i %IS_JOB_RUN% -c %CLEAN_SERVER% -d %IS_REST_API_CONTAINER%\""
+                        }
+                    } else {
+                        def containerId = sh(script: 'docker ps --filter "name=${REST_CONTAINER_NAME}" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
+                        sleep(time: 2, unit: "SECONDS")
+                        withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                            sh "docker exec -i ${containerId} sh \"/usr/local/bin/python Clean/clean_environment.py -u ${DB_USER_NAME} -p ${DB_PASSWORD} -i ${IS_JOB_RUN} -c ${CLEAN_SERVER} -d ${IS_REST_API_CONTAINER}\""
+                        }
+                    }
+                }
+            }
+        }
+
+        // Step 12 - Docker App - Stop Flask Servers - Option 2 //
+        /*
+        stage("[Docker] Docker App - Stop Flask Servers") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        def containerId = bat(script: 'docker ps --filter "name=%REST_CONTAINER_NAME%" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
+                        sleep(time: 2, unit: "SECONDS")
+                        withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                            bat "docker exec -i ${containerId} sh -c \"curl -i --connect-timeout 30 http://127.0.0.1:5000/stop_server\""
+                        }
+                    } else {
+                        def containerId = sh(script: 'docker ps --filter "name=${REST_CONTAINER_NAME}" --format "{{.ID}}"', returnStdout: true).trim().readLines().drop(1).join(" ")
+                        sleep(time: 2, unit: "SECONDS")
+                        withCredentials([usernamePassword(credentialsId: 'container_database_credentials', usernameVariable: 'DB_USER_NAME', passwordVariable: 'DB_PASSWORD')]) {
+                            sh "docker exec -i ${containerId} sh \"curl -i --connect-timeout 30 http://127.0.0.1:5000/stop_server\""
+                        }
+                    }
+                }
+            }
+        }
+        */
+
+        // Step 13 - Clean & Remove Docker Images //
+        stage("[Docker] Clean & Remove Docker Images") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        bat 'docker-compose --file Dockerfiles\\%DOCKER_COMPOSE_FILE_1% down --rmi all --volumes'
+                    } else {
+                        sh "docker-compose --file Dockerfiles/${DOCKER_COMPOSE_FILE_1} down --rmi all --volumes"
+                    }
+                }
+            }
+        }
 
         // Step 14 - Minikube Start //
         stage("[K8S] Minikube Start") {
@@ -307,32 +307,32 @@ pipeline {
             }
         }
 
-//         // Step 15 - Build & Up Docker Compose //
-//         stage("[K8S] Build Docker Compose") {
-//             steps {
-//                 script {
-//                     if (checkOS() == "Windows") {
-//                         bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_3% build'
-//                     } else {
-//                         sh "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_3} build"
-//                     }
-//                     sleep(time: 10, unit: "SECONDS")
-//                 }
-//             }
-//         }
-//
-//         // Step 16 - Push Docker Compose //
-//         stage("[K8S] Push Docker Compose") {
-//             steps {
-//                 script {
-//                     if (checkOS() == "Windows") {
-//                         bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_3% push'
-//                     } else {
-//                         sh "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_3} push"
-//                     }
-//                 }
-//             }
-//         }
+        // Step 15 - Build & Up Docker Compose //
+        stage("[K8S] Build Docker Compose") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_3% build'
+                    } else {
+                        sh "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_3} build"
+                    }
+                    sleep(time: 10, unit: "SECONDS")
+                }
+            }
+        }
+
+        // Step 16 - Push Docker Compose //
+        stage("[K8S] Push Docker Compose") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        bat 'docker-compose --env-file .env --file Dockerfiles\\%DOCKER_COMPOSE_FILE_3% push'
+                    } else {
+                        sh "docker-compose --env-file .env --file Dockerfiles/${DOCKER_COMPOSE_FILE_3} push"
+                    }
+                }
+            }
+        }
 
         // Step 17 - Deploy HELM Chart with Passing Image //
         stage("[K8S] Deploy HELM Chart with Passing Image") {
@@ -348,6 +348,19 @@ pipeline {
         }
 
         // Step 18 - Write Service URL into `k8s_url.txt` - Option 1 //
+        stage("[K8S] Write service URL into `k8s_url.txt`") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        bat 'start /B minikube service %REST_API_SERVICE_NAME% --url > Testing\\%K8S_URL_FILE%'
+                    } else {
+                        sh 'minikube service ${REST_API_SERVICE_NAME} --url > Testing/${K8S_URL_FILE} &'
+                    }
+                }
+            }
+        }
+
+        // Step 18 - Write Service URL into `k8s_url.txt` - Option 2 //
         /*
         stage("[K8S] Write service URL into `k8s_url.txt`") {
             steps {
@@ -362,31 +375,17 @@ pipeline {
         }
         */
 
-        // Step 18 - Write Service URL into `k8s_url.txt` - Option 2 //
-        stage("[K8S] Write service URL into `k8s_url.txt`") {
-            steps {
-                script {
-                    if (checkOS() == "Windows") {
-                        bat 'start /B minikube service %REST_API_SERVICE_NAME% --url > Testing\\%K8S_URL_FILE%'
-                    } else {
-                        sh 'minikube service ${REST_API_SERVICE_NAME} --url > Testing/${K8S_URL_FILE} &'
-                    }
-                }
-            }
-        }
-
-
         // Step 19 - Test Deployed Application //
         stage("[K8S] Test Deployed Application - `k8s_backend_testing.py`") {
             steps {
                 script {
                     if (checkOS() == "Windows") {
-                        sleep(time: 240, unit: "SECONDS")
+                        sleep(time: 90, unit: "SECONDS")
                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
                             bat 'python Testing\\k8s_backend_testing.py -u %MYSQL_USER_NAME% -p %MYSQL_PASSWORD% -i %IS_JOB_RUN% -r %REQUEST_TYPE% -s %IS_MYSQL_CONTAINER_FOR_K8S% -k %IS_K8S_URL%'
                         }
                     } else {
-                        sleep(time: 240, unit: "SECONDS")
+                        sleep(time: 90, unit: "SECONDS")
                         withCredentials([usernamePassword(credentialsId: 'database_credentials', usernameVariable: 'MYSQL_USER_NAME', passwordVariable: 'MYSQL_PASSWORD')]) {
                            sh 'python Testing/k8s_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i ${IS_JOB_RUN} -r ${REQUEST_TYPE} -s ${IS_MYSQL_CONTAINER_FOR_K8S} -k ${IS_K8S_URL}'
                         }
