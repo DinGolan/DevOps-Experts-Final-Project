@@ -5,7 +5,7 @@
 ## Description ##
 • DevOps Experts Course - Final Project.
 
-• Python Backend & Frontend Stack.
+• Python Backend & Frontend.
 
 • The Project Includes 4 Parts - [MySQL & Python , Jenkins , Docker , K8S & HELM].
 
