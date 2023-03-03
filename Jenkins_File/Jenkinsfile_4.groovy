@@ -257,7 +257,7 @@ pipeline {
         */
     }
 
-    // Step 12 - [Docker] Clean & Remove Docker Images Build & Push //
+    // Step 12 - [Docker] Clean & Remove Docker Images //
     post {
         always {
             script {
