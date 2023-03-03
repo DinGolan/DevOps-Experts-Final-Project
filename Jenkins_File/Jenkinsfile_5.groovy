@@ -362,6 +362,23 @@ pipeline {
                 }
             }
         }
+
+        // Step 19 - Remove `k8s_url.txt` //
+        stage("[K8S] Remove `k8s_url.txt`") {
+            steps {
+                script {
+                    if (checkOS() == "Windows") {
+                        if (fileExists('Testing\\k8s_url.txt')) {
+                            bat 'del Testing\\k8s_url.txt'
+                        }
+                    } else {
+                        if (fileExists('Testing/k8s_url.txt')) {
+                            sh 'rm Testing/k8s_url.txt'
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
