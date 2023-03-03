@@ -378,20 +378,7 @@ pipeline {
             }
         }
 
-        // Step 20 - Clean HELM Environment //
-        stage("[K8S] Clean HELM Environment") {
-            steps {
-                script {
-                    if (checkOS() == "Windows") {
-                        bat 'helm delete'
-                    } else {
-                        sh 'helm delete'
-                    }
-                }
-            }
-        }
-
-        // Step 21 - Remove `k8s_url.txt` //
+        // Step 20 - Remove `k8s_url.txt` //
         stage("[K8S] Remove `k8s_url.txt`") {
             steps {
                 script {
@@ -404,6 +391,19 @@ pipeline {
                             sh 'rm Testing/k8s_url.txt'
                         }
                     }
+                }
+            }
+        }
+    }
+
+    // Step 21 - Clean HELM Environment //
+    post {
+        always {
+            script {
+                if (checkOS() == "Windows") {
+                    bat 'helm delete'
+                } else {
+                    sh 'helm delete'
                 }
             }
         }
