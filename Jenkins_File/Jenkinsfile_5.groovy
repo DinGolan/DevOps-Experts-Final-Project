@@ -352,9 +352,9 @@ pipeline {
             steps {
                 script {
                     if (checkOS() == "Windows") {
-                        bat 'start /B minikube service %REST_API_SERVICE_NAME% --namespace %HELM_CHART_NAME% --url > Testing\\%K8S_URL_FILE%'
+                        bat 'start /B minikube service %REST_API_SERVICE_NAME% --url > Testing\\%K8S_URL_FILE%'
                     } else {
-                        sh 'start /B minikube service ${REST_API_SERVICE_NAME} --namespace ${HELM_CHART_NAME} --url > Testing/${K8S_URL_FILE}'
+                        sh 'start /B minikube service ${REST_API_SERVICE_NAME} --url > Testing/${K8S_URL_FILE}'
                     }
                 }
             }
