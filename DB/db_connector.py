@@ -455,7 +455,7 @@ def get_k8s_url():
               "(1) minikube start"                                                 + "\n" +
               "(2) helm install helm-chart-testing .\\HELM\\ --set image.version=dingolan/devops_experts_final_project:rest_api_version_latest_3"             + "\n" +
               "(3) minikube service rest-api-application-service --url > Testing\\k8s_url.txt"                                                                + "\n" +
-              "(4) python Testing\\k8s_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i True -r GET -s ${IS_MYSQL_CONTAINER} -k ${IS_K8S_URL}" + "\n")
+              "(4) python Testing\\k8s_backend_testing.py -u ${MYSQL_USER_NAME} -p ${MYSQL_PASSWORD} -i True -r GET -s ${IS_MYSQL_CONTAINER_FOR_K8S} -k ${IS_K8S_URL}" + "\n")
 
     # Exit from program, we can't continue #
     exit(1)
