@@ -417,13 +417,29 @@ pipeline {
         always {
             script {
                 if (checkOS() == "Windows") {
+                    // Remove HELM //
                     bat 'helm delete %HELM_CHART_NAME%'
-                    bat 'minikube delete'
+
+                    // Remove Minikube //
+                    bat 'minikube stop'
+                    bat 'minikube delete --purge'
+
+                    // Remove Docker //
                     bat 'docker-compose --file Dockerfiles\\%DOCKER_COMPOSE_FILE_3% down --rmi all --volumes'
+                    def dockerImageId = getK8SDockerImageId()
+                    bat 'docker rmi -f ' + dockerImageId
                 } else {
+                    // Remove HELM //
                     sh 'helm delete %HELM_CHART_NAME%'
+
+                    // Remove Minikube //
+                    sh 'minikube stop'
                     sh 'minikube delete'
+
+                    // Remove Docker //
                     sh "docker-compose --file Dockerfiles/${DOCKER_COMPOSE_FILE_3} down --rmi all --volumes"
+                    def dockerImageId = getK8SDockerImageId()
+                    sh 'docker rmi -f ' + dockerImageId
                 }
             }
         }
@@ -431,6 +447,11 @@ pipeline {
 }
 
 /* Functions */
+def getK8SDockerImageId() {
+    def dockerImageId = bat(script: 'docker images --quiet gcr.io/k8s-minikube/kicbase', returnStdout: true).trim().readLines().drop(1).join(" ").replaceAll("\'","");
+    return dockerImageId
+}
+
 def storeUrlInFile() {
     def url  = ''
     def file = ''
