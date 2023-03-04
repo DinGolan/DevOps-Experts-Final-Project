@@ -412,16 +412,18 @@ pipeline {
         }
     }
 
-    // Step 21 - Clean HELM Environment //
+    // Step 21 - Clean HELM / Minikube / Docker Environment //
     post {
         always {
             script {
                 if (checkOS() == "Windows") {
                     bat 'helm delete %HELM_CHART_NAME%'
                     bat 'minikube delete'
+                    bat 'docker-compose --file Dockerfiles\\%DOCKER_COMPOSE_FILE_3% down --rmi all --volumes'
                 } else {
                     sh 'helm delete %HELM_CHART_NAME%'
                     sh 'minikube delete'
+                    sh "docker-compose --file Dockerfiles/${DOCKER_COMPOSE_FILE_3} down --rmi all --volumes"
                 }
             }
         }
